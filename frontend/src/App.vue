@@ -1,12 +1,36 @@
 <template>
-  <div id="app">
-    <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </nav>
-    <router-view/>
+  <div>
+    <Header></Header>
+
+    <!-- mongoose 테스트 위한 임시 회원가입/로그인 -->
+    <SignIn v-if="!signup"></SignIn>
+    <SignUp v-else></SignUp>
+    <button @click="signup=!signup">체인지</button>
+
+    <Footer></Footer>
   </div>
 </template>
+<script>
+import Header from './components/Header.vue';
+import Footer from './components/Footer.vue';
+import SignIn from './components/SignIn.vue';
+import SignUp from './components/SignUp.vue';
+
+export default {
+  data(){
+    return{
+      signup: false
+    }
+  },
+  components: {
+    Header,
+    Footer,
+    SignIn,
+    SignUp
+}
+}
+
+</script>
 
 <style>
 #app {
