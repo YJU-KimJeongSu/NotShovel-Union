@@ -1,7 +1,14 @@
 <template>
-  <div class="header">
-    <p>Header</p>
-  </div>
+    <nav class="navbar">
+      <div class="container-fluid">
+        <router-link to="/" class="navbar-brand"><img src="../assets/logo2.png" width="120"></router-link>
+        <form class="d-flex" role="search">
+          <button class="btn btn-outline-light" @click="$router.push('signin')" >로그인</button>
+          <button class="btn btn-outline-light" @click="$router.push('signup')">회원가입</button>
+        </form>
+      </div>
+    </nav>
+
 </template>
 
 <script>
@@ -11,20 +18,21 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
+.header{
   padding: 0;
+  margin: 0;
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
+.navbar{
+  padding: 5px 0;
+  width: 100%;
+  background-color: #383D40;
 }
-a {
-  color: #42b983;
+.container-fluid{
+  width: 70%;
+}
+.btn {
+  margin-left: 10px;
+  height: 35px;
 }
 </style>
