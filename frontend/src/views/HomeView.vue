@@ -1,11 +1,17 @@
 <template>
     <div class="home">
-        <div class="inner">포토폴리오 들어갈 자리</div>
+        <!-- <div class="inner">포트폴리오 들어갈 자리</div> -->
+        <SelectProject></SelectProject>
     </div>
 </template>
 <script>
+import SelectProject from '@/components/SelectProject.vue';
+
+
 export default {
-    
+    components :{
+        SelectProject
+    }
 }
 </script>
 <style scoped>
