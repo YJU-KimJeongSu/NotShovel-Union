@@ -26,7 +26,7 @@ export default {
 .navbar{
   padding: 5px 0;
   width: 100%;
-  background-color: #383D40;
+  background-color: #11101D;
 }
 .container-fluid{
   width: 70%;

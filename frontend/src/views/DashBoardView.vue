@@ -3,7 +3,7 @@
   <div class="sidebar" v-on:click="menuBtnChange();">
     <div class="logo-details">
       <i class='bx bxl-c-plus-plus icon'></i>
-        <div class="logo_name">Union</div>
+        <div class="logo_name">프로젝트명</div>
         <i class='bx bx-menu' id="btn" v-on:click="btnClick();"></i>
     </div>
     <ul class="nav-list">
