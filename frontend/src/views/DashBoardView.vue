@@ -10,8 +10,8 @@
 </template>
 
 <script>
-import sidebar from './SideBar.vue'
-import meetingNotes from './MeetingNotes.vue'
+import sidebar from '../components/SideBar.vue'
+import meetingNotes from '../components/MeetingNotes.vue'
 
 export default {
   data: function() {
