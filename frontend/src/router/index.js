@@ -5,6 +5,7 @@ import SignInView from '../views/SignInView.vue'
 import SignUpView from '../views/SignUpView.vue'
 import DashBoardView from '../views/DashBoardView.vue'
 import SignInUpView from '../views/SignInUpView.vue'
+import CreateProjectView from '../views/CreateProjectView.vue'
 
 
 Vue.use(VueRouter)
@@ -14,6 +15,11 @@ const routes = [
     path: '/',
     name: 'home',
     component: HomeView
+  },
+  {
+    path: '/createproject',
+    name: 'createproject',
+    component: CreateProjectView
   },
   {
     path: '/signin',

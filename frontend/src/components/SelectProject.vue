@@ -15,11 +15,11 @@
           <div class="card-panel">5</div>
           <div class="card-panel">6</div>
         </Flicking>
+        <router-link to="/createproject">추가</router-link>
     </div>
 </template>
 <script>
 import { Flicking } from "@egjs/vue-flicking";
-import { Arrow } from "@egjs/flicking-plugins";
 import { Perspective } from "@egjs/flicking-plugins";
 
 
@@ -29,8 +29,7 @@ export default {
   },
   data() {
     return {
-      // plugins: [new Arrow()]
-      plugins: [new Perspective({ rotate: 0.5 })]
+        plugins: [new Perspective({ rotate: 0.5 })]
     }
   }
 }
@@ -51,6 +50,7 @@ export default {
 }
 .inner{
     width: 70%;
+    flex-direction: column;
 }
 .flicking-arrow-next::before,
 .flicking-arrow-prev::before,

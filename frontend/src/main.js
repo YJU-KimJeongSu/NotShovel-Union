@@ -4,6 +4,10 @@ import router from './router'
 import store from './store'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import VueClipboard from 'vue-clipboard2'
+
+VueClipboard.config.autoSetContainer = true;
+Vue.use(VueClipboard)
 
 Vue.config.productionTip = false
 
