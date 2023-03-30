@@ -2,12 +2,10 @@
   <div>
     <Header></Header>
     <RouterView></RouterView>
-    <Footer></Footer>
   </div>
 </template>
 <script>
 import Header from './components/Header.vue';
-import Footer from './components/Footer.vue';
 import { RouterView } from 'vue-router';
 
 export default {
@@ -18,7 +16,6 @@ export default {
   },
   components: {
     Header,
-    Footer,
     RouterView
 }
 }
