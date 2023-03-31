@@ -5,12 +5,12 @@
             <form action="#" class="form" id="form1">
                 <h2 class="form__title">Sign Up</h2>
                 <div class="user-box">
-                    <input type="text" placeholder="Name" class="input" />
-                    <input type="email" placeholder="Email" class="input" />
-                    <input type="password" placeholder="Password" class="input" />
-                    <input type="password" placeholder="PasswordCheck" class="input" />
+                    <input type="text" placeholder="Name" class="input" v-model="name" />
+                    <input type="email" placeholder="Email" class="input" v-model="email" />
+                    <input type="password" placeholder="Password" class="input" v-model="password"/>
+                    <input type="password" placeholder="PasswordCheck" class="input" v-model="passwordCheck"/>
                 </div>
-                <button class="btn">Sign Up</button>
+                <button class="btn" @click="signUp()">Sign Up</button>
             </form>
         </div>
 
@@ -42,10 +42,16 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
     data() {
         return {
-
+            name: null,
+            email: null,
+            password: null,
+            passwordCheck: null,
+            // phone_number는 ui 구현을 안해서 임시로 제외
         }
     },
     methods: {
@@ -54,6 +60,28 @@ export default {
         },
         overlay__panelChange2() {
             document.querySelector(".container").classList.add("right-panel-active");
+        },
+        signUp() {
+            if (this.password != this.passwordCheck) {
+                alert('비밀번호를 다시 확인해주세요');
+            } else if (this.name == null || this.email == null || this.password == null) {
+                alert('비어있는 칸이 있습니다.');
+            } else {
+                axios.post("/api/member/signup", {
+                    name: this.email,
+                    email: this.email,
+                    password: this.password,
+                    // phone_number는 ui 구현을 안해서 임시로 제외
+                })
+                .then((res) => {
+                    console.log(res);
+                    alert('회원가입에 성공했습니다.');
+                })
+                .catch((err) => {
+                    console.log(err);
+                    alert('회원가입에 실패했습니다.');
+                })
+            }
         },
     }
 }
