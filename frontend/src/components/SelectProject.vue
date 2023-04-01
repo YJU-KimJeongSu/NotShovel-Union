@@ -49,8 +49,11 @@ export default {
     justify-content: center;
 }
 .inner{
-    width: 70%;
+    width: 80%;
     flex-direction: column;
+}
+.flicking-viewport {
+  width: 100%;
 }
 .flicking-arrow-next::before,
 .flicking-arrow-prev::before,
