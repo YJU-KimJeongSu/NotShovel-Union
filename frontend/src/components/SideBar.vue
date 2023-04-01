@@ -6,8 +6,8 @@
         <i class='bx bx-menu' id="btn" @click="btnClick"></i>
     </div>
     <ul class="nav-list">
-      <draggable v-model="myList">
-        <li v-for="(board, index) in bList"
+      <draggable>
+        <li v-for="(board, index) in propsdata"
           :key="index"
           @click="clickBoard(board.clickMethod)"
         >
@@ -19,8 +19,8 @@
           <span class="tooltip">{{board.name}}</span>
         </li>
       </draggable>
-      
-      <li>
+
+      <li @click="addBoard">
         <a href="#">
           <i class='bx bx-plus' ></i>
           <span class="links_name">게시판 추가</span>
@@ -28,6 +28,7 @@
         <span class="tooltip">게시판 추가</span>
       </li>
     </ul>
+  
   </div>
 </template>
 
@@ -35,20 +36,9 @@
 import draggable from 'vuedraggable'
 
 export default {
+  props: ['propsdata'],
   components: {
     draggable,
-  },
-  data() {
-    return {
-      bList: [
-        {name: '회의록', icon: 'bx bx-folder', clickMethod: 'meetingNotes'},
-        {name: 'User', icon: 'bx bx-user', clickMethod: ''},
-        {name: 'Messages', icon: 'bx bx-chat', clickMethod: ''},
-        {name: 'Gant Chart', icon: 'bx bx-pie-chart-alt-2', clickMethod: ''},
-        {name: 'Setting', icon: 'bx bx-cog', clickMethod: ''},
-        
-      ]
-    }
   },
   methods: {
     menuBtnChange: function() {
@@ -75,8 +65,9 @@ export default {
     clickBoard: function(event) {
       this.$emit('changeBoard', event);
     },
-    
-  
+    addBoard: function() {
+      this.$emit('addBoard');
+    },
   },
 }
 </script>
