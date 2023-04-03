@@ -59,6 +59,10 @@ export default {
       let sidebar = document.querySelector(".sidebar");
       sidebar.classList.toggle("open");
       this.menuBtnChange();
+      if(sidebar.classList.contains('open'))
+        this.$emit('openBar', true);
+      else
+        this.$emit('openBar', false);
     },
 
     //  아이콘 클릭에 따라, 각 이벤트 정보를 담고 DashBoard.vue로 emit
