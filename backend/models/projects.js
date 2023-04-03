@@ -7,6 +7,7 @@ const projects = new Schema({
     description: String,
     create_date: { type: Date, default: Date.now },
     member_ids: [{ type: Schema.Types.ObjectId, ref: 'members' }],
+    admin_ids: [{ type: Schema.Types.ObjectId, ref: 'members' }],
     // board_ids: [
     //     {
     //         kind: { type: String, enum: ['gantt_charts', 'meeting_minutes'] }, // enum으로 정해놓은 값 외에 다른 값이 들어오면 에러
