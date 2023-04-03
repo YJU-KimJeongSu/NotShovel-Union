@@ -1,21 +1,19 @@
 <template>
     <div class="form">
         <!-- create -->
-        <div class="mb-3 project_form" v-if="create == false">
+        <div class="mb-3 project_form" v-if="createState == false">
             <h2>프로젝트 생성</h2>
-            <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="프로젝트 이름"
-                v-model="project_name">
-            <textarea class="form-control" id="exampleFormControlTextarea1" placeholder="프로젝트 설명" rows="3"
-                v-model="project_description"></textarea>
+            <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="프로젝트 이름" v-model="name">
+            <textarea class="form-control" id="exampleFormControlTextarea1" placeholder="프로젝트 설명" rows="3"  v-model="description"></textarea>
             <p class="select_file">프로젝트 대표 이미지<input class="form-control" type="file" id="formFile"></p>
-            <button type="button" class="btn btn-secondary" @click="create = !!!create">생성</button>
+            <button type="button" class="btn btn-secondary" @click="save()">생성</button>
         </div>
 
         <!-- 초대링크 -->
         <div class="mb-3 project_form" v-else>
             <h2>생성 완료</h2>
             <div class="project_photo"></div>
-            <p>{{ this.project_name }} 프로젝트가 생성 완료되었습니다!</p>
+            <p>{{ this.name }} 프로젝트가 생성 완료되었습니다!</p>
             <p>초대링크
                 <input type="text" v-model="link">
                 <button type="button" @click="linkCopy">복사</button>
@@ -24,16 +22,42 @@
     </div>
 </template>
 <script>
+import axios from 'axios';
+
 export default {
     data() {
         return {
-            create: false, // 생성 버튼 누르면 true로 변경, 컴포넌트 변경
-            project_name: null,
-            project_description: null,
+            createState: false, // 생성 버튼 누르면 true로 변경, 컴포넌트 변경
+            name: null,
+            description: null,
+            member_id: sessionStorage.getItem('member_id'),
+            picture: null,
             link: null
         }
     },
     methods: {
+        save(){
+            if(this.name == null) {
+                alert('프로젝트 이름을 입력해주세요.')
+            }
+            else{ 
+                axios.post('/api/project', {
+                    name: this.name,
+                    description: this.description,
+                    picture: this.picture,
+                    member_id: this.member_id,
+                })
+                .then((res)=> {
+                    console.log(res.data.id);
+                    this.link = `http://localhost:3000/register?id=${res.data.id}`;
+                    this.createState = !!!this.createState;
+                })
+                .catch((err) => {
+                    console.log(err);
+                    alert('프로젝트 생성에 실패하였습니다.')
+                });
+            }
+        },  
         linkCopy() {
             this.$copyText(this.link);
             alert(this.link + ' 복사 완료!');
