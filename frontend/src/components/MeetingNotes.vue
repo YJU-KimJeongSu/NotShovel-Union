@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="section" v-bind:class="{open: props}">
     <div class="select-menu">
         <div class="select-btn" @click="clickSelectBtn">
           <span class="sBtn-text">Select your option</span>
@@ -71,6 +71,7 @@
 <script>
 
 export default {
+  props: ['props'],
   methods: {
     clickSelectBtn: function() {
       const optionMenu = document.querySelector(".select-menu");
@@ -93,5 +94,36 @@ export default {
 @import url('../assets/css/tableStyle.css');
 @import url('../assets/css/selectStyle.css');
 @import url('https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css');
+
+.section {
+  position: relative;
+  animation-name: close;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+}
+
+.section.open {
+  position: relative;
+  animation-name: open;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes open {
+  from {
+    left: 0;
+  }
+  to {
+    left: 9%;
+  }
+}
+@keyframes close {
+  from {
+    left: 9%;
+  }
+  to {
+    left: 0;
+  }
+}
 
 </style>
