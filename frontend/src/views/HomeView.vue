@@ -9,25 +9,26 @@
 import selectProject from '@/components/SelectProject.vue';
 
 export default {
-  data() {
-    return {
-      loginState: false // false면 로그아웃 상태, true면 로그인 상태
-    }
-  },
-  mounted() {
-    if (sessionStorage.getItem('member_id')) {
-      this.loginState = true;
-    }
-  },
-  components: {
-    SelectProject: selectProject
-  },
-  methods: {
-    test() {
-      sessionStorage.setItem('member_id', '642aaa6b16ec02acf4f7c7fd');
+    data(){
+        return {
+            loginState: false // false면 로그아웃 상태, true면 로그인 상태
+        }
+    },
+    mounted(){
+        if(sessionStorage.getItem('member_id')){
+            this.loginState = true;
+        }
+    },
+    components :{
+         SelectProject: selectProject
+    },
+    methods:{
+        test(){
+            sessionStorage.setItem('member_id','642aaa6b16ec02acf4f7c7fd');
+            history.go(0);
+       }
     }
   }
-}
 </script>
 <style scoped>
 .home {

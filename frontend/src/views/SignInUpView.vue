@@ -5,10 +5,11 @@
             <form action="#" class="form" id="form1">
                 <h2 class="form__title">Sign Up</h2>
                 <div class="user-box">
-                    <input type="text" placeholder="Name" class="input" v-model="name" />
-                    <input type="email" placeholder="Email" class="input" v-model="email" />
-                    <input type="password" placeholder="Password" class="input" v-model="password"/>
-                    <input type="password" placeholder="PasswordCheck" class="input" v-model="passwordCheck"/>
+                    <input type="text" placeholder="Name" class="input" v-model="signup.name" />
+                    <input type="email" placeholder="Email" class="input" v-model="signup.email" />
+                    <input type="password" placeholder="Password" class="input" v-model="signup.password"/>
+                    <input type="password" placeholder="PasswordCheck" class="input" v-model="signup.passwordCheck"/>
+                    <input type="text" placeholder="Phone" class="input" v-model="signup.phone_number">
                 </div>
                 <button class="btn" @click="signUp()">Sign Up</button>
             </form>
@@ -19,11 +20,11 @@
             <form action="#" class="form" id="form2">
                 <h2 class="form__title">Sign In</h2>
                 <div class="user-box">
-                    <input type="email" placeholder="Email" class="input" />
-                    <input type="password" placeholder="Password" class="input" />
-                    <a href="#" class="link">Forgot your password?</a>
+                    <input type="email" placeholder="Email" class="input" v-model="signin.email"/>
+                    <input type="password" placeholder="Password" class="input" v-model="signin.password"/>
                 </div>
-                <button class="btn">Sign In</button>
+                <a href="#" class="link">Forgot your password?</a>
+                <button class="btn" @click="signIn()">Sign In</button>
             </form>
         </div>
 
@@ -42,16 +43,23 @@
 </template>
 
 <script>
+import router from '@/router';
 import axios from 'axios';
 
 export default {
     data() {
         return {
-            name: null,
-            email: null,
-            password: null,
-            passwordCheck: null,
-            // phone_number는 ui 구현을 안해서 임시로 제외
+            signup: {
+                name: null,
+                email: null,
+                password: null,
+                passwordCheck: null,
+                phone_number: null,
+            },
+            signin: {
+                email: null,
+                password: null,
+            },
         }
     },
     methods: {
@@ -62,27 +70,72 @@ export default {
             document.querySelector(".container").classList.add("right-panel-active");
         },
         signUp() {
-            if (this.password != this.passwordCheck) {
+            if (this.signup.password != this.signup.passwordCheck) {
                 alert('비밀번호를 다시 확인해주세요');
-            } else if (this.name == null || this.email == null || this.password == null) {
+            } else if (
+                this.signup.name == null ||
+                this.signup.email == null ||
+                this.signup.password == null ||
+                this.signup.phone_number == null ||
+                this.signup.name == '' ||
+                this.signup.email == '' ||
+                this.signup.password == '' ||
+                this.signup.phone_number == ''
+            ) {
                 alert('비어있는 칸이 있습니다.');
             } else {
                 axios.post("/api/member/signup", {
-                    name: this.email,
-                    email: this.email,
-                    password: this.password,
-                    // phone_number는 ui 구현을 안해서 임시로 제외
+                    name: this.signup.email,
+                    email: this.signup.email,
+                    password: this.signup.password,
+                    phone_number: this.signup.phone_number
                 })
                 .then((res) => {
                     console.log(res);
                     alert('회원가입에 성공했습니다.');
+                    router.go(0); // 새로고침
                 })
                 .catch((err) => {
-                    console.log(err);
-                    alert('회원가입에 실패했습니다.');
+                    if (err.response.status == 409) {
+                        alert('회원가입에 실패했습니다.\n사유 : 중복된 아이디');
+                    } else {
+                        console.log(err);
+                        alert('회원가입에 실패했습니다.');
+                    }
                 })
             }
         },
+        signIn() {
+            if (
+                this.signin.email == null ||
+                this. signin.password == null ||
+                this.signin.email == '' ||
+                this.signin.password == ''
+            ) {
+                alert('비어있는 칸이 있습니다');
+            } else {
+                axios.post("/api/member/signin", {
+                    email: this.signin.email,
+                    password: this.signin.password
+                })
+                .then((res) => {
+                    // console.log(res.data);
+                    sessionStorage.setItem('member_id', res.data);
+                    location.href = '/';
+                })
+                .catch((err) => {
+                    if (err.response.status == 401) {
+                        alert('잘못된 이메일 혹은 비밀번호 입니다.');
+                    } else {
+                        console.log(err);
+                        alert('로그인에 실패했습니다.');
+                    }
+                })
+            }
+        }
+    },
+    mounted() {
+        this.overlay__panelChange1();
     }
 }
 </script>
@@ -97,7 +150,7 @@ export default {
 .link {
     color: #333;
     font-size: 0.9rem;
-    margin: 1.5rem 0;
+    margin: 1rem 0;
     text-decoration: none;
     transition: 0.7s;
 }
@@ -112,12 +165,12 @@ export default {
     border-radius: 0.7rem;
     box-shadow: 0 0.9rem 1.7rem rgba(0, 0, 0, 0.25),
         0 0.7rem 0.7rem rgba(0, 0, 0, 0.22);
-    height: 480px;
+    height: 520px;
     max-width: 758px;
     overflow: hidden;
     position: relative;
     width: 100%;
-    transform: translate(0%, max(calc((100vh - 500px) / 2), 59px));
+    transform: translate(0%, max(calc((100vh - 580px) / 2), 59px));
 }
 
 .container__form {
@@ -145,7 +198,7 @@ export default {
 }
 
 .container.right-panel-active .container--signup {
-    animation: show 0.6s;
+    /* animation: show 0.6s; */
     opacity: 1;
     transform: translateX(100%);
     z-index: 5;
@@ -167,7 +220,7 @@ export default {
 }
 
 .overlay {
-    background-color: #525252;
+    background-color: #11101C;
     background-attachment: fixed;
     background-position: center;
     background-repeat: no-repeat;
@@ -216,8 +269,8 @@ export default {
 }
 
 .btn {
-    background-color: #888;
-    background-image: linear-gradient(90deg, #999 0%, #666 74%);
+    background-color: #666;
+    background-image: linear-gradient(90deg, #777 0%, #444 74%);
     border-radius: 20px;
     border: 0px;
     color: #fff;
@@ -264,7 +317,7 @@ export default {
     background-color: #fff;
     border: none;
     padding: 0.6rem 0.6rem;
-    margin: 0.3rem 0;
+    margin: 0.1rem 0;
     width: 100%;
 }
 
@@ -277,7 +330,8 @@ export default {
     padding: 7px 0;
     font-size: 16px;
     color: #fff;
-    margin-bottom: 30px;
+    margin-bottom: 12px;
+    margin-top: 12px;
     border: none;
     border-bottom: 1px solid #fff;
     outline: none;
