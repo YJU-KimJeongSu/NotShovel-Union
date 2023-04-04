@@ -27,7 +27,7 @@ exports.signIn = (req, res, next) => {
     .then((data) => {
         // console.log(data._id);
         if (data) { // 정상 (로그인 성공)
-            res.status(201).send(data._id);
+            res.status(201).send({member_id: data._id, name: data.name});
         } else { // 없는 회원
             res.status(401).send('wrong'); // 401 - 사용자 자격 증명 실패
         }

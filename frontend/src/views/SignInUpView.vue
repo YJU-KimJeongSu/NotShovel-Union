@@ -120,7 +120,8 @@ export default {
                 })
                 .then((res) => {
                     // console.log(res.data);
-                    sessionStorage.setItem('member_id', res.data);
+                    sessionStorage.setItem('member_id', res.data.member_id);
+                    sessionStorage.setItem('mamber_name', res.data.name);
                     location.href = '/';
                 })
                 .catch((err) => {
