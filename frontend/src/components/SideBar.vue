@@ -2,7 +2,7 @@
   <div class="sidebar">
     <div class="logo-details">
       <i class='bx bxl-c-plus-plus icon'></i>
-        <div class="logo_name">프로젝트명</div>
+        <div class="logo_name">{{ project_name }}</div>
         <i class='bx bx-menu' id="btn" @click="btnClick"></i>
     </div>
     <ul class="nav-list">
@@ -36,9 +36,17 @@
 import draggable from 'vuedraggable'
 
 export default {
+  data(){
+    return {
+      project_name: "이름 없음"
+    }
+  }, 
   props: ['propsdata'],
   components: {
     draggable,
+  },
+  created(){
+    this.project_name = sessionStorage.getItem('project_name')
   },
   methods: {
     menuBtnChange: function() {
