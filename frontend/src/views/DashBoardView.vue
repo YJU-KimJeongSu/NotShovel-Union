@@ -14,10 +14,13 @@
 import sidebar from '../components/SideBar.vue'
 import meetingNotes from '../components/MeetingNotes.vue'
 import modal from '../components/AddBoardModal.vue'
+import { eventBus } from '../main.js';
 
 export default {
   data: function() {
     return {
+      project: null,
+      project_id: null,
       isOpen: false,
       currentView: "",
       showModal: false,
@@ -29,6 +32,13 @@ export default {
         {name: 'Setting', type: 'setting', icon: 'bx bx-cog', clickMethod: ''},
       ],
     }
+  },
+  created(){
+    eventBus.$on('project', (project)=>{
+      this.project = project;
+      console.log(project);
+    });
+    this.project_id = sessionStorage.getItem('project_id');
   },
   components: {
     SideBar: sidebar,
