@@ -8,7 +8,6 @@
 <script>
 import SelectProject from '@/components/SelectProject.vue';
 
-
 export default {
     data(){
         return {
@@ -26,6 +25,7 @@ export default {
     methods:{
         test(){
             sessionStorage.setItem('member_id','642aaa6b16ec02acf4f7c7fd');
+            history.go(0);
         }
     }
 }
