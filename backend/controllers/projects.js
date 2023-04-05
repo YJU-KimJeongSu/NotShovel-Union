@@ -1,26 +1,94 @@
-const projects = require('../models/projects');
+const members = require("../models/members");
+const projects = require("../models/projects");
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
 
-exports.save = (req, res) => {
-  
-  projects.create({
+exports.save = async (req, res) => {
+  try {
+    const member_id = req.body.member_id;
+    const project = await projects.create({
       name: req.body.name,
       description: req.body.description,
-      picture: req.body.picture,
-      member_ids: req.body.member_id,
-      admin_ids: req.body.member_id // 만든 사람은 관리자에도 추가
-    })
-    .then((doc) => res.status(201).json({ id: doc._id }))
-    .catch((err) => res.status(400).send(err))
-}
+      image: req.body.image,
+      member_ids: member_id,
+      admin_id: member_id, // 만든 사람은 관리자에도 추가
+    });
+
+    // 만들고 나서 members 안에 있는 프로젝트에도 추가
+    const project_id = project._id;
+    const member = await members.findOneAndUpdate(
+      { _id: member_id },
+      { $push: { project_ids: project_id } },
+      { new: true }
+    );
+    if (member) {
+      res.json(member);
+    } else {
+      res.status(404).json({ error: "Member not found" });
+    }
+  } catch (err) {
+    res.status(400).send(err);
+  }
+};
 
 // 로그인시 가입되어있는 프로젝트 띄우기
-exports.findProjects = async(req, res) => {
-  const member_id = req.query.member_id;
-  // console.log(member_id);
+exports.findProjects = async (req, res) => {
   try {
-    const datas = await projects.find({ member_ids: { $in: [member_id] } });
-    res.json(datas);
+    const member_id = req.query.member_id;
+    const member = await members.findById(member_id, "project_ids");
+    if (member) {
+      const project_ids = member.project_ids;
+      const projectData = [];
+
+      for (const project_id of project_ids) {
+        const project = await projects.findById(project_id);
+        if (project) {
+          const name = project.name;
+          const description = project.description;
+          const image = project.image;
+          const id = project._id;
+
+          projectData.push({
+            id: id,
+            name: name,
+            description: description,
+            image: image,
+          });
+        } else {
+          return res.status(404).json({ error: "Project not found" });
+        }
+      }
+      // console.log(projectData);
+      res.json(projectData);
+    } else {
+      return res.status(404).json({ error: "Member not found" });
+    }
   } catch (err) {
-    res.status(500).send(err);
+    return res.status(400).send(err);
   }
+};
+
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public/images');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+
+// Initialize multer middleware with defined storage
+const upload = multer({ storage: storage });
+
+// Handle image upload
+exports.imageUpload = (req, res) => {
+  upload.single('image')(req, res, function (err) {
+    if (err) {
+      return res.status(400).json({ message: 'Failed to upload image' });
+    }
+    const { filename, mimetype, size } = req.file;
+    return res.json({ filename: filename });
+  });
 };
