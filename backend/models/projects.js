@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 
 const projects = new Schema({
   name: { type: String, required: true },
-  picture: String,
+  image: String,
   description: String,
   create_date: { type: Date, default: Date.now },
   member_ids: [{ type: Schema.Types.ObjectId, ref: "members", required: true }],

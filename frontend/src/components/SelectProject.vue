@@ -4,7 +4,8 @@
     <div class="inner2" v-if="projects.length != 0">
       <Flicking :options="{ circular: true }" :plugins="plugins">
         <!-- 해당 아이디가 소속한 프로젝트 도는 반복문 -->
-        <div class="card-panel" v-for="(project, index) in projects" :key="index" @click="projectIdEmit(project)">
+        <div class="card-panel" v-for="(project, index) in projects" :key="index" @click="projectIdEmit(project)"
+        :style="`background-image : url(${project.image})`">
           {{ project.name }}
         </div>
       </Flicking>
@@ -69,6 +70,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  background-size:300px 300px;
 }
 
 .card-panel:hover {
@@ -77,6 +79,7 @@ export default {
 
 .inner2 {
   width: 100%;
+  text-align: center;
 }
 
 .inner {

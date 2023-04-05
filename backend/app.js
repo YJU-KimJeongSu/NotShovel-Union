@@ -31,18 +31,11 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
   res.status(err.status || 500);
   res.render('error');
 });
-
-// mongoose
-//   .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-//   .then(() => console.log('Successfully connected to mongodb'))
-//   .catch(e => console.error(e));
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));

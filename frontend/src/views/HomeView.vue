@@ -2,7 +2,6 @@
   <div class="home">
     <div class="inner" v-if="loginState == false">포트폴리오 들어갈 자리</div>
     <SelectProject v-else></SelectProject>
-    <button @click="test()">세션추가</button>
   </div>
 </template>
 <script>
@@ -22,12 +21,6 @@ export default {
     components :{
          SelectProject: selectProject
     },
-    methods:{
-        test(){
-            sessionStorage.setItem('member_id','642aaa6b16ec02acf4f7c7fd');
-            history.go(0);
-       }
-    }
   }
 </script>
 <style scoped>

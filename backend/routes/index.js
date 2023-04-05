@@ -7,4 +7,5 @@ module.exports = (app) => {
   // project
   app.post('/api/project', projectController.save);
   app.get('/api/project', projectController.findProjects);
+  app.post('/api/project/upload', projectController.imageUpload);
 };
