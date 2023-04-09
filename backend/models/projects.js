@@ -16,8 +16,9 @@ const projects = new Schema({
   //     },
   // ]
   // 이게 사용하기 더 쉬움
-  meeting_minute_ids: [{ type: Schema.Types.ObjectId, ref: "meeting_minutes" }],
+  meeting_minutes_ids: [{ type: Schema.Types.ObjectId, ref: "meeting_minutes" }],
   gantt_charts_ids: [{ type: Schema.Types.ObjectId, ref: "gantt_charts" }],
+  chattings_ids: [{ type: Schema.Types.ObjectId, ref: "chattings" }]
 });
 
 module.exports = mongoose.model("projects", projects);
