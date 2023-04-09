@@ -5,7 +5,7 @@
       <Flicking :options="{ circular: true }" :plugins="plugins">
         <!-- 해당 아이디가 소속한 프로젝트 도는 반복문 -->
         <div class="card-panel" v-for="(project, index) in projects" :key="index" @click="projectIdEmit(project)"
-        :style="`background-image : url(${project.image})`">
+          :style="`background-image: url(http://localhost:3000/images/${project.image})`">
           {{ project.name }}
         </div>
       </Flicking>
@@ -46,7 +46,6 @@ export default {
   },
   methods: {
     projectIdEmit(index) {
-      // 형제 컴포넌트끼리 데이터 주고받을 땐 eventBus 사용
       eventBus.$emit('project', index);
 
       // 프로젝트 이름과 아이디는 세션에 저장
@@ -70,7 +69,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-size:300px 300px;
+  background-size: 300px 300px;
 }
 
 .card-panel:hover {

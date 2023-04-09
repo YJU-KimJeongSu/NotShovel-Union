@@ -7,7 +7,7 @@
       <textarea class="form-control" id="exampleFormControlTextarea1" placeholder="프로젝트 설명" rows="3"
         v-model="description"></textarea>
       <p class="select_file">프로젝트 대표 이미지
-        <input class="form-control" ref="image" accept="image/*" type="file" id="formFile">
+        <input class="form-control" ref="image" accept="image/*" type="file" id="formFile" @change="saveImage()">
       </p>
       <button type="button" class="btn btn-secondary" @click="save()">생성</button>
     </div>
@@ -15,8 +15,7 @@
     <!-- 초대링크 -->
     <div class="mb-3 project_form" v-else>
       <h2>생성 완료</h2>
-      <div class="project_photo"></div>
-      <!-- <img :src='`${image}`' class="project_photo"> -->
+      <img :src="`http://localhost:3000/images/${image}`"  class="project_photo">
       <p>{{ this.name }} 프로젝트가 생성 완료되었습니다!</p>
       <p>초대링크
         <input type="text" v-model="link">
@@ -36,7 +35,7 @@ export default {
       name: null,
       description: null,
       member_id: sessionStorage.getItem('member_id'),
-      image: null,
+      image: 'default.jpg',
       link: null,
     }
   },
@@ -47,19 +46,11 @@ export default {
           alert('프로젝트 이름을 입력해주세요.');
           return;
         }
-        const formData = new FormData();
-        const image = this.$refs['image'].files[0];
-        formData.append('image', image);
-
-        const { data: { filename } } = await axios.post('/api/project/upload', 
-        formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
-
+       
         const { data: { id } } = await axios.post('/api/project', {
           name: this.name,
           description: this.description,
-          image: filename,
+          image: this.image,
           member_id: this.member_id,
         });
 
@@ -72,6 +63,17 @@ export default {
       }
     },
 
+    async saveImage(){
+      const formData = new FormData();
+        const image = this.$refs['image'].files[0];
+        formData.append('image', image);
+
+        const { data: { filename } } = await axios.post('/api/project/upload', 
+        formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        this.image = filename;
+    },
 
     linkCopy() {
       this.$copyText(this.link);
