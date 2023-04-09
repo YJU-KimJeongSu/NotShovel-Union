@@ -90,5 +90,6 @@ exports.imageUpload = (req, res) => {
     }
     const { filename, mimetype, size } = req.file;
     return res.json({ filename: filename });
+    
   });
 };
