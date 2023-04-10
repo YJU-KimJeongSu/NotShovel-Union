@@ -5,7 +5,8 @@
         <p v-if="mamber_name" class="name">{{ mamber_name }}님 환영합니다!</p>
         <form class="d-flex" role="search">
           <button v-if="!loginState" class="btn btn-outline-light" @click="$router.push('signinup')" >로그인</button>
-          <button v-else class="btn btn-outline-light" @click="logout()" >로그아웃</button>
+          <button v-if="loginState" class="btn btn-outline-light" @click="$router.push('editmember')" >회원정보 수정</button>
+          <button v-if="loginState" class="btn btn-outline-light" @click="logout()" >로그아웃</button>
         </form>
       </div>
     </nav>
@@ -63,6 +64,7 @@ export default {
 
 .name {
   color: #fff;
-  margin: 0 0 0 40%;
+  /* margin: 0 0 0 40%; */
+  margin-top: 9px;
 }
 </style>

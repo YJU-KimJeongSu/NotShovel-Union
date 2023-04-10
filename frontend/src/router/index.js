@@ -4,6 +4,7 @@ import HomeView from '../views/HomeView.vue'
 import DashBoardView from '../views/DashBoardView.vue'
 import SignInUpView from '../views/SignInUpView.vue'
 import CreateProjectView from '../views/CreateProjectView.vue'
+import EditMember from '../views/EditMember.vue'
 
 
 Vue.use(VueRouter)
@@ -29,6 +30,11 @@ const routes = [
     name: 'dashboard',
     component: DashBoardView
   },
+  {
+    path: '/editmember',
+    name: 'editmember',
+    component: EditMember
+  }
 ]
 
 const router = new VueRouter({
