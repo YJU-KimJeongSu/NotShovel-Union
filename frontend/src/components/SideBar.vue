@@ -1,52 +1,88 @@
 <template>
   <div class="sidebar">
-    <div class="logo-details">
-      <i class='bx bxl-c-plus-plus icon'></i>
-        <div class="logo_name">{{ project_name }}</div>
-        <i class='bx bx-menu' id="btn" @click="btnClick"></i>
-    </div>
-    <ul class="nav-list">
-      <draggable>
-        <li v-for="(board, index) in propsdata"
-          :key="index"
-          @click="clickBoard(board.clickMethod)"
-        >
-          <a href="#">
-            <i v-bind:class="board.icon"></i>
-            <!-- <i class='bx bx-folder' ></i> -->
-            <span class="links_name">{{board.name}}</span>
-          </a>
-          <span class="tooltip">{{board.name}}</span>
-        </li>
-      </draggable>
+    <div class="nav-container">
+      <div class="logo-details">
+        <i class='bx bxl-c-plus-plus icon'></i>
+          <div class="logo_name">{{ project_name }}</div>
+          <i class='bx bx-menu' id="btn" @click="btnClick"></i>
+      </div>
+      <ul class="nav-list">
+        <div>
+          <draggable>
+            <li v-for="(board, index) in propsdata"
+              :key="index"
+              @click="clickBoard(board.clickMethod)"
+            >
+              <a href="#">
+                <i v-bind:class="board.icon"></i>
+                <!-- <i class='bx bx-folder' ></i> -->
+                <span class="links_name">{{board.name}}</span>
+              </a>
+              <span class="tooltip">{{board.name}}</span>
+            </li>
+          </draggable>
 
-      <li @click="addBoard">
-        <a href="#">
-          <i class='bx bx-plus' ></i>
-          <span class="links_name">게시판 추가</span>
-        </a>
-        <span class="tooltip">게시판 추가</span>
-      </li>
-    </ul>
-  
+        </div>
+
+
+        <div id="edit">
+
+          <li @click="addBoard">
+            <a href="#">
+              <i class='bx bx-plus' ></i>
+              <span class="links_name">게시판 추가</span>
+            </a>
+            <span class="tooltip">게시판 추가</span>
+          </li>
+
+          <!-- <div> -->
+          <li @click="addBoard">
+            <a href="#">
+              <i class='bx bx-edit' ></i>
+              <span class="links_name">게시판 편집</span>
+            </a>
+            <span class="tooltip">게시판 편집</span>
+          </li>
+        </div>
+      </ul>
+    <!-- </div> -->
+  </div>
   </div>
 </template>
 
 <script>
-import draggable from 'vuedraggable'
+import draggable from 'vuedraggable';
+import axios from "axios";
 
 export default {
   data(){
     return {
-      project_name: "이름 없음"
+      project_name: "이름 없음",
+      admin_id: "",
+      manager_ids: []
     }
   }, 
   props: ['propsdata'],
   components: {
     draggable,
   },
-  created(){
+  created() {
     this.project_name = sessionStorage.getItem('project_name')
+  },
+  mounted() {
+    console.log('axios 요청 시도 from sidebar');
+    axios.get('/api/project/authority/', {
+      params: {
+        member_id: sessionStorage.getItem('member_id')
+      }
+    })
+      .then((res) => {
+        const authData = res.data;
+        this.admin_id = authData.admin_id;
+        this.manager_ids = authData.manager_ids;
+        console.log("result: " + authData.admin_id);
+      })
+      .catch((err) => console.log(err));
   },
   methods: {
     menuBtnChange: function() {
@@ -98,17 +134,21 @@ export default {
 .sidebar {
   position: fixed;
   left: 0;
-  top: 59px;
+  top: 0;
   height: 100%;
   width: 78px;
   background: #11101D;
   padding: 6px 14px;
   z-index: 99;
   transition: all 0.5s ease;
+  overflow-y:auto;
+  overflow-x: hidden;
+  z-index: -1;
 }
 
 .sidebar.open {
   width: 250px;
+  overflow-y:auto;
 }
 
 .sidebar .logo-details {
@@ -164,7 +204,12 @@ export default {
 
 .sidebar .nav-list {
   margin-top: 20px;
-  height: 100%;
+  height: 88%;
+}
+.sidebar .nav-container {
+  position: relative;
+  top: 58px;
+  
 }
 
 .sidebar li {
@@ -366,6 +411,23 @@ export default {
   font-size: 25px;
   font-weight: 500;
   margin: 18px
+}
+
+
+/* ul {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+} */
+
+#edit {
+  /* position: absolute; */
+  /* bottom: 20px; */
+}
+
+.nav-list {
+
+
 }
 
 @media (max-width: 420px) {
