@@ -1,50 +1,62 @@
 <template>
   <div class="sidebar">
     <div class="nav-container">
-      <div class="logo-details">
-        <i class='bx bxl-c-plus-plus icon'></i>
-          <div class="logo_name">{{ project_name }}</div>
-          <i class='bx bx-menu' id="btn" @click="btnClick"></i>
+    <div class="logo-details">
+      <i class='bx bxl-c-plus-plus icon'></i>
+        <div class="logo_name">{{ project_name }}</div>
+        <i class='bx bx-menu' id="btn" @click="btnClick"></i>
+    </div>
+    <ul class="nav-list">
+      
+      
+      <draggable v-if="member_id == admin_id">
+        <li v-for="(board, index) in propsdata"
+          :key="index"
+          @click="clickBoard(board.clickMethod)"
+        >
+          <a href="#">
+            <i v-bind:class="board.icon"></i>
+            <!-- <i class='bx bx-folder' ></i> -->
+            <span class="links_name">{{board.name}}</span>
+          </a>
+          <span class="tooltip">{{board.name}}</span>
+        </li>
+      </draggable>
+      <li v-else
+          v-for="(board, index) in propsdata"
+          :key="index"
+          @click="clickBoard(board.clickMethod)"
+        >
+          <a href="#">
+            <i v-bind:class="board.icon"></i>
+            <!-- <i class='bx bx-folder' ></i> -->
+            <span class="links_name">{{board.name}}</span>
+          </a>
+          <span class="tooltip">{{board.name}}</span>
+        </li>
+      
+
+
+      
+      <div id="edit" v-if="member_id == admin_id">
+      <li @click="addBoard">
+        <a href="#">
+          <i class='bx bx-plus' ></i>
+          <span class="links_name">게시판 추가</span>
+        </a>
+        <span class="tooltip">게시판 추가</span>
+      </li>
+
+    <!-- <div> -->
+      <li @click="addBoard" id="edit">
+        <a href="#">
+          <i class='bx bx-edit' ></i>
+          <span class="links_name">게시판 편집</span>
+        </a>
+        <span class="tooltip">게시판 편집</span>
+      </li>
       </div>
-      <ul class="nav-list">
-        <div>
-          <draggable>
-            <li v-for="(board, index) in propsdata"
-              :key="index"
-              @click="clickBoard(board.clickMethod)"
-            >
-              <a href="#">
-                <i v-bind:class="board.icon"></i>
-                <!-- <i class='bx bx-folder' ></i> -->
-                <span class="links_name">{{board.name}}</span>
-              </a>
-              <span class="tooltip">{{board.name}}</span>
-            </li>
-          </draggable>
-
-        </div>
-
-
-        <div id="edit">
-
-          <li @click="addBoard">
-            <a href="#">
-              <i class='bx bx-plus' ></i>
-              <span class="links_name">게시판 추가</span>
-            </a>
-            <span class="tooltip">게시판 추가</span>
-          </li>
-
-          <!-- <div> -->
-          <li @click="addBoard">
-            <a href="#">
-              <i class='bx bx-edit' ></i>
-              <span class="links_name">게시판 편집</span>
-            </a>
-            <span class="tooltip">게시판 편집</span>
-          </li>
-        </div>
-      </ul>
+    </ul>
     <!-- </div> -->
   </div>
   </div>
@@ -57,6 +69,7 @@ import axios from "axios";
 export default {
   data(){
     return {
+      member_id: "",
       project_name: "이름 없음",
       admin_id: "",
       manager_ids: []
@@ -67,7 +80,8 @@ export default {
     draggable,
   },
   created() {
-    this.project_name = sessionStorage.getItem('project_name')
+    this.project_name = sessionStorage.getItem('project_name');
+    this.member_id = sessionStorage.getItem('member_id');
   },
   mounted() {
     console.log('axios 요청 시도 from sidebar');
@@ -141,14 +155,14 @@ export default {
   padding: 6px 14px;
   z-index: 99;
   transition: all 0.5s ease;
-  overflow-y:auto;
+  overflow-y: auto;
   overflow-x: hidden;
-  z-index: -1;
 }
 
 .sidebar.open {
-  width: 250px;
-  overflow-y:auto;
+  /* 250px */
+  width: 235px;
+  
 }
 
 .sidebar .logo-details {
@@ -204,12 +218,7 @@ export default {
 
 .sidebar .nav-list {
   margin-top: 20px;
-  height: 88%;
-}
-.sidebar .nav-container {
-  position: relative;
-  top: 58px;
-  
+  height: 80%;
 }
 
 .sidebar li {
@@ -413,21 +422,14 @@ export default {
   margin: 18px
 }
 
-
-/* ul {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+/* #edit {
+  
+  top: 20vmin;
 } */
 
-#edit {
-  /* position: absolute; */
-  /* bottom: 20px; */
-}
-
-.nav-list {
-
-
+.nav-container {
+  position: relative;
+  top: 59px;
 }
 
 @media (max-width: 420px) {
