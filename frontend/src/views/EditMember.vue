@@ -2,33 +2,72 @@
   <div class="container right-panel-active">
     <h2>회원정보 수정</h2>
     <div class="form">
-      <span class="span"><label for="" class="label">Email</label><input type="text" class="input"></span>
-      <span><label for="" class="label">Password</label><input type="text" class="input"></span>
-      <span><label for="" class="label">PasswordCheck</label><input type="text" class="input"></span>
-      <span><label for="" class="label">Name</label><input type="text" class="input"></span>
-      <span><label for="" class="label">Phone</label><input type="text" class="input"></span>
-      <p>나는 행복합니다</p>
-      <button class="btn">수정</button>
+      <span><label for="password" class="label">Password</label><input type="password" class="input" id="password" name="password" @keyup="checkInput()" v-model="password"></span>
+      <span><label for="passwordCheck" class="label">PasswordCheck</label><input type="password" class="input" id="passwordCheck" name="passwordCheck" @keyup="checkInput()" v-model="passwordCheck"></span>
+      <span><label for="name" class="label">Name</label><input type="text" class="input" id="name" name="name" @keyup="checkInput()" v-model="name"></span>
+      <span><label for="phone" class="label">Phone</label><input type="text" class="input" id="phone" name="phone" @keyup="checkInput()" v-model="phone_number"></span>
+      <p>{{ checkingText }}</p>
+      <button class="btn" @click="editUserInfo()">수정</button>
     </div>
   </div>
 </template>
 
 <script>
-import router from '@/router';
 import axios from 'axios';
 
 export default {
   data() {
     return {
-      name: null,
-      email: null,
       password: null,
       passwordCheck: null,
       phone_number: null,
+      checkingText: '비어있는 칸이 있습니다',
     }
   },
   methods: {
-
+    editUserInfo() {
+      if (this.checkingText === '비어있는 칸이 있습니다') {
+        alert('비어있는 칸이 있습니다');
+      } else if (this.checkingText === '비밀번호를 확인해주세요') {
+        alert('비밀번호를 확인해주세요');
+      } else if (this.checkingText === '　') {
+        axios.patch("/api/member/edit", {
+          member_id: sessionStorage.getItem('member_id'),
+          name: this.name,
+          password: this.password,
+          phone_number: this.phone_number,
+        })
+        .then((res) => {
+          console.log(res);
+          alert('정상적으로 수정되었습니다.');
+          sessionStorage.setItem('mamber_name', res.data.name);
+          location.href='/';
+          })
+          .catch((err) => {
+            console.log(err);
+            alert('수정에 실패했습니다.');
+          })
+      }
+    },
+    checkInput() {
+      if (this.name == null ||
+        this.password == null ||
+        this.passwordCheck == null ||
+        this.phone_number == null ||
+        this.name == '' ||
+        this.password == '' ||
+        this.passwordCheck == '' ||
+        this.phone_number == '') {
+          console.log(1);
+          this.checkingText = '비어있는 칸이 있습니다';
+        } else if (this.password !== this.passwordCheck) {
+          console.log(2);
+          this.checkingText = '비밀번호를 확인해주세요';
+        } else {
+          console.log(3);
+          this.checkingText = '　';
+        }
+    },
   },
 }
 </script>
@@ -95,7 +134,6 @@ input:focus::placeholder {
   font-weight: 600;
   font-size: 16px;
   margin-top: 2rem;
-  visibility: hidden;
 }
 
 .btn {

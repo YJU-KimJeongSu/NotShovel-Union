@@ -85,7 +85,7 @@ export default {
         alert('비어있는 칸이 있습니다.');
       } else {
         axios.post("/api/member/signup", {
-          name: this.signup.email,
+          name: this.signup.name,
           email: this.signup.email,
           password: this.signup.password,
           phone_number: this.signup.phone_number
