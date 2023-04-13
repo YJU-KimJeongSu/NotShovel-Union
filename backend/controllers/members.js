@@ -34,3 +34,18 @@ exports.signIn = (req, res, next) => {
     })
     .catch((err) => { res.status(500).send(err) })
 };
+
+
+exports.chkPW = (req, res) => {
+    const { id, password } = req.body; 
+
+    members.findOne({ _id: id, password: password }) 
+    .then((data) => {
+        if (data) { 
+            res.status(201).json({ message: '비밀번호 일치' });
+        } else { 
+            res.status(401).json({ message: '비밀번호 일치X' });
+        }
+    })
+    .catch((err) => { res.status(500).send(err) });
+};
