@@ -1,21 +1,21 @@
 <template>
   <div class="form">
     <!-- create -->
-    <div class="mb-3 project_form" v-if="createState == false">
+    <div class="mb-3 project-form" v-if="createState == false">
       <h2>프로젝트 생성</h2>
       <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="프로젝트 이름" v-model="name">
       <textarea class="form-control" id="exampleFormControlTextarea1" placeholder="프로젝트 설명" rows="3"
         v-model="description"></textarea>
-      <p class="select_file">프로젝트 대표 이미지
+      <p class="select-file">프로젝트 대표 이미지
         <input class="form-control" ref="image" accept="image/*" type="file" id="formFile" @change="saveImage()">
       </p>
       <button type="button" class="btn btn-secondary" @click="save()">생성</button>
     </div>
 
     <!-- 초대링크 -->
-    <div class="mb-3 project_form" v-else>
+    <div class="mb-3 project-form" v-else>
       <h2>생성 완료</h2>
-      <img :src="`http://localhost:3000/images/${image}`"  class="project_photo">
+      <img :src="`http://localhost:3000/images/${image}`"  class="project-photo">
       <p>{{ this.name }} 프로젝트가 생성 완료되었습니다!</p>
       <p>초대링크
         <input type="text" v-model="link">
@@ -79,17 +79,11 @@ export default {
       this.$copyText(this.link);
       alert(this.link + ' 복사 완료!');
     }
-    // // blob url 저장
-    // upload(e) {
-    //   var file = e.target.files;
-    //   let url = URL.createObjectURL(file[0]);
-    //   this.image = url;
-    // },
   }
 }
 
 </script>
-<style scoped>
+<style>
 .form {
   height: 90vh;
   display: flex;
@@ -98,7 +92,7 @@ export default {
   position: relative;
 }
 
-.project_form {
+.project-form {
   width: 500px;
   height: 500px;
   display: flex;
@@ -115,14 +109,14 @@ export default {
   transform: translate(-50%, -50%);
 }
 
-.project_photo {
+.project-photo {
   width: 170px;
   height: 170px;
   border-radius: 50%;
   /* background-color: gray; */
 }
 
-.select_file,
+.select-file,
 .btn {
   width: 100%;
 }
