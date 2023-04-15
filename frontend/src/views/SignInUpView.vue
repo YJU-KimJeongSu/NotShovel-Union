@@ -122,6 +122,7 @@ export default {
             // console.log(res.data);
             sessionStorage.setItem('member_id', res.data.member_id);
             sessionStorage.setItem('member_name', res.data.name);
+            sessionStorage.setItem('member_image', res.data.image);
             location.href = '/';
           })
           .catch((err) => {
