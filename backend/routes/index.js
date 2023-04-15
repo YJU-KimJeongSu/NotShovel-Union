@@ -5,6 +5,7 @@ module.exports = (app) => {
   app.post('/api/member/signup', memberController.signUp);
   app.post('/api/member/signin', memberController.signIn);
   app.patch('/api/member/edit', memberController.editMember);
+  app.delete('/api/member/delete', memberController.deleteMemeber);
   // project
   app.post('/api/project', projectController.save);
   app.get('/api/project', projectController.findProjects);

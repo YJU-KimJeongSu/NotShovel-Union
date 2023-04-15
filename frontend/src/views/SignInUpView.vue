@@ -127,6 +127,8 @@ export default {
           .catch((err) => {
             if (err.response.status == 401) {
               alert('잘못된 이메일 혹은 비밀번호 입니다.');
+            } else if (err.response.status == 404) {
+              alert('회원 탈퇴 처리된 아이디입니다.');
             } else {
               console.log(err);
               alert('로그인에 실패했습니다.');

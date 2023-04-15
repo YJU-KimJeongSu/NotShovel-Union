@@ -8,6 +8,7 @@
       <span><label for="phone" class="label">Phone</label><input type="text" class="input" id="phone" name="phone" @keyup="checkInput()" v-model="phone_number"></span>
       <p>{{ checkingText }}</p>
       <button class="btn" @click="editUserInfo()">수정</button>
+      <button class="delete-btn" @click="deleteUser()">회원 탈퇴</button>
     </div>
   </div>
 </template>
@@ -18,10 +19,12 @@ import axios from 'axios';
 export default {
   data() {
     return {
+      name: null,
       password: null,
       passwordCheck: null,
       phone_number: null,
       checkingText: '비어있는 칸이 있습니다',
+      member_id: sessionStorage.getItem('member_id'),
     }
   },
   methods: {
@@ -32,16 +35,16 @@ export default {
         alert('비밀번호를 확인해주세요');
       } else if (this.checkingText === '　') {
         axios.patch("/api/member/edit", {
-          member_id: sessionStorage.getItem('member_id'),
+          member_id: this.member_id,
           name: this.name,
           password: this.password,
           phone_number: this.phone_number,
         })
-        .then((res) => {
-          console.log(res);
-          alert('정상적으로 수정되었습니다.');
-          sessionStorage.setItem('mamber_name', res.data.name);
-          location.href='/';
+          .then((res) => {
+            console.log(res);
+            alert('정상적으로 수정되었습니다.');
+            sessionStorage.setItem('member_name', res.data.name);
+            location.href = '/';
           })
           .catch((err) => {
             console.log(err);
@@ -58,16 +61,43 @@ export default {
         this.password == '' ||
         this.passwordCheck == '' ||
         this.phone_number == '') {
-          console.log(1);
           this.checkingText = '비어있는 칸이 있습니다';
         } else if (this.password !== this.passwordCheck) {
-          console.log(2);
           this.checkingText = '비밀번호를 확인해주세요';
         } else {
-          console.log(3);
           this.checkingText = '　';
         }
     },
+    deleteUser() {
+      if (this.checkingText === '비어있는 칸이 있습니다') {
+        alert('비어있는 칸이 있습니다');
+      } else if (this.checkingText === '비밀번호를 확인해주세요') {
+        alert('비밀번호를 확인해주세요');
+      } else if (this.checkingText === '　') {
+        axios.delete('/api/member/delete', {
+          // delete 요청은 payload body를 사용하지 않고 url 파라미터를 사용함
+          // 단 현재 보안 토큰 등의 개념이 부족하므로 payload body를 사용하기 위해 data 속성을 따로 추가해서 넣음
+          data: {
+            member_id: this.member_id,
+            password: this.password
+          },
+        })
+          .then(() => {
+            alert('정상적으로 탈퇴 처리가 되었습니다.');
+            sessionStorage.removeItem('member_name');
+            sessionStorage.removeItem('member_id');
+            location.href = '/';
+          })
+          .catch((err) => {
+            console.log(err);
+            if (err.response.status === 404) {
+              alert('잘못된 비밀번호입니다');
+            } else {
+              alert('탈퇴에 실패했습니다.')
+            }
+          })
+      }
+    }
   },
 }
 </script>
@@ -165,5 +195,21 @@ input:focus::placeholder {
 
 .btn:focus {
   outline: none;
+}
+
+.delete-btn {
+  background-color: #f00;
+  border-radius: 10px;
+  border: 0px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 0.1rem;
+  padding: 0.3rem 1rem;
+  margin-top: 1rem;
+  text-transform: uppercase;
+  /* transition: transform 80ms ease-in; */
+  align-self: center;
 }
 </style>
