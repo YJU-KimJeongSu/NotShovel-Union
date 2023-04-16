@@ -103,3 +103,18 @@ exports.imageUpload = (req, res, next) => {
     return res.json({ filename: filename });
   });
 }
+
+// 프로젝트 제거 시
+exports.chkPW = (req, res) => {
+    const { id, password } = req.body; 
+
+    members.findOne({ _id: id, password: password }) 
+    .then((data) => {
+        if (data) { 
+            res.status(201).json({ message: '비밀번호 일치' });
+        } else { 
+            res.status(401).json({ message: '비밀번호 일치X' });
+        }
+    })
+    .catch((err) => { res.status(500).send(err) });
+};

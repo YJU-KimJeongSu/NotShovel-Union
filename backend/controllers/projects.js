@@ -25,7 +25,7 @@ exports.save = async (req, res) => {
     if (member) {
       res.json(member);
     } else {
-      res.status(404).json({ error: "Member not found" });
+      res.status(404).json({ error: '회원을 찾을 수 없습니다.'  });
     }
   } catch (err) {
     res.status(400).send(err);
@@ -56,13 +56,13 @@ exports.findProjects = async (req, res) => {
             image: image,
           });
         } else {
-          return res.status(404).json({ error: "Project not found" });
+          return res.status(404).json({ error: '프로젝트를 찾을 수 없습니다.' });
         }
       }
       // console.log(projectData);
       res.json(projectData);
     } else {
-      return res.status(404).json({ error: "Member not found" });
+      return res.status(404).json({ error: '회원을 찾을 수 없습니다.' });
     }
   } catch (err) {
     return res.status(400).send(err);
@@ -79,17 +79,80 @@ const storage = multer.diskStorage({
   }
 });
 
-// Initialize multer middleware with defined storage
 const upload = multer({ storage: storage });
 
-// Handle image upload
 exports.imageUpload = (req, res) => {
   upload.single('image')(req, res, function (err) {
     if (err) {
-      return res.status(400).json({ message: 'Failed to upload image' });
+      return res.status(400).json({ message: '이미지 업로드 실패' });
     }
     const { filename, mimetype, size } = req.file;
     return res.json({ filename: filename });
     
   });
+};
+
+exports.findAuth = async(req, res, next) => {
+  try {
+    const member_id = req.query.member_id;
+    console.log(`user id: ${member_id}`);
+    // console.log('findAuth 실행중');
+    // const member = await projects.findById(member_id, "member_ids");
+    const project = await projects.findOne({member_ids : member_id});
+    
+    if (project) {
+      const admin = project.admin_id;
+      const managers = project.manager_ids;
+      console.log(`admin: ${admin}`);
+      console.log(`manager: ${managers}`);
+
+      const jsonData = {admin_id: admin, manager_ids: []};
+      for (const manager of managers) {
+        jsonData.manager_ids.push(manager);
+      }
+      res.json(jsonData);
+    } else {console.log('가져오기 실패');}
+  } catch(err) {
+    return res.status(400).send(err);
+  }
+};
+
+exports.updateProject = async(req,res) => {
+  try {
+    const { name, description, image, project_id } = req.body; 
+
+    const updatedProject = await projects.findByIdAndUpdate(project_id, {
+      name,
+      description,
+      image
+    }, { new: true }); 
+    
+    if (updatedProject) {
+      return res.status(200).json(updatedProject);
+    } else {
+      return res.status(404).json({ error: '프로젝트를 찾을 수 없습니다.' });
+    }
+  } catch (err) {
+      return res.status(500).send(err);
+  }
+};
+
+exports.deleteProject = async(req,res) => {
+  try {
+    const project_id = req.body.project_id; 
+
+    const deleteProject = await projects.deleteOne({ _id: project_id });
+    if (deleteProject.deletedCount > 0) { 
+      return res.status(200).json({ message: '프로젝트가 삭제되었습니다.' });
+    } else {
+      return res.status(404).json({ error: '프로젝트를 찾을 수 없습니다.' });
+    }
+  } catch (err) {
+      return res.status(500).send(err);
+  }
+};
+
+exports.findMembers = async(req, res) => {
+  const project_id = req.query.project_id;
+  const member_ids = await projects.findOne({project_id : project_id});
 };

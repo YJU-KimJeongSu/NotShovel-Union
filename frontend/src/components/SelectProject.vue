@@ -4,7 +4,7 @@
     <div class="inner2" v-if="projects.length != 0">
       <Flicking :options="{ circular: true }" :plugins="plugins">
         <!-- 해당 아이디가 소속한 프로젝트 도는 반복문 -->
-        <div class="card-panel" v-for="(project, index) in projects" :key="index" @click="projectIdEmit(project)"
+        <div class="card-panel" v-for="(project, index) in projects" :key="index" @click="selectProject(project)"
           :style="`background-image: url(http://localhost:3000/images/${project.image})`">
           {{ project.name }}
         </div>
@@ -45,14 +45,14 @@ export default {
       .catch((err) => console.log(err));
   },
   methods: {
-    projectIdEmit(index) {
+    selectProject(index) {
       eventBus.$emit('project', index);
-
       // 프로젝트 이름과 아이디는 세션에 저장
-      sessionStorage.setItem('project_id', index._id);
+      sessionStorage.setItem('project_description', index.description);
+      sessionStorage.setItem('project_id', index.id);
       sessionStorage.setItem('project_name', index.name);
       this.$router.push('/dashboard');
-    }
+    },
   }
 }
 </script>

@@ -8,8 +8,16 @@ module.exports = (app) => {
   app.patch('/api/member/edit', memberController.editMember);
   app.delete('/api/member/delete', memberController.deleteMemeber);
   app.post('/api/member/image', memberController.imageUpload);
+  app.post('/api/member/chkPw', memberController.chkPW);
+
   // project
   app.post('/api/project', projectController.save);
   app.get('/api/project', projectController.findProjects);
+  app.patch('/api/project', projectController.updateProject);
+  app.delete('/api/project', projectController.deleteProject);
+
   app.post('/api/project/upload', projectController.imageUpload);
+  app.get('/api/project/authority/', projectController.findAuth);
+
+  app.get('/api/project/members', projectController.findMembers);
 };
