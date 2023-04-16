@@ -2,10 +2,11 @@
     <nav class="navbar">
       <div class="container-fluid">
         <router-link to="/" class="navbar-brand"><img src="../assets/logo2.png" width="120"></router-link>
-        <p v-if="mamber_name" class="name">{{ mamber_name }}님 환영합니다!</p>
+        <p v-if="member_name" class="name">{{ member_name }}님 환영합니다!</p>
         <form class="d-flex" role="search">
           <button v-if="!loginState" class="btn btn-outline-light" @click="$router.push('signinup')" >로그인</button>
-          <button v-else class="btn btn-outline-light" @click="logout()" >로그아웃</button>
+          <button v-if="loginState" class="btn btn-outline-light" @click="$router.push('editmember')" >회원정보 수정</button>
+          <button v-if="loginState" class="btn btn-outline-light" @click="logout()" >로그아웃</button>
         </form>
       </div>
     </nav>
@@ -21,15 +22,15 @@ export default {
   data() {
     return {
       loginState: false, // false면 로그아웃 상태, true면 로그인 상태
-      mamber_name: sessionStorage.getItem('mamber_name'),
+      member_name: sessionStorage.getItem('member_name'),
     }
   },
   methods: {
     logout() {
       sessionStorage.removeItem('member_id');
-      sessionStorage.removeItem('mamber_name');
+      sessionStorage.removeItem('member_name');
       this.loginState = false;
-      this.mamber_name = null;
+      this.member_name = null;
       router.go(0);
     },
   },
@@ -63,6 +64,7 @@ export default {
 
 .name {
   color: #fff;
-  margin: 0 0 0 40%;
+  /* margin: 0 0 0 40%; */
+  margin-top: 9px;
 }
 </style>
