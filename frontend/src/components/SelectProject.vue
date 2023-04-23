@@ -56,7 +56,7 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
 @import url("/node_modules/@egjs/vue-flicking/dist/flicking.css");
 @import url("/node_modules/@egjs/flicking-plugins/dist/arrow.css");
 

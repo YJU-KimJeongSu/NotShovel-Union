@@ -34,7 +34,8 @@ const routes = [
     path: '/editmember',
     name: 'editmember',
     component: EditMember
-  }
+  },
+  {
     path: '/manageproject',
     name: 'manageproject',
     component: ManageProjectView

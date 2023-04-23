@@ -83,7 +83,7 @@ export default {
 }
 
 </script>
-<style>
+<style scoped>
 .form {
   height: 90vh;
   display: flex;

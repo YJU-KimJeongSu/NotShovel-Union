@@ -157,7 +157,6 @@ export default {
 .input {
   background-color: #fff;
   font-size: 20px;
-  /* font-weight: 550; */
   border: none;
   border-bottom: 1px solid #fff;
   outline: none;
