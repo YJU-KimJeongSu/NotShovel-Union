@@ -22,7 +22,7 @@
           <span class="tooltip">{{board.name}}</span>
         </li>
       </draggable>
-      <li v-else
+      <li v-if="member_id != admin_id"
           v-for="(board, index) in propsdata"
           :key="index"
           @click="clickBoard(board.clickMethod)"
