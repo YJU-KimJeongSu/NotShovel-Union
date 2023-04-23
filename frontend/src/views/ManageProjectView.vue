@@ -178,7 +178,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .manage-form {
   display: flex;
   align-items: center;
