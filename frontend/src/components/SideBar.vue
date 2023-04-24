@@ -1,70 +1,65 @@
 <template>
   <div class="sidebar">
     <div class="nav-container">
-    <div class="logo-details">
-      <i class='bx bxl-c-plus-plus icon'></i>
+      <div class="logo-details">
+        <i class='bx bxl-c-plus-plus icon'></i>
         <div class="logo_name">{{ project_name }}</div>
         <i class='bx bx-menu' id="btn" @click="btnClick"></i>
-    </div>
-    <ul class="nav-list">
-      
-      
-      <draggable v-if="member_id == admin_id">
-        <li v-for="(board, index) in propsdata"
-          :key="index"
-          @click="clickBoard(board.clickMethod)"
-        >
-          <a href="#">
-            <i v-bind:class="board.icon"></i>
-            <!-- <i class='bx bx-folder' ></i> -->
-            <span class="links_name">{{board.name}}</span>
-          </a>
-          <span class="tooltip">{{board.name}}</span>
-        </li>
-      </draggable>
-      <li v-if="member_id != admin_id"
-          v-for="(board, index) in propsdata"
-          :key="index"
-          @click="clickBoard(board.clickMethod)"
-        >
-          <a href="#">
-            <i v-bind:class="board.icon"></i>
-            <!-- <i class='bx bx-folder' ></i> -->
-            <span class="links_name">{{board.name}}</span>
-          </a>
-          <span class="tooltip">{{board.name}}</span>
-        </li>
-      
-
-
-      
-      <div id="edit" v-if="member_id == admin_id">
-      <li @click="addBoard">
-        <a href="#">
-          <i class='bx bx-plus' ></i>
-          <span class="links_name">게시판 추가</span>
-        </a>
-        <span class="tooltip">게시판 추가</span>
-      </li>
-
-    <!-- <div> -->
-      <li @click="addBoard" id="edit">
-        <a href="#">
-          <i class='bx bx-edit' ></i>
-          <span class="links_name">게시판 편집</span>
-        </a>
-        <span class="tooltip">게시판 편집</span>
-      </li>
       </div>
-    </ul>
-    <!-- </div> -->
-  </div>
+      <ul class="nav-list">
+        <draggable v-if="member_id == admin_id">
+          <li v-for="(board, index) in propsdata" :key="index" @click="clickBoard(board.clickMethod)">
+            <a href="#">
+              <i v-bind:class="board.icon"></i>
+              <!-- <i class='bx bx-folder' ></i> -->
+              <span class="links_name">{{ board.name }}</span>
+            </a>
+            <span class="tooltip">{{ board.name }}</span>
+          </li>
+        </draggable>
+        <li v-if="member_id != admin_id" v-for="(board, index) in propsdata" :key="index"
+          @click="clickBoard(board.clickMethod)">
+          <a href="#">
+            <i v-bind:class="board.icon"></i>
+            <!-- <i class='bx bx-folder' ></i> -->
+            <span class="links_name">{{ board.name }}</span>
+          </a>
+          <span class="tooltip">{{ board.name }}</span>
+        </li>
+        <div id="edit" v-if="member_id == admin_id">
+          <li @click="addBoard">
+            <a href="#">
+              <i class='bx bx-plus'></i>
+              <span class="links_name">게시판 추가</span>
+            </a>
+            <span class="tooltip">게시판 추가</span>
+          </li>
+
+          <li @click="addBoard" id="edit">
+            <a href="#">
+              <i class='bx bx-edit'></i>
+              <span class="links_name">게시판 편집</span>
+            </a>
+            <span class="tooltip">게시판 편집</span>
+          </li>
+        </div>
+
+        <li @click="exitProject()" class="exit-btn">
+          <a href="#">
+            <i class="bx bx-exit"></i>
+            <span class="links_name">프로젝트 나가기</span>
+          </a>
+        </li>
+
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
 import draggable from 'vuedraggable';
 import axios from "axios";
+import router from '@/router';
 
 export default {
   data(){
@@ -130,6 +125,29 @@ export default {
     addBoard: function() {
       this.$emit('addBoard');
     },
+
+    exitProject() {
+      axios.delete('/api/project/exit', {
+        data: {
+          member_id: sessionStorage.getItem('member_id'),
+          project_id: sessionStorage.getItem('project_id'),
+        }
+      })
+        .then(() => {
+          alert('프로젝트에서 탈퇴 되었습니다.');
+          sessionStorage.removeItem('project_description');
+          sessionStorage.removeItem('project_id');
+          sessionStorage.removeItem('project_name');
+          router.go('/');
+        })
+        .catch((err) => {
+          if (err.response.status === 403) {
+            alert('관리자는 탈퇴할 수 없습니다.');
+          } else {
+            alert('알 수 없는 에러');
+          }
+        })
+    }
   },
 }
 </script>

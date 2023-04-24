@@ -156,3 +156,34 @@ exports.findMembers = async(req, res) => {
   const project_id = req.query.project_id;
   const member_ids = await projects.findOne({project_id : project_id});
 };
+
+exports.exitProject = async (req, res) => {
+  const { member_id, project_id } = req.body;
+  await projects.findOne({ _id: project_id })
+    .then(async (data) => {
+      if (member_id == data.admin_id) { // 어드민은 프로젝트 탈퇴 불가능
+        return res.status(403).send('admin');
+      } else { // 어드민이 아닐 때는 그냥 탈퇴
+        const filter = { _id: project_id };
+        const update = {
+          $pull: {
+            manager_ids: { $in: member_id },
+            member_ids: { $in: member_id }
+          }
+        };
+        const option = { new: true }
+        await projects.findOneAndUpdate(filter, update, option)
+          .then(() => {
+            return res.status(200).send('exit');
+          })
+          .catch((err) => {
+            console.log(err);
+            return res.status(500).send();
+          })
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send();
+    })
+};
