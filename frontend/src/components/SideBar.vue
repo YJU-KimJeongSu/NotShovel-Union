@@ -138,7 +138,7 @@ export default {
           sessionStorage.removeItem('project_description');
           sessionStorage.removeItem('project_id');
           sessionStorage.removeItem('project_name');
-          router.go('/');
+          location.href = '/';
         })
         .catch((err) => {
           if (err.response.status === 403) {

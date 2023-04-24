@@ -164,17 +164,31 @@ exports.exitProject = async (req, res) => {
       if (member_id == data.admin_id) { // 어드민은 프로젝트 탈퇴 불가능
         return res.status(403).send('admin');
       } else { // 어드민이 아닐 때는 그냥 탈퇴
-        const filter = { _id: project_id };
+        const filter = { _id: member_id };
         const update = {
           $pull: {
-            manager_ids: { $in: member_id },
-            member_ids: { $in: member_id }
+            project_ids: { $in: project_id }
           }
         };
         const option = { new: true }
-        await projects.findOneAndUpdate(filter, update, option)
-          .then(() => {
-            return res.status(200).send('exit');
+        await members.findOneAndUpdate(filter, update, option)
+          .then(async () => {
+            const filter2 = { _id: project_id };
+            const update2 = {
+              $pull: {
+                manager_ids: { $in: member_id },
+                member_ids: { $in: member_id }
+              }
+            };
+            const option2 = { new: true }
+            await projects.findOneAndUpdate(filter2, update2, option2)
+              .then(() => {
+                return res.status(200).send('exit');
+              })
+              .catch((err) => {
+                console.log(err);
+                return res.status(500).send();
+              })
           })
           .catch((err) => {
             console.log(err);
