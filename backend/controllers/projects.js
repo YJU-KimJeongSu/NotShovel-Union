@@ -152,7 +152,40 @@ exports.deleteProject = async(req,res) => {
   }
 };
 
-exports.findMembers = async(req, res) => {
+// exports.findMembers = async(req, res) => {
+//   const project_id = req.query.project_id;
+//   try {
+//     const project = await projects.findOne({_id: project_id});
+//     if (project) {
+//       const member_ids = project.member_ids;
+//       return res.status(200).json(member_ids);
+//     } else {
+//       return res.status(404).json({ error: '프로젝트를 찾을 수 없습니다.' });
+//     }
+//   } catch (err) {
+//     return res.status(500).send(err);
+//   }
+// };
+
+
+exports.findMembers = async (req, res) => {
   const project_id = req.query.project_id;
-  const member_ids = await projects.findOne({project_id : project_id});
+  try {
+    const project = await projects.findOne({_id: project_id}).populate('member_ids'); // 멤버 정보를 populate로 가져옴
+    if (project) {
+      const members = project.member_ids.map(member => {
+        return {
+          id: member._id,
+          email: member.email,
+          name: member.name,
+          phone: member.phone_number
+        };
+      });
+      return res.status(200).json(members);
+    } else {
+      return res.status(404).json({ error: '프로젝트를 찾을 수 없습니다.' });
+    }
+  } catch (err) {
+    return res.status(500).send(err);
+  }
 };

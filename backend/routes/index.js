@@ -1,5 +1,6 @@
 const memberController = require('../controllers/members');
 const projectController = require('../controllers/projects');
+const ganttController = require('../controllers/gantt_charts');
 
 module.exports = (app) => {
   //member
@@ -20,4 +21,7 @@ module.exports = (app) => {
   app.get('/api/project/authority/', projectController.findAuth);
 
   app.get('/api/project/members', projectController.findMembers);
+
+  // gantt
+  app.post('/api/gantt', ganttController.save);
 };
