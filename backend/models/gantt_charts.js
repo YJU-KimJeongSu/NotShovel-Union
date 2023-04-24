@@ -5,7 +5,7 @@ const gantt_charts = new Schema({
     // 게시판 공통 내용
     project_id: { type: Schema.Types.ObjectId, ref: 'projects', required: true },
     board_name: { type: String, required: true },
-    // board_order: { type: Number, required: true, unique: true }, // 중복이 안돼야 정렬할때 편하게 작업 가능
+    board_order: { type: Number, required: true, unique: true }, // 중복이 안돼야 정렬할때 편하게 작업 가능
 
     // 간트차트 내용
     activity_name: { type: String, required: true },

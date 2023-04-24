@@ -1,64 +1,71 @@
 <template>
   <div class="sidebar">
     <div class="nav-container">
-    <div class="logo-details">
-      <i class='bx bxl-c-plus-plus icon'></i>
+      <div class="logo-details">
+        <i class='bx bxl-c-plus-plus icon'></i>
         <div class="logo_name">{{ project_name }}</div>
         <i class='bx bx-menu' id="btn" @click="btnClick"></i>
-    </div>
-    <ul class="nav-list">
-      
-      
-      <draggable v-if="member_id == admin_id">
-        <li v-for="(board, index) in propsdata"
-          :key="index"
-          @click="clickBoard(board.clickMethod)"
-        >
-          <a href="#">
-            <i v-bind:class="board.icon"></i>
-            <!-- <i class='bx bx-folder' ></i> -->
-            <span class="links_name">{{board.name}}</span>
-          </a>
-          <span class="tooltip">{{board.name}}</span>
-        </li>
-      </draggable>
-      <li v-if="member_id != admin_id"
-          v-for="(board, index) in propsdata"
-          :key="index"
-          @click="clickBoard(board.clickMethod)"
-        >
-          <a href="#">
-            <i v-bind:class="board.icon"></i>
-            <!-- <i class='bx bx-folder' ></i> -->
-            <span class="links_name">{{board.name}}</span>
-          </a>
-          <span class="tooltip">{{board.name}}</span>
-        </li>
-      
-
-
-      
-      <div id="edit" v-if="member_id == admin_id">
-      <li @click="addBoard">
-        <a href="#">
-          <i class='bx bx-plus' ></i>
-          <span class="links_name">게시판 추가</span>
-        </a>
-        <span class="tooltip">게시판 추가</span>
-      </li>
-
-    <!-- <div> -->
-      <li @click="addBoard" id="edit">
-        <a href="#">
-          <i class='bx bx-edit' ></i>
-          <span class="links_name">게시판 편집</span>
-        </a>
-        <span class="tooltip">게시판 편집</span>
-      </li>
       </div>
-    </ul>
-    <!-- </div> -->
-  </div>
+      <ul class="nav-list">
+      
+      <!-- 관리자 아이디일 때만 드래그 작동(추가, 수정 버튼 제외) -->
+        <draggable v-if="(propsdata.member_id == propsdata.admin_id) && editMode">
+          <li v-for="(board, index) in propsdata.bList"
+            :key="index"
+            @click="clickBoard(board.clickMethod)"
+          >
+            <a href="#">
+              <i v-bind:class="board.icon"></i>
+              <!-- <i class='bx bx-folder' ></i> -->
+              <span class="links_name">{{board.name}}</span>
+            </a>
+            <span class="tooltip">{{board.name}}</span>
+          </li>
+        </draggable>
+
+        <!-- 관리자 모드가 아닐 때(추가, 수정 버튼 제외) -->
+        <li v-else v-for="(board, index) in propsdata.bList"
+            :key="index"
+            @click="clickBoard(board.clickMethod)"
+        >
+          <a href="#">
+            <i v-bind:class="board.icon"></i>
+            <!-- <i class='bx bx-folder' ></i> -->
+            <span class="links_name">{{board.name}}</span>
+          </a>
+          <span class="tooltip">{{board.name}}</span>
+        </li>
+      
+
+
+      <!-- 추가 버튼 -->
+        <div id="edit" v-if="propsdata.member_id == propsdata.admin_id">
+          <li @click="addBoard">
+            <a href="#">
+              <i class='bx bx-plus' ></i>
+              <span class="links_name">게시판 추가</span>
+            </a>
+            <span class="tooltip">게시판 추가</span>
+          </li>
+
+      <!-- <div> -->
+          <!-- 수정 버튼 -->
+          <li @click="clickEdit" id="edit">
+            <a href="#">
+              <i class='bx bx-edit' ></i>
+              <span class="links_name">게시판 편집</span>
+            </a>
+            <span class="tooltip">게시판 편집</span>
+          </li>
+        </div>
+
+        <div class="edit_mode" v-if="editMode">
+          <button class="btn btn-outline-light" @click="saveOrder">제출</button>
+          <button class="btn btn-outline-light">취소</button>
+        </div>
+      </ul>
+      <!-- </div> -->
+    </div>
   </div>
 </template>
 
@@ -69,10 +76,10 @@ import axios from "axios";
 export default {
   data(){
     return {
-      member_id: "",
-      project_name: "이름 없음",
-      admin_id: "",
-      manager_ids: []
+      // member_id: "",
+      // project_name: "이름 없음",
+
+      editMode: false
     }
   }, 
   props: ['propsdata'],
@@ -80,24 +87,24 @@ export default {
     draggable,
   },
   created() {
-    this.project_name = sessionStorage.getItem('project_name');
-    this.member_id = sessionStorage.getItem('member_id');
+    // this.project_name = sessionStorage.getItem('project_name');
+    // this.member_id = sessionStorage.getItem('member_id');
   },
-  mounted() {
-    console.log('axios 요청 시도 from sidebar');
-    axios.get('/api/project/authority/', {
-      params: {
-        member_id: sessionStorage.getItem('member_id')
-      }
-    })
-      .then((res) => {
-        const authData = res.data;
-        this.admin_id = authData.admin_id;
-        this.manager_ids = authData.manager_ids;
-        console.log("result: " + authData.admin_id);
-      })
-      .catch((err) => console.log(err));
-  },
+  // mounted() {
+  //   console.log('axios 요청 시도 from sidebar');
+  //   axios.get('/api/project/authority/', {
+  //     params: {
+  //       member_id: sessionStorage.getItem('member_id')
+  //     }
+  //   })
+  //     .then((res) => {
+  //       const authData = res.data;
+  //       this.admin_id = authData.admin_id;
+  //       this.manager_ids = authData.manager_ids;
+  //       console.log("result: " + authData.admin_id);
+  //     })
+  //     .catch((err) => console.log(err));
+  // },
   methods: {
     menuBtnChange: function() {
       let sidebar = document.querySelector(".sidebar");
@@ -130,6 +137,12 @@ export default {
     addBoard: function() {
       this.$emit('addBoard');
     },
+    clickEdit: function() {
+      this.editMode = true;
+    },
+    saveOrder: function() {
+      this.$emit('saveOrder');
+    }
   },
 }
 </script>
