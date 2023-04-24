@@ -22,8 +22,9 @@ exports.save = async (req, res) => {
       { $push: { project_ids: project_id } },
       { new: true }
     );
+
     if (member) {
-      res.json(member);
+      res.json({id: project_id}); // 원래 member 객체를 보냈으나, member는 안쓰이는 것 같아서 project_id만 보내게 수정
     } else {
       res.status(404).json({ error: '회원을 찾을 수 없습니다.'  });
     }
@@ -200,4 +201,40 @@ exports.exitProject = async (req, res) => {
       console.log(err);
       res.status(500).send();
     })
+};
+
+exports.registerToProject = async (req, res) => {
+  let checker = false;
+  const { member_id, project_id } = req.body;
+  const project = await projects.findOne({ _id: project_id })
+    .then((data) => {
+      if (data.member_ids.includes(member_id)) {
+        return res.status(409).send('already exists');
+      } else {
+        checker = true;
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.status(500).send(err);
+    });
+
+  if (checker) {
+    const filter = { _id: project_id };
+    const update = { $push: { member_ids: member_id } };
+    const option = { new: true };
+    await projects.findOneAndUpdate(filter, update, option);
+
+    const filter2 = { _id: member_id };
+    const update2 = { $push: { project_ids: project_id } };
+    const option2 = { new: true };
+    await members.findOneAndUpdate(filter2, update2, option2)
+      .then(() => {
+        return res.status(200).send();
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(500).send(err);
+      })
+  }
 };

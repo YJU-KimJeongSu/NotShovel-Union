@@ -6,6 +6,7 @@ import SignInUpView from '../views/SignInUpView.vue'
 import CreateProjectView from '../views/CreateProjectView.vue'
 import EditMember from '../views/EditMember.vue'
 import ManageProjectView from '../views/ManageProjectView.vue'
+import RegisterToProject from '../views/RegisterToProject.vue'
 
 Vue.use(VueRouter)
 
@@ -39,6 +40,11 @@ const routes = [
     path: '/manageproject',
     name: 'manageproject',
     component: ManageProjectView
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: RegisterToProject
   },
 ]
 

@@ -20,4 +20,5 @@ module.exports = (app) => {
   app.get('/api/project/authority/', projectController.findAuth);
   app.get('/api/project/members', projectController.findMembers);
   app.delete('/api/project/exit', projectController.exitProject);
+  app.patch('/api/project/register', projectController.registerToProject);
 };
