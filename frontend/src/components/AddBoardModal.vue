@@ -20,7 +20,7 @@
                 <label for="exampleFormControlInput1" class="form-label">게시판 종류</label>
                 <select class="form-select form-select mb-3" v-model="boardInfo.type">
                   <option selected disabled>종류를 선택해주세요</option>
-                  <option value="meetingNotes" >회의록</option>
+                  <option value="meetingMinutes" >회의록</option>
                   <option value="gantChart">간트 차트</option>
                   <option value="openChatting">오픈 채팅</option>
                 </select>
@@ -28,7 +28,7 @@
 
             </div>
             <!-- <div class="modal-footer"> -->
-              <button class="btn btn-dark" @click="close">Create</button>
+              <button class="btn btn-dark" @click="createBoard">Create</button>
             <!-- </div> -->
           </div>
           
@@ -47,8 +47,11 @@ export default {
     }
   },
   methods: {
-    close() {
-      this.$emit('close', this.boardInfo);
+    close: function() {
+      this.$emit('close');
+    },
+    createBoard: function() {
+      this.$emit('createBoard', this.boardInfo);
     }
   }
 }

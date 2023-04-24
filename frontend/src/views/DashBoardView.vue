@@ -12,12 +12,13 @@
               @openBar="changeBar"
               @saveOrder="saveOrderItems"
     ></SideBar>
-    <MeetingNotes v-if="currentView === 'meetingNotes'" :props="isOpen"></MeetingNotes>
+    <MeetingNotes v-if="currentView === 'meetingMinutes'" :props="isOpen"></MeetingNotes>
     <!-- 추후에 각 게시판 종류별로 컴포넌트 추가(ex: 차트, 오픈채팅 등) -->
     <!-- 각 뷰들을 구성하는데 필요한 데이터들은 여기서 각 컴포넌트로 props -->
     <Setting v-else-if="currentView === 'setting'" :props="isOpen"></Setting>
     <GanttChart v-else-if="currentView === 'ganttChart'" :props="isOpen"></GanttChart>
-    <Modal v-if="showModal" @close="closeModal"></Modal>
+    <Modal v-if="showModal" @close="closeModal" @createBoard="createBoardItem"></Modal>
+    
   </div>
   
 </template>
@@ -40,13 +41,13 @@ export default {
       currentView: "",
       showModal: false,
       dbData: {
-        bList: [
-        {name: '회의록', type: 'meetingNotes', icon: 'bx bx-folder', clickMethod: 'meetingNotes'},
-        {name: 'User', type: '', icon: 'bx bx-user', clickMethod: ''},
-        {name: 'Messages', type: 'openChat', icon: 'bx bx-chat', clickMethod: ''},
-        {name: 'Gantt Chart', type: 'ganttChart', icon: 'bx bx-pie-chart-alt-2', clickMethod: 'ganttChart'},
-        {name: 'Setting', type: 'setting', icon: 'bx bx-cog', clickMethod: 'setting'},
-        ],
+        // bList: [
+        // {name: '회의록', type: 'meetingNotes', icon: 'bx bx-folder', clickMethod: 'meetingNotes'},
+        // {name: 'User', type: '', icon: 'bx bx-user', clickMethod: ''},
+        // {name: 'Messages', type: 'openChat', icon: 'bx bx-chat', clickMethod: ''},
+        // {name: 'Gantt Chart', type: 'ganttChart', icon: 'bx bx-pie-chart-alt-2', clickMethod: 'ganttChart'},
+        // ],
+        bList: [],
         admin_id: "",
         manager_ids: [],
         member_id: "",
@@ -66,7 +67,7 @@ export default {
     this.dbData.member_id = sessionStorage.getItem('member_id');
   },
   mounted: function() {
-    console.log('axios 요청 시도 from sidebar');
+    
     axios.get('/api/project/authority/', {
       params: {
         member_id: sessionStorage.getItem('member_id')
@@ -76,7 +77,23 @@ export default {
         const authData = res.data;
         this.dbData.admin_id = authData.admin_id;
         this.dbData.manager_ids = authData.manager_ids;
-        console.log("result: " + authData.admin_id);
+      })
+      .catch((err) => console.log(err));
+
+
+
+      // 게시판 리스트 겟요청
+      axios.get('/api/board', {
+      params: {
+        project_id: this.project_id
+      }
+    })
+      .then((res) => {
+        const boardData = res.data;
+        this.dbData.bList = res.data;
+        console.log(boardData[0].board_order);
+        console.log(boardData[1].board_order);
+        console.log(boardData[2].board_order);
       })
       .catch((err) => console.log(err));
   },
@@ -88,6 +105,7 @@ export default {
     GanttChart: ganttChart,
   },
   methods: {
+    // sideBar 클릭 시 오른쪽 화면 전환
     changeView: function(view) {
       if(view === 'dashMain') {
         this.currentView = "";
@@ -99,24 +117,70 @@ export default {
     addOneBoard: function() {
       this.showModal = !this.showModal;
     },
-    closeModal: function(boardInfo) {
+
+    // 게시판 추가 모달 캔슬 동작
+    closeModal: function() {
+      this.showModal = !this.showModal;
+    },
+
+    // 게시판 추가
+    createBoardItem: function(boardInfo) {
+      boardInfo.listIndex = this.dbData.bList.length; // 새로 추가된 게시판의 순서Index
+      axios.post('/api/board', boardInfo,{
+        params: {
+          project_id: this.project_id
+        }
+      })
+        .then(response => {
+          console.log(response.data);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    
       const board = boardInfo;
       let icon;
       switch(board.type) {
-        case 'meetingNotes': icon = 'bx bx-folder'; break;
+        case 'meetingMinutes': icon = 'bx bx-folder'; break;
         case 'openChatting': icon = 'bx bx-chat'; break;
         case 'gantChart': icon = 'bx bx-pie-chart-alt-2'; break;
         default: icon='';
       }
       if(board.type != '')
-        this.bList.push({name: board.name, icon: icon});
+        this.dbData.bList.push({name: board.name, icon: icon});
+
       this.showModal = !this.showModal;
     },
     changeBar: function(event) {
       this.isOpen = event;
+      let boardData = this.dbData.bList;
+      console.log(boardData[0].board_order);
+        console.log(boardData[1].board_order);
+        console.log(boardData[2].board_order);
     },
-    saveOrderItems: function() {
+    saveOrderItems: function(newOrder) {
+      let bList = this.dbData.bList;
+      for(let i = 0; i < bList.length; i++) {
+        bList[i].newOrder = newOrder[i];
+      }
+      console.log('save Event 수신');
       
+
+      axios.patch('/api/board/order', bList, {
+        params: {
+          project_id: this.project_id
+        }
+      })
+        .then(response => {
+          console.log(response.data);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+
+
+
+        
     }
     
   }

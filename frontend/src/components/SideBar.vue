@@ -3,13 +3,17 @@
     <div class="nav-container">
       <div class="logo-details">
         <i class='bx bxl-c-plus-plus icon'></i>
-        <div class="logo_name">{{ project_name }}</div>
+        <div class="logo_name">{{ propsdata.project_name }}</div>
         <i class='bx bx-menu' id="btn" @click="btnClick"></i>
       </div>
       <ul class="nav-list">
       
       <!-- 관리자 아이디일 때만 드래그 작동(추가, 수정 버튼 제외) -->
-        <draggable v-if="(propsdata.member_id == propsdata.admin_id) && editMode">
+        <draggable v-if="(propsdata.member_id == propsdata.admin_id) && editMode"
+                :sort="true"
+                :move="checkMove"
+                :list="propsdata.bList"
+        >
           <li v-for="(board, index) in propsdata.bList"
             :key="index"
             @click="clickBoard(board.clickMethod)"
@@ -17,9 +21,9 @@
             <a href="#">
               <i v-bind:class="board.icon"></i>
               <!-- <i class='bx bx-folder' ></i> -->
-              <span class="links_name">{{board.name}}</span>
+              <span class="links_name">{{board.board_name}}</span>
             </a>
-            <span class="tooltip">{{board.name}}</span>
+            <span class="tooltip">{{board.board_name}}</span>
           </li>
         </draggable>
 
@@ -31,13 +35,23 @@
           <a href="#">
             <i v-bind:class="board.icon"></i>
             <!-- <i class='bx bx-folder' ></i> -->
-            <span class="links_name">{{board.name}}</span>
+            <span class="links_name">{{board.board_name}}</span>
           </a>
-          <span class="tooltip">{{board.name}}</span>
+          <span class="tooltip">{{board.board_name}}</span>
         </li>
       
 
 
+
+        <li>
+          <a href="#">
+            <i class="bx bx-cog"></i>
+            <!-- <i class='bx bx-folder' ></i> -->
+            <span class="links_name">Setting</span>
+          </a>
+          <span class="tooltip">Setting</span>
+        </li>
+      
       <!-- 추가 버튼 -->
         <div id="edit" v-if="propsdata.member_id == propsdata.admin_id">
           <li @click="addBoard">
@@ -76,35 +90,13 @@ import axios from "axios";
 export default {
   data(){
     return {
-      // member_id: "",
-      // project_name: "이름 없음",
-
-      editMode: false
+      editMode: false,
     }
   }, 
   props: ['propsdata'],
   components: {
     draggable,
   },
-  created() {
-    // this.project_name = sessionStorage.getItem('project_name');
-    // this.member_id = sessionStorage.getItem('member_id');
-  },
-  // mounted() {
-  //   console.log('axios 요청 시도 from sidebar');
-  //   axios.get('/api/project/authority/', {
-  //     params: {
-  //       member_id: sessionStorage.getItem('member_id')
-  //     }
-  //   })
-  //     .then((res) => {
-  //       const authData = res.data;
-  //       this.admin_id = authData.admin_id;
-  //       this.manager_ids = authData.manager_ids;
-  //       console.log("result: " + authData.admin_id);
-  //     })
-  //     .catch((err) => console.log(err));
-  // },
   methods: {
     menuBtnChange: function() {
       let sidebar = document.querySelector(".sidebar");
@@ -141,7 +133,18 @@ export default {
       this.editMode = true;
     },
     saveOrder: function() {
-      this.$emit('saveOrder');
+      let newOrder = [];
+      console.log('saveOrder 클릭!');
+      for(let i = 0; i < this.propsdata.bList.length; i++) {
+        newOrder.push(i);
+        console.log('newOrder Push: ' + newOrder[i]);
+      }
+      // this.propsdata.bList.push({pushtest: 1});
+      this.$emit('saveOrder', newOrder);
+    },
+
+    checkMove: function(e) {
+      window.console.log("Future index: " + e.draggedContext.futureIndex);
     }
   },
 }

@@ -1,6 +1,7 @@
 const memberController = require('../controllers/members');
 const projectController = require('../controllers/projects');
 const ganttController = require('../controllers/gantt_charts');
+const boardController= require('../controllers/common/board');
 
 module.exports = (app) => {
   //member
@@ -24,4 +25,10 @@ module.exports = (app) => {
 
   // gantt
   app.post('/api/gantt', ganttController.save);
+
+
+
+  app.patch('/api/board/order', boardController.changeBoardOrder);
+  app.post('/api/board', boardController.createBoard);
+  app.get('/api/board', boardController.getBoardList);
 };

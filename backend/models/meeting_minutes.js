@@ -9,19 +9,19 @@ const meeting_minutes = new Schema({
     
     // 회의록 내용 - 채팅
     meeting_chattings: [{
-        context: { type: String, required: true },
-        type: { type: String, enum: ['normal', 'reply', 'mention', 'file'], required: true },
+        context: { type: String}, // req
+        type: { type: String, enum: ['normal', 'reply', 'mention', 'file']}, // req
         date: { type: Date, default: Date.now },
-        member_id: { type: Schema.Types.ObjectId, ref: 'members', required: true },
+        member_id: { type: Schema.Types.ObjectId, ref: 'members'}, // req
         attached_file: {
-            file_name: { type: String, required: true },
+            file_name: { type: String}, // req
             file_extension: String, // 확장자 없는 파일 올렸을 때 에러 방지용으로 required설정 x
         },
     }],
 
     // 회의록 내용 - 본문
-    title: { type: String, required: true },
-    context: { type: String, required: true },
+    title: { type: String}, // req
+    context: { type: String}, // req
     date: { type: Date, default: Date.now }, // 회의한 날짜
     place: String,
     create_date: { type: Date, default: Date.now }, // 회의록 작성한 날짜
