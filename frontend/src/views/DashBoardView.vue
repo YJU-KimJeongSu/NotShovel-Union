@@ -5,6 +5,8 @@
     <MeetingNotes v-if="currentView === 'meetingNotes'" :props="isOpen"></MeetingNotes>
     <!-- 추후에 각 게시판 종류별로 컴포넌트 추가(ex: 차트, 오픈채팅 등) -->
     <!-- 각 뷰들을 구성하는데 필요한 데이터들은 여기서 각 컴포넌트로 props -->
+    <Setting v-else-if="currentView === 'setting'" :props="isOpen"></Setting>
+    <GanttChart v-else-if="currentView === 'ganttChart'" :props="isOpen"></GanttChart>
     <Modal v-if="showModal" @close="closeModal"></Modal>
   </div>
   
@@ -14,6 +16,8 @@
 import sidebar from '../components/SideBar.vue'
 import meetingNotes from '../components/MeetingNotes.vue'
 import modal from '../components/AddBoardModal.vue'
+import ganttChart from '../components/GanttChart.vue'
+import setting from '../components/Setting.vue'
 import { eventBus } from '../main.js';
 
 export default {
@@ -28,8 +32,8 @@ export default {
         {name: '회의록', type: 'meetingNotes', icon: 'bx bx-folder', clickMethod: 'meetingNotes'},
         {name: 'User', type: '', icon: 'bx bx-user', clickMethod: ''},
         {name: 'Messages', type: 'openChat', icon: 'bx bx-chat', clickMethod: ''},
-        {name: 'Gant Chart', type: 'gantChart', icon: 'bx bx-pie-chart-alt-2', clickMethod: ''},
-        {name: 'Setting', type: 'setting', icon: 'bx bx-cog', clickMethod: ''},
+        {name: 'Gantt Chart', type: 'ganttChart', icon: 'bx bx-pie-chart-alt-2', clickMethod: 'ganttChart'},
+        {name: 'Setting', type: 'setting', icon: 'bx bx-cog', clickMethod: 'setting'},
       ],
     }
   },
@@ -39,11 +43,14 @@ export default {
       console.log(project);
     });
     this.project_id = sessionStorage.getItem('project_id');
+    this.currentView = sessionStorage.getItem('currentView');
   },
   components: {
     SideBar: sidebar,
     MeetingNotes: meetingNotes,
-    Modal: modal
+    Modal: modal,
+    Setting: setting,
+    GanttChart: ganttChart,
   },
   methods: {
     changeView: function(view) {
@@ -52,6 +59,7 @@ export default {
         return;
       }
       this.currentView = view;
+      sessionStorage.setItem('currentView', this.currentView);
     },
     addOneBoard: function() {
       this.showModal = !this.showModal;

@@ -10,12 +10,10 @@
       <button class="manage-btn-small" @click="selectProjectMenu('member')">회원 관리</button>
     </div>
 
-    <div>
       <div class="mb-3 project-form" v-if="menu === 'project'">
         <button class="manage-btn" @click="selectProjectMenu('projectDelete')">프로젝트 삭제</button>
         <button class="manage-btn" @click="selectProjectMenu('projectUpdate')">프로젝트 수정</button>
       </div>
-
       <div v-if="menu === 'projectUpdate'" class="mb-3 project-form">
         <h2>프로젝트 수정</h2>
         <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="프로젝트 이름"
@@ -35,10 +33,28 @@
           v-model="admin_pw">
         <button type="button" class="btn btn-secondary" @click="deleteProject()">프로젝트 삭제</button>
       </div>
-    </div>
 
     <div class="mb-3 project-form" v-if="menu === 'member'">
       <h2>멤버 관리</h2>
+        <table>
+          <tr>
+            <th>이메일</th>
+            <th>이름</th>
+            <th>휴대폰번호</th>
+            <th>등급</th>
+          </tr>
+          <tr v-for="member in members" :key="member.id">
+            <td>{{ member.email }}</td>
+            <td>{{ member.name }}</td>
+            <td>{{ member.phone }}</td>
+            <td>
+              <select>
+                <option>매니저</option>
+                <option>일반회원</option>
+              </select>
+            </td>
+          </tr>
+        </table>
     </div>
   </div>
 </template>
@@ -82,13 +98,16 @@ export default {
         console.log("result: " +  this.admin_id);
      })
      .catch((err) => console.log(err));
-
-
   },
   methods: {
     selectProjectMenu(arg) {
       this.menu = arg;
       this.select = true;
+
+      if(arg=='member'){
+        this.getMember();
+      }
+
     },
     async updateProject() {
       try {
@@ -103,6 +122,7 @@ export default {
           project_id: this.project.id,
         });
         this.menu = 'default';
+        this.select = false;
         alert('변경이 완료되었습니다.');
         sessionStorage.setItem('project_name', this.project.name);
         sessionStorage.setItem('project_description', this.project.description);
@@ -160,25 +180,40 @@ export default {
       }
     },
 
-    // async getMember() {
-    //   await axios.get('/api/project/members', {
-    //     params: {
-    //       project_id: this.project.id
-    //     }
-    //   })
-    //     .then((res) => {
-    //       // this.email = res.data.email;
-    //       // this.name =  res.data.name;
-    //       // =res.data.phone_number;
+    async getMember() {
+      try {
+        const response = await axios.get('/api/project/members', {
+          params: {
+            project_id: this.project.id
+          }
+        });
 
-    //     })
-    //     .catch((err) => console.log(err));
-    // }
+        // 응답 결과를 배열 안에 객체 형식으로 담기
+        this.members = response.data.map(member => {
+          return {
+            id: member.id,
+            email: member.email,
+            name: member.name,
+            phone: member.phone
+          };
+        });
+
+        console.log(this.members);
+      } catch (error) {
+        console.error(error);
+      }
+  }
+
+
+
   }
 }
 </script>
 
-<style>
+<style scoped>
+table {
+  width: 450px;
+}
 .manage-form {
   display: flex;
   align-items: center;
@@ -195,9 +230,9 @@ export default {
   display: flex;
   width: 1200px;
   height: 100px;
-  position: absolute;
+  /* position: absolute;
   top: 50%;
-  transform: translate(0%, -50%);
+  transform: translate(0%, -50%); */
 }
 
 .manage-btn {

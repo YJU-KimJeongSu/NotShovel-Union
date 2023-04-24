@@ -4,8 +4,6 @@ import HomeView from '../views/HomeView.vue'
 import DashBoardView from '../views/DashBoardView.vue'
 import SignInUpView from '../views/SignInUpView.vue'
 import CreateProjectView from '../views/CreateProjectView.vue'
-import ManageProjectView from '../views/ManageProjectView.vue'
-
 
 Vue.use(VueRouter)
 
@@ -29,11 +27,6 @@ const routes = [
     path: '/dashboard',
     name: 'dashboard',
     component: DashBoardView
-  },
-  {
-    path: '/manageproject',
-    name: 'manageproject',
-    component: ManageProjectView
   },
 ]
 
