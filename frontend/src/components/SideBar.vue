@@ -1,10 +1,10 @@
 <template>
-  <div class="sidebar">
+  <div class="sidebar" :class="{ open: isOpen }">
     <div class="nav-container">
       <div class="logo-details">
         <i class='bx bxl-c-plus-plus icon'></i>
         <div class="logo_name">{{ project_name }}</div>
-        <i class='bx bx-menu' id="btn" @click="btnClick"></i>
+        <i :class="menuIconToggle" id="btn" @click="btnClick"></i>
       </div>
       <ul class="nav-list">
         <draggable v-if="member_id == admin_id">
@@ -59,15 +59,15 @@
 <script>
 import draggable from 'vuedraggable';
 import axios from "axios";
-import router from '@/router';
 
 export default {
   data(){
     return {
-      member_id: "",
+      member_id: null,
       project_name: "이름 없음",
-      admin_id: "",
-      manager_ids: []
+      admin_id: null,
+      manager_ids: [],
+      isOpen: false,
     }
   }, 
   props: ['propsdata'],
@@ -78,9 +78,9 @@ export default {
     this.project_name = sessionStorage.getItem('project_name');
     this.member_id = sessionStorage.getItem('member_id');
   },
-  mounted() {
+  async mounted() {
     console.log('axios 요청 시도 from sidebar');
-    axios.get('/api/project/authority/', {
+    await axios.get('/api/project/authority/', {
       params: {
         member_id: sessionStorage.getItem('member_id')
       }
@@ -93,41 +93,49 @@ export default {
       })
       .catch((err) => console.log(err));
   },
+  computed: {
+    menuIconToggle() {
+      return this.isOpen ? 'bx bx-menu-alt-right' : 'bx bx-menu';
+    }
+  },
   methods: {
-    menuBtnChange: function() {
-      let sidebar = document.querySelector(".sidebar");
-      let closeBtn = document.querySelector("#btn");
-      if(sidebar.classList.contains("open")){
-      closeBtn.classList.replace("bx-menu", "bx-menu-alt-right");//replacing the iocns class
-      }else {
-      closeBtn.classList.replace("bx-menu-alt-right","bx-menu");//replacing the iocns class
-      }
-    },
-    searchClick: function() {
-      let sidebar = document.querySelector(".sidebar");
-      sidebar.classList.toggle("open");
-      this.menuBtnChange();
-    },
-    btnClick: function() {
-      let sidebar = document.querySelector(".sidebar");
-      sidebar.classList.toggle("open");
-      this.menuBtnChange();
-      if(sidebar.classList.contains('open'))
+    // Vue.js를 이용한 방법으로 수정했지만, 디버깅을 위해 원본 코드를 남겨놨습니다.
+
+    // menuBtnChange() {
+    //   let sidebar = document.querySelector(".sidebar");
+    //   let closeBtn = document.querySelector("#btn");
+    //   if(sidebar.classList.contains("open")){
+    //   closeBtn.classList.replace("bx-menu", "bx-menu-alt-right");//replacing the iocns class
+    //   }else {
+    //   closeBtn.classList.replace("bx-menu-alt-right","bx-menu");//replacing the iocns class
+    //   }
+    // },
+    // searchClick() {
+    //   let sidebar = document.querySelector(".sidebar");
+    //   sidebar.classList.toggle("open");
+    //   this.menuBtnChange();
+    // },
+    btnClick() {
+      // let sidebar = document.querySelector(".sidebar");
+      // sidebar.classList.toggle("open");
+      // this.menuBtnChange();
+      this.isOpen = !this.isOpen;
+      if(this.isOpen)
         this.$emit('openBar', true);
       else
         this.$emit('openBar', false);
     },
 
     //  아이콘 클릭에 따라, 각 이벤트 정보를 담고 DashBoard.vue로 emit
-    clickBoard: function(event) {
+    clickBoard(event) {
       this.$emit('changeBoard', event);
     },
-    addBoard: function() {
+    addBoard() {
       this.$emit('addBoard');
     },
 
-    exitProject() {
-      axios.delete('/api/project/exit', {
+    async exitProject() {
+      await axios.delete('/api/project/exit', {
         data: {
           member_id: sessionStorage.getItem('member_id'),
           project_id: sessionStorage.getItem('project_id'),
@@ -138,7 +146,7 @@ export default {
           sessionStorage.removeItem('project_description');
           sessionStorage.removeItem('project_id');
           sessionStorage.removeItem('project_name');
-          location.href = '/';
+          this.$router.push('/');
         })
         .catch((err) => {
           if (err.response.status === 403) {

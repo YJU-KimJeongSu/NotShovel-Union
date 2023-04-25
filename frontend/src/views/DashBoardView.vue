@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- SideBar에서 게시판 선택에 따른 뷰 전환 -->
-    <SideBar @changeBoard="changeView" @addBoard="addOneBoard" :propsdata="bList" @openBar="changeBar"></SideBar>
+    <SideBar @changeBoard="changeView()" @addBoard="addOneBoard()" :propsdata="bList" @openBar="changeBar()"></SideBar>
     <MeetingNotes v-if="currentView === 'meetingNotes'" :props="isOpen"></MeetingNotes>
     <!-- 추후에 각 게시판 종류별로 컴포넌트 추가(ex: 차트, 오픈채팅 등) -->
     <!-- 각 뷰들을 구성하는데 필요한 데이터들은 여기서 각 컴포넌트로 props -->
@@ -46,17 +46,17 @@ export default {
     Modal: modal
   },
   methods: {
-    changeView: function(view) {
+    changeView(view) {
       if(view === 'dashMain') {
         this.currentView = "";
         return;
       }
       this.currentView = view;
     },
-    addOneBoard: function() {
+    addOneBoard() {
       this.showModal = !this.showModal;
     },
-    closeModal: function(boardInfo) {
+    closeModal(boardInfo) {
       const board = boardInfo;
       let icon;
       switch(board.type) {
@@ -69,7 +69,7 @@ export default {
         this.bList.push({name: board.name, icon: icon});
       this.showModal = !this.showModal;
     },
-    changeBar: function(event) {
+    changeBar(event) {
       this.isOpen = event;
     }
     

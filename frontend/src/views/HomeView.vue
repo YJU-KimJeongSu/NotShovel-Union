@@ -8,20 +8,20 @@
 import selectProject from '@/components/SelectProject.vue';
 
 export default {
-    data(){
-        return {
-            loginState: false // false면 로그아웃 상태, true면 로그인 상태
-        }
-    },
-    mounted(){
-        if(sessionStorage.getItem('member_id')){
-            this.loginState = true;
-        }
-    },
-    components :{
-         SelectProject: selectProject
-    },
-  }
+  data() {
+    return {
+      loginState: false // false면 로그아웃 상태, true면 로그인 상태
+    }
+  },
+  mounted() {
+    if (sessionStorage.getItem('member_id')) {
+      this.loginState = true;
+    }
+  },
+  components: {
+    SelectProject: selectProject
+  },
+}
 </script>
 <style scoped>
 .home {
