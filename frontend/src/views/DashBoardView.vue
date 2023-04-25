@@ -7,10 +7,10 @@
       게시판 순서 저장(saveOrder)
 -->
     <SideBar :propsdata="dbData"
-              @changeBoard="changeView()"
-              @addBoard="addOneBoard()"
-              @openBar="changeBar()"
-              @saveOrder="saveOrderItems()"
+              @changeBoard="changeView"
+              @addBoard="addOneBoard"
+              @openBar="changeBar"
+              @saveOrder="saveOrderItems"
     ></SideBar>
     <MeetingNotes v-if="currentView === 'meetingMinutes'" :props="isOpen"></MeetingNotes>
     <!-- 추후에 각 게시판 종류별로 컴포넌트 추가(ex: 차트, 오픈채팅 등) -->
@@ -91,9 +91,9 @@ export default {
       .then((res) => {
         const boardData = res.data;
         this.dbData.bList = res.data;
-        console.log(boardData[0].board_order);
-        console.log(boardData[1].board_order);
-        console.log(boardData[2].board_order);
+        // console.log(boardData[0].board_order);
+        // console.log(boardData[1].board_order);
+        // console.log(boardData[2].board_order);
       })
       .catch((err) => console.log(err));
   },
@@ -153,9 +153,9 @@ export default {
     changeBar(event) {
       this.isOpen = event;
       let boardData = this.dbData.bList;
-      console.log(boardData[0].board_order);
-      console.log(boardData[1].board_order);
-      console.log(boardData[2].board_order);
+      // console.log(boardData[0].board_order);
+      // console.log(boardData[1].board_order);
+      // console.log(boardData[2].board_order);
     },
     async saveOrderItems(newOrder) {
       let bList = this.dbData.bList;
