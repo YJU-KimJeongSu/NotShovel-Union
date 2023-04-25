@@ -1,5 +1,6 @@
 <template>
-  <div class="container right-panel-active">
+  <!-- <div class="container right-panel-active"></div> -->
+  <div class="container" :class="{active: isActive}">
     <!-- Sign Up -->
     <div class="container__form container--signup">
       <form action="#" class="form" id="form1">
@@ -32,10 +33,12 @@
     <div class="container__overlay">
       <div class="overlay">
         <div class="overlay__panel overlay--left">
-          <button class="btn" id="signIn" @click="overlay__panelChange1()">Sign In</button>
+          <!-- <button class="btn" id="signIn" @click="overlay__panelChange1()">Sign In</button> -->
+          <button class="btn" id="signIn" @click="panelChange()">Sign In</button>
         </div>
         <div class="overlay__panel overlay--right">
-          <button class="btn" id="signUp" @click="overlay__panelChange2()">Sign Up</button>
+          <!-- <button class="btn" id="signUp" @click="overlay__panelChange2()">Sign Up</button> -->
+          <button class="btn" id="signUp" @click="panelChange()">Sign Up</button>
         </div>
       </div>
     </div>
@@ -49,6 +52,7 @@ import axios from 'axios';
 export default {
   data() {
     return {
+      isActive: false,
       signup: {
         name: null,
         email: null,
@@ -63,13 +67,16 @@ export default {
     }
   },
   methods: {
-    overlay__panelChange1() {
-      document.querySelector(".container").classList.remove("right-panel-active");
+    // overlay__panelChange1() {
+    //   document.querySelector(".container").classList.remove("right-panel-active");
+    // },
+    // overlay__panelChange2() {
+    //   document.querySelector(".container").classList.add("right-panel-active");
+    // },
+    panelChange() {
+      this.isActive = !this.isActive;
     },
-    overlay__panelChange2() {
-      document.querySelector(".container").classList.add("right-panel-active");
-    },
-    signUp() {
+    async signUp() {
       if (this.signup.password != this.signup.passwordCheck) {
         alert('비밀번호를 다시 확인해주세요');
       } else if (
@@ -84,7 +91,7 @@ export default {
       ) {
         alert('비어있는 칸이 있습니다.');
       } else {
-        axios.post("/api/member/signup", {
+        await axios.post("/api/member/signup", {
           name: this.signup.name,
           email: this.signup.email,
           password: this.signup.password,
@@ -105,7 +112,7 @@ export default {
           })
       }
     },
-    signIn() {
+    async signIn() {
       if (
         this.signin.email == null ||
         this.signin.password == null ||
@@ -114,7 +121,7 @@ export default {
       ) {
         alert('비어있는 칸이 있습니다');
       } else {
-        axios.post("/api/member/signin", {
+        await axios.post("/api/member/signin", {
           email: this.signin.email,
           password: this.signin.password
         })
@@ -138,9 +145,9 @@ export default {
       }
     }
   },
-  mounted() {
-    this.overlay__panelChange1();
-  }
+  // mounted() {
+  //   this.overlay__panelChange1();
+  // }
 }
 </script>
 
@@ -190,7 +197,7 @@ export default {
   z-index: 2;
 }
 
-.container.right-panel-active .container--signin {
+.container.active .container--signin {
   transform: translateX(100%);
 }
 
@@ -201,7 +208,7 @@ export default {
   z-index: 1;
 }
 
-.container.right-panel-active .container--signup {
+.container.active .container--signup {
   /* animation: show 0.6s; */
   opacity: 1;
   transform: translateX(100%);
@@ -219,7 +226,7 @@ export default {
   z-index: 100;
 }
 
-.container.right-panel-active .container__overlay {
+.container.active .container__overlay {
   transform: translateX(-100%);
 }
 
@@ -237,7 +244,7 @@ export default {
   width: 200%;
 }
 
-.container.right-panel-active .overlay {
+.container.active .overlay {
   transform: translateX(50%);
 }
 
@@ -259,7 +266,7 @@ export default {
   transform: translateX(-20%);
 }
 
-.container.right-panel-active .overlay--left {
+.container.active .overlay--left {
   transform: translateX(0);
 }
 
@@ -268,7 +275,7 @@ export default {
   transform: translateX(0);
 }
 
-.container.right-panel-active .overlay--right {
+.container.active .overlay--right {
   transform: translateX(20%);
 }
 

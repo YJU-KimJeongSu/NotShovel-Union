@@ -5,6 +5,7 @@ import DashBoardView from '../views/DashBoardView.vue'
 import SignInUpView from '../views/SignInUpView.vue'
 import CreateProjectView from '../views/CreateProjectView.vue'
 import EditMember from '../views/EditMember.vue'
+import RegisterToProject from '../views/RegisterToProject.vue'
 
 Vue.use(VueRouter)
 
@@ -33,6 +34,11 @@ const routes = [
     path: '/editmember',
     name: 'editmember',
     component: EditMember
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: RegisterToProject
   },
 ]
 

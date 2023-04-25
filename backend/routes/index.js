@@ -23,12 +23,13 @@ module.exports = (app) => {
 
   app.get('/api/project/members', projectController.findMembers);
   app.post('/api/project/grade', projectController.changeGrade);
+  app.delete('/api/project/exit', projectController.exitProject);
+  app.patch('/api/project/register', projectController.registerToProject);
 
   // gantt
   app.post('/api/gantt', ganttController.save);
 
-
-
+  // board
   app.patch('/api/board/order', boardController.changeBoardOrder);
   app.post('/api/board', boardController.createBoard);
   app.get('/api/board', boardController.getBoardList);

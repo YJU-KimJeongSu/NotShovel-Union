@@ -28,7 +28,7 @@
 
             </div>
             <!-- <div class="modal-footer"> -->
-              <button class="btn btn-dark" @click="createBoard">Create</button>
+              <button class="btn btn-dark" @click="createBoard()">Create</button>
             <!-- </div> -->
           </div>
           
@@ -52,6 +52,7 @@ export default {
     },
     createBoard: function() {
       this.$emit('createBoard', this.boardInfo);
+      this.$router.go();
     }
   }
 }

@@ -7,10 +7,10 @@
       게시판 순서 저장(saveOrder)
 -->
     <SideBar :propsdata="dbData"
-              @changeBoard="changeView"
-              @addBoard="addOneBoard"
-              @openBar="changeBar"
-              @saveOrder="saveOrderItems"
+              @changeBoard="changeView()"
+              @addBoard="addOneBoard()"
+              @openBar="changeBar()"
+              @saveOrder="saveOrderItems()"
     ></SideBar>
     <MeetingNotes v-if="currentView === 'meetingMinutes'" :props="isOpen"></MeetingNotes>
     <!-- 추후에 각 게시판 종류별로 컴포넌트 추가(ex: 차트, 오픈채팅 등) -->
@@ -105,8 +105,7 @@ export default {
     GanttChart: ganttChart,
   },
   methods: {
-    // sideBar 클릭 시 오른쪽 화면 전환
-    changeView: function(view) {
+    changeView(view) {
       if(view === 'dashMain') {
         this.currentView = "";
         return;
@@ -114,19 +113,19 @@ export default {
       this.currentView = view;
       sessionStorage.setItem('currentView', this.currentView);
     },
-    addOneBoard: function() {
+    addOneBoard() {
       this.showModal = !this.showModal;
     },
 
     // 게시판 추가 모달 캔슬 동작
-    closeModal: function() {
+    closeModal() {
       this.showModal = !this.showModal;
     },
 
     // 게시판 추가
-    createBoardItem: function(boardInfo) {
+    async createBoardItem(boardInfo) {
       boardInfo.listIndex = this.dbData.bList.length; // 새로 추가된 게시판의 순서Index
-      axios.post('/api/board', boardInfo,{
+      await axios.post('/api/board', boardInfo,{
         params: {
           project_id: this.project_id
         }
@@ -140,33 +139,32 @@ export default {
     
       const board = boardInfo;
       let icon;
-      switch(board.type) {
+      switch (board.type) {
         case 'meetingMinutes': icon = 'bx bx-folder'; break;
         case 'openChatting': icon = 'bx bx-chat'; break;
         case 'gantChart': icon = 'bx bx-pie-chart-alt-2'; break;
         default: icon='';
       }
-      if(board.type != '')
+      if (board.type != '')
         this.dbData.bList.push({name: board.name, icon: icon});
 
       this.showModal = !this.showModal;
     },
-    changeBar: function(event) {
+    changeBar(event) {
       this.isOpen = event;
       let boardData = this.dbData.bList;
       console.log(boardData[0].board_order);
-        console.log(boardData[1].board_order);
-        console.log(boardData[2].board_order);
+      console.log(boardData[1].board_order);
+      console.log(boardData[2].board_order);
     },
-    saveOrderItems: function(newOrder) {
+    async saveOrderItems(newOrder) {
       let bList = this.dbData.bList;
-      for(let i = 0; i < bList.length; i++) {
+      for (let i = 0; i < bList.length; i++) {
         bList[i].newOrder = newOrder[i];
       }
       console.log('save Event 수신');
-      
 
-      axios.patch('/api/board/order', bList, {
+      await axios.patch('/api/board/order', bList, {
         params: {
           project_id: this.project_id
         }
@@ -177,12 +175,7 @@ export default {
         .catch(error => {
           console.error(error);
         });
-
-
-
-        
     }
-    
   }
 }
 </script>

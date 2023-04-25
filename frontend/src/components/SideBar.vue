@@ -1,17 +1,16 @@
 <template>
-  <div class="sidebar">
+  <div class="sidebar" :class="{ open: isOpen }">
     <div class="nav-container">
       <div class="logo-details">
         <i class='bx bxl-c-plus-plus icon'></i>
         <div class="logo_name">{{ propsdata.project_name }}</div>
-        <i class='bx bx-menu' id="btn" @click="btnClick"></i>
+        <i :class="menuIconToggle" id="btn" @click="btnClick"></i>
       </div>
       <ul class="nav-list">
       
       <!-- 관리자 아이디일 때만 드래그 작동(추가, 수정 버튼 제외) -->
         <draggable v-if="(propsdata.member_id == propsdata.admin_id) && editMode"
                 :sort="true"
-                :move="checkMove"
                 :list="propsdata.bList"
         >
           <li v-for="(board, index) in propsdata.bList"
@@ -28,7 +27,7 @@
         </draggable>
 
         <!-- 관리자 모드가 아닐 때(추가, 수정 버튼 제외) -->
-        <li v-else v-for="(board, index) in propsdata.bList"
+        <li v-if="!((propsdata.member_id == propsdata.admin_id) && editMode)" v-for="(board, index) in propsdata.bList"
             :key="index"
             @click="clickBoard(board.clickMethod)"
         >
@@ -62,11 +61,9 @@
             <span class="tooltip">게시판 추가</span>
           </li>
 
-      <!-- <div> -->
-          <!-- 수정 버튼 -->
           <li @click="clickEdit" id="edit">
             <a href="#">
-              <i class='bx bx-edit' ></i>
+              <i class='bx bx-edit'></i>
               <span class="links_name">게시판 편집</span>
             </a>
             <span class="tooltip">게시판 편집</span>
@@ -77,8 +74,15 @@
           <button class="btn btn-outline-light" @click="saveOrder">제출</button>
           <button class="btn btn-outline-light">취소</button>
         </div>
-      </ul>
       <!-- </div> -->
+        <li @click="exitProject()" class="exit-btn">
+          <a href="#">
+            <i class="bx bx-exit"></i>
+            <span class="links_name">프로젝트 나가기</span>
+          </a>
+        </li>
+
+      </ul>
     </div>
   </div>
 </template>
@@ -91,48 +95,80 @@ export default {
   data(){
     return {
       editMode: false,
+      member_id: null,
+      project_name: "이름 없음",
+      admin_id: null,
+      manager_ids: [],
+      isOpen: false,
     }
   }, 
   props: ['propsdata'],
   components: {
     draggable,
   },
-  methods: {
-    menuBtnChange: function() {
-      let sidebar = document.querySelector(".sidebar");
-      let closeBtn = document.querySelector("#btn");
-      if(sidebar.classList.contains("open")){
-      closeBtn.classList.replace("bx-menu", "bx-menu-alt-right"); //replacing the icons class
-      }else {
-      closeBtn.classList.replace("bx-menu-alt-right","bx-menu"); //replacing the icons class
+  created() {
+    this.project_name = sessionStorage.getItem('project_name');
+    this.member_id = sessionStorage.getItem('member_id');
+  },
+  async mounted() {
+    console.log('axios 요청 시도 from sidebar');
+    await axios.get('/api/project/authority/', {
+      params: {
+        member_id: sessionStorage.getItem('member_id')
       }
-    },
-    searchClick: function() {
-      let sidebar = document.querySelector(".sidebar");
-      sidebar.classList.toggle("open");
-      this.menuBtnChange();
-    },
-    btnClick: function() {
-      let sidebar = document.querySelector(".sidebar");
-      sidebar.classList.toggle("open");
-      this.menuBtnChange();
-      if(sidebar.classList.contains('open'))
+    })
+      .then((res) => {
+        const authData = res.data;
+        this.admin_id = authData.admin_id;
+        this.manager_ids = authData.manager_ids;
+        console.log("result: " + authData.admin_id);
+      })
+      .catch((err) => console.log(err));
+  },
+  computed: {
+    menuIconToggle() {
+      return this.isOpen ? 'bx bx-menu-alt-right' : 'bx bx-menu';
+    }
+  },
+  methods: {
+    // Vue.js를 이용한 방법으로 수정했지만, 디버깅을 위해 원본 코드를 남겨놨습니다.
+
+    // menuBtnChange() {
+    //   let sidebar = document.querySelector(".sidebar");
+    //   let closeBtn = document.querySelector("#btn");
+    //   if(sidebar.classList.contains("open")){
+    //   closeBtn.classList.replace("bx-menu", "bx-menu-alt-right");//replacing the iocns class
+    //   }else {
+    //   closeBtn.classList.replace("bx-menu-alt-right","bx-menu");//replacing the iocns class
+    //   }
+    // },
+    // searchClick() {
+    //   let sidebar = document.querySelector(".sidebar");
+    //   sidebar.classList.toggle("open");
+    //   this.menuBtnChange();
+    // },
+    btnClick() {
+      // let sidebar = document.querySelector(".sidebar");
+      // sidebar.classList.toggle("open");
+      // this.menuBtnChange();
+      this.isOpen = !this.isOpen;
+      if(this.isOpen)
         this.$emit('openBar', true);
       else
         this.$emit('openBar', false);
     },
 
     //  아이콘 클릭에 따라, 각 이벤트 정보를 담고 DashBoard.vue로 emit
-    clickBoard: function(event) {
+    clickBoard(event) {
       this.$emit('changeBoard', event);
     },
-    addBoard: function() {
+    addBoard() {
       this.$emit('addBoard');
     },
-    clickEdit: function() {
+    clickEdit() {
       this.editMode = true;
     },
-    saveOrder: function() {
+    saveOrder() {
       let newOrder = [];
       console.log('saveOrder 클릭!');
       for(let i = 0; i < this.propsdata.bList.length; i++) {
@@ -143,8 +179,27 @@ export default {
       this.$emit('saveOrder', newOrder);
     },
 
-    checkMove: function(e) {
-      window.console.log("Future index: " + e.draggedContext.futureIndex);
+    async exitProject() {
+      await axios.delete('/api/project/exit', {
+        data: {
+          member_id: sessionStorage.getItem('member_id'),
+          project_id: sessionStorage.getItem('project_id'),
+        }
+      })
+        .then(() => {
+          alert('프로젝트에서 탈퇴 되었습니다.');
+          sessionStorage.removeItem('project_description');
+          sessionStorage.removeItem('project_id');
+          sessionStorage.removeItem('project_name');
+          this.$router.push('/');
+        })
+        .catch((err) => {
+          if (err.response.status === 403) {
+            alert('관리자는 탈퇴할 수 없습니다.');
+          } else {
+            alert('알 수 없는 에러');
+          }
+        })
     }
   },
 }
