@@ -44,6 +44,7 @@ export default {
           image: filename,
         })
           .then((res) => {
+            console.log(res);
             alert('정상적으로 수정되었습니다.');
             sessionStorage.setItem('member_name', res.data.name);
             sessionStorage.setItem('member_image', res.data.image);
@@ -71,13 +72,13 @@ export default {
           this.checkingText = '　';
         }
     },
-    async deleteUser() {
+    deleteUser() {
       if (this.checkingText === '비어있는 칸이 있습니다') {
         alert('비어있는 칸이 있습니다');
       } else if (this.checkingText === '비밀번호를 확인해주세요') {
         alert('비밀번호를 확인해주세요');
       } else if (this.checkingText === '　') {
-        await axios.delete('/api/member/delete', {
+        axios.delete('/api/member/delete', {
           // delete 요청은 payload body를 사용하지 않고 url 파라미터를 사용함
           // 단 현재 보안 토큰 등의 개념이 부족하므로 payload body를 사용하기 위해 data 속성을 따로 추가해서 넣음
           data: {
