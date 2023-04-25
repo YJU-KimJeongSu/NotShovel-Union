@@ -14,6 +14,8 @@
 </template>
 
 <script>
+import router from '@/router';
+
 export default {
   name: 'Header',
 
@@ -29,7 +31,7 @@ export default {
       sessionStorage.removeItem('member_name');
       this.loginState = false;
       this.member_name = null;
-      location.href = '/';
+      router.go(0);
     },
   },
   mounted() {

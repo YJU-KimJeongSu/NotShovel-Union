@@ -33,8 +33,8 @@ export default {
       projects: [],
     }
   },
-  async mounted() {
-    await axios.get('/api/project', {
+  mounted() {
+    axios.get('/api/project', {
       params: {
         member_id: sessionStorage.getItem('member_id')
       }

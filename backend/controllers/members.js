@@ -1,56 +1,51 @@
 const members = require('../models/members');
 const multer = require('multer');
+const fs = require('fs');
 const path = require('path');
 
-exports.signUp = async (req, res, next) => {
-  await members.findOne({ email: req.body.email })
-    .then(async (data) => {
+exports.signUp = (req, res, next) => {
+  members.findOne({ email: req.body.email })
+    .then((data) => {
       if (!data) {
-        await members.create({
+        members.create({
           email: req.body.email,
           password: req.body.password,
           name: req.body.name,
           phone_number: req.body.phone_number,
         })
-          .then(() => res.status(201).send())
-          .catch((err) => {
-            console.log(err);
-            return res.status(500).send(err)
-          })
+          .then(() => res.status(201).send('ok')) // 201 - POST 명령 실행 및 성공
+          .catch((err) => res.status(500).send(err)) // 500 - 내부 서버 오류. 존재하는 아이디가 아닌데 create 실패했으니 내부 오류
       } else {
-        return res.status(409).send('duplicate email')
+        res.status(409).send('duplicate email') // 409 - 리소스 충돌
       }
     })
 };
 
-exports.signIn = async (req, res, next) => {
-  await members.findOne({
+exports.signIn = (req, res, next) => {
+  members.findOne({
     email: req.body.email,
     password: req.body.password,
   })
     .then((data) => {
       if (data) {
         if (data.state === "0") {
-          return res.status(404).send('Member not found');
+          res.status(404).send('Member not found');
         } else {
           const loginData = {
             member_id: data._id,
             name: data.name,
             image: data.image || 'DefaultImage.png',
           }
-          return res.status(201).send(loginData);
+          res.status(201).send(loginData);
         }
       } else {
-        return res.status(401).send('wrong'); // 401 - 사용자 자격 증명 실패
+        res.status(401).send('wrong'); // 401 - 사용자 자격 증명 실패
       }
     })
-    .catch((err) => {
-      console.log(err);
-      return res.status(500).send(err)
-    })
+    .catch((err) => { res.status(500).send(err) })
 };
 
-exports.editMember = async (req, res, next) => {
+exports.editMember = (req, res, next) => {
   const filter = { _id: req.body.member_id };
   const update = {
     name: req.body.name,
@@ -59,34 +54,33 @@ exports.editMember = async (req, res, next) => {
     image: req.body.image
   };
   const option = { new: true };
-  await members.findOneAndUpdate(filter, update, option)
-    .then((data) => {
-      return res.status(201).send({ name: data.name, image: data.image || 'DefaultImage.png' });
+  members.findOneAndUpdate(filter, update, option)
+  .then((data) => {
+    res.status(201).send({ name: data.name, image: data.image || 'DefaultImage.png' });
     })
     .catch((err) => {
       console.log(err);
-      return res.status(500).send(err);
+      res.status(500).send(err);
     })
-}
-
-exports.deleteMemeber = async (req, res, next) => {
+  }
+  
+exports.deleteMemeber = (req, res, next) => {
   const filter = {
     _id: req.body.member_id,
     password: req.body.password
   };
   const update = { state: "0" };
   const option = { new: true };
-  await members.findOneAndUpdate(filter, update, option)
+  members.findOneAndUpdate(filter, update, option)
     .then((data) => {
       if (!data) {
-        return res.status(404).send('Member not found');
+        res.status(404).send('Member not found');
       } else {
-        return res.status(201).send();
+        res.status(201).send();
       }
     })
     .catch((err) => {
-      console.log(err);
-      return res.status(500).send(err);
+      res.status(500).send(err);
     })
 }
 
@@ -111,19 +105,16 @@ exports.imageUpload = (req, res, next) => {
 }
 
 // 프로젝트 제거 시
-exports.chkPW = async (req, res) => {
-  const { id, password } = req.body;
+exports.chkPW = (req, res) => {
+    const { id, password } = req.body; 
 
-  await members.findOne({ _id: id, password: password })
+    members.findOne({ _id: id, password: password }) 
     .then((data) => {
-      if (data) {
-        return res.status(201).json({ message: '비밀번호 일치' });
-      } else {
-        return res.status(401).json({ message: '비밀번호 일치X' });
-      }
+        if (data) { 
+            res.status(201).json({ message: '비밀번호 일치' });
+        } else { 
+            res.status(401).json({ message: '비밀번호 일치X' });
+        }
     })
-    .catch((err) => {
-      console.log(err);
-      return res.status(500).send(err)
-    });
+    .catch((err) => { res.status(500).send(err) });
 };

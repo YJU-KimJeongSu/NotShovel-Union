@@ -46,21 +46,16 @@ export default {
           alert('프로젝트 이름을 입력해주세요.');
           return;
         }
-
+       
         const { data: { id } } = await axios.post('/api/project', {
           name: this.name,
           description: this.description,
           image: this.image,
           member_id: this.member_id,
-        })
-          .catch((err) => {
-            if (err.response.status === 404) {
-              alert('존재하지 않는 회원입니다. 다시 로그인해주세요');
-            }
-          });
+        });
 
         // 임시 링크
-        this.link = `http://localhost:8080/register?id=${id}`; // 원래 3000번으로 연결되어 있었으나, 백엔드 서버에 바로 접속하는건 안좋을 것 같아서 수정
+        this.link = `http://localhost:3000/register?id=${id}`;
         this.createState = !!!this.createState;
       } catch (err) {
         console.error(err);
