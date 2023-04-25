@@ -22,6 +22,7 @@ module.exports = (app) => {
   app.get('/api/project/authority/', projectController.findAuth);
 
   app.get('/api/project/members', projectController.findMembers);
+  app.post('/api/project/grade', projectController.changeGrade);
 
   // gantt
   app.post('/api/gantt', ganttController.save);

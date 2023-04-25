@@ -17,6 +17,10 @@ export default {
         if(sessionStorage.getItem('member_id')){
             this.loginState = true;
         }
+        sessionStorage.removeItem('project_id');
+        sessionStorage.removeItem('currentView');
+        sessionStorage.removeItem('project_description');
+        sessionStorage.removeItem('project_name');
     },
     components :{
          SelectProject: selectProject

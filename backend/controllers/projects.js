@@ -189,3 +189,28 @@ exports.findMembers = async (req, res) => {
     return res.status(500).send(err);
   }
 };
+exports.changeGrade = async (req, res) => {
+  const project_id = req.body.project_id;
+  const member_id = req.body.member_id;
+  const grade = req.body.grade;
+
+  try {
+    const project = await projects.findById(project_id);
+    if(grade==='member'){
+      project.manager_ids.pull(member_id);
+      await project.save();
+      return res.status(200).json({ msg: "일반 멤버로 변경되었습니다." });
+    }
+    else if(grade==='manager'){
+      project.manager_ids.push(member_id);
+      await project.save();
+      res.status(200).json({ msg: "매니저로 변경되었습니다." });
+    } 
+    else {
+      return res.status(404).json({ msg: "등급 변경 실패" });;
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500);
+  }
+};

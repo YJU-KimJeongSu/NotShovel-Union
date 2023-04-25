@@ -35,7 +35,7 @@ export default {
       name: null,
       description: null,
       member_id: sessionStorage.getItem('member_id'),
-      image: 'default.jpg',
+      image: 'DefaultImage.png',
       link: null,
     }
   },
