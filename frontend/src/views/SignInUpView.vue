@@ -102,7 +102,7 @@ export default {
             alert('회원가입에 성공했습니다.');
             router.go(0); // 새로고침
           })
-          .catch((err) => {
+          .catch((err) => { // ToDo 회원가입 시 폰 번호(유니크 키) 중복 확인 추가
             if (err.response.status == 409) {
               alert('회원가입에 실패했습니다.\n사유 : 중복된 아이디');
             } else {
@@ -123,7 +123,7 @@ export default {
       } else {
         await axios.post("/api/member/signin", {
           email: this.signin.email,
-          password: this.signin.password
+          password: this.signin.password,
         })
           .then((res) => {
             // console.log(res.data);

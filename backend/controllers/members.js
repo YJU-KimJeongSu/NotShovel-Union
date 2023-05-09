@@ -1,14 +1,17 @@
 const members = require('../models/members');
 const multer = require('multer');
 const path = require('path');
+const bcrypt = require('bcrypt');
 
 exports.signUp = async (req, res, next) => {
+  // ToDo 회원가입 시 폰번호(유니크 키) 중복 확인 추가
+  // ToDo 이중 promise 구조 개선
   await members.findOne({ email: req.body.email })
     .then(async (data) => {
       if (!data) {
         await members.create({
           email: req.body.email,
-          password: req.body.password,
+          password: await bcrypt.hash(req.body.password, 11),
           name: req.body.name,
           phone_number: req.body.phone_number,
         })
@@ -21,33 +24,64 @@ exports.signUp = async (req, res, next) => {
         return res.status(409).send('duplicate email')
       }
     })
+    .catch((err) => {
+      console.log(err);
+      return res.status(500).send(err);
+    })
 };
 
 exports.signIn = async (req, res, next) => {
-  await members.findOne({
-    email: req.body.email,
-    password: req.body.password,
-  })
-    .then((data) => {
-      if (data) {
-        if (data.state === "0") {
-          return res.status(404).send('Member not found');
-        } else {
+  // bcrypt 암호화로 인해 로직 변경
+  // await members.findOne({
+    //   email: req.body.email,
+    //   password: req.body.password,
+    // })
+    //   .then((data) => {
+      //     if (data) {
+        //       if (data.state === "0") {
+          //         return res.status(404).send('Member not found');
+          //       } else {
+            //         const loginData = {
+  //           member_id: data._id,
+  //           name: data.name,
+  //           image: data.image || 'DefaultImage.png',
+  //         }
+  //         return res.status(201).send(loginData);
+  //       }
+  //     } else {
+    //       return res.status(401).send('wrong'); // 401 - 사용자 자격 증명 실패
+  //     }
+  //   })
+  //   .catch((err) => {
+    //     console.log(err);
+    //     return res.status(500).send(err)
+    //   })
+    
+    try {
+      const email = req.body.email;
+      const reqPassword = req.body.password;
+      const member = await members.findOne({email});
+      if (!member) return res.status(401).send('wrong');
+      else if (member.state === '0') return res.status(404).send('Member not found');
+      bcrypt.compare(reqPassword, member.password, (err, result) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).send(err);
+        } else if (result) {
           const loginData = {
-            member_id: data._id,
-            name: data.name,
-            image: data.image || 'DefaultImage.png',
+            member_id: member._id,
+            name: member.name,
+            image: member.image || 'DefaultImage.png',
           }
           return res.status(201).send(loginData);
+        } else {
+          return res.status(401).send('wrong');
         }
-      } else {
-        return res.status(401).send('wrong'); // 401 - 사용자 자격 증명 실패
-      }
-    })
-    .catch((err) => {
+      })
+    } catch(err) {
       console.log(err);
-      return res.status(500).send(err)
-    })
+      return res.status(500).send(err);
+    }
 };
 
 exports.editMember = async (req, res, next) => {
