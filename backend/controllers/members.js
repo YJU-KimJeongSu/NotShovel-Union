@@ -28,11 +28,12 @@ exports.signUp = async (req, res, next) => {
   //       return res.status(500).send(err);
   //     })
     
-    // ToDo 회원가입 시 폰번호(유니크 키) 중복 확인 추가
     try {
       const member = await members.findOne({email: req.body.email});
-      
-      if (member) return res.status(409).send('duplicate email');
+      if (member) return res.status(409).send({error: 'duplicate email'});
+
+      const phoneCheck = await members.findOne({phone_number: req.body.phone_number});
+      if (phoneCheck) return res.status(409).send({error: 'duplicate phone'});
 
       const newMember = {
         email: req.body.email,

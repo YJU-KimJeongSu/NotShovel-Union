@@ -103,8 +103,11 @@ export default {
             router.go(0); // 새로고침
           })
           .catch((err) => { // ToDo 회원가입 시 폰 번호(유니크 키) 중복 확인 추가
-            if (err.response.status == 409) {
-              alert('회원가입에 실패했습니다.\n사유 : 중복된 아이디');
+            if (err.response.status === 409) {
+              const error = err.response.data.error;
+              console.log(error);
+              if (error === 'duplicate email') alert('회원가입에 실패했습니다.\n사유 : 중복된 아이디');
+              else if (error === 'duplicate phone') alert('회원가입에 실패했습니다.\n사유 : 중복된 휴대폰 번호');
             } else {
               console.log(err);
               alert('회원가입에 실패했습니다.');
