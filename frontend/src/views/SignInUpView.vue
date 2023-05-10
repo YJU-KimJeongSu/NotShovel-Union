@@ -103,8 +103,11 @@ export default {
             router.go(0); // 새로고침
           })
           .catch((err) => {
-            if (err.response.status == 409) {
-              alert('회원가입에 실패했습니다.\n사유 : 중복된 아이디');
+            if (err.response.status === 409) {
+              const error = err.response.data.error;
+              console.log(error);
+              if (error === 'duplicate email') alert('회원가입에 실패했습니다.\n사유 : 중복된 아이디');
+              else if (error === 'duplicate phone') alert('회원가입에 실패했습니다.\n사유 : 중복된 휴대폰 번호');
             } else {
               console.log(err);
               alert('회원가입에 실패했습니다.');
@@ -123,7 +126,7 @@ export default {
       } else {
         await axios.post("/api/member/signin", {
           email: this.signin.email,
-          password: this.signin.password
+          password: this.signin.password,
         })
           .then((res) => {
             // console.log(res.data);
