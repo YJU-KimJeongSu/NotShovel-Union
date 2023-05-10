@@ -28,7 +28,7 @@
 
             </div>
             <!-- <div class="modal-footer"> -->
-              <button class="btn btn-dark" @click="createBoard()">Create</button>
+              <button class="btn btn-dark" @click="createBoard">Create</button>
             <!-- </div> -->
           </div>
           

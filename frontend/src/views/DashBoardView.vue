@@ -124,6 +124,7 @@ export default {
 
     // 게시판 추가
     async createBoardItem(boardInfo) {
+      console.log(`createBoardInfo: ${boardInfo.name}`);
       boardInfo.listIndex = this.dbData.bList.length; // 새로 추가된 게시판의 순서Index
       await axios.post('/api/board', boardInfo,{
         params: {

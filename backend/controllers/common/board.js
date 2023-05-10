@@ -79,7 +79,7 @@ const meetingMinutes = await meeting_minutes.find({ project_id: project_id }).so
 exports.createBoard = async (req, res) => {
   const project_id = req.query.project_id;
   console.log(`project_id: ${project_id}`);
-  console.log(req.body.listIndex);
+  console.log(`추가될 순서: ${req.body.listIndex}`);
   const type = req.body.type;
 
   // 게시판 type에 따라서 저장 되는 model이 바뀜
