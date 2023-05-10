@@ -102,7 +102,7 @@ export default {
             alert('회원가입에 성공했습니다.');
             router.go(0); // 새로고침
           })
-          .catch((err) => { // ToDo 회원가입 시 폰 번호(유니크 키) 중복 확인 추가
+          .catch((err) => {
             if (err.response.status === 409) {
               const error = err.response.data.error;
               console.log(error);
