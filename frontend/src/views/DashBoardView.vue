@@ -73,30 +73,28 @@ export default {
         member_id: sessionStorage.getItem('member_id')
       }
     })
-      .then((res) => {
+    .then((res) => {
         const authData = res.data;
         this.dbData.admin_id = authData.admin_id;
         this.dbData.manager_ids = authData.manager_ids;
-      })
-      .catch((err) => console.log(err));
-
-
-
-      // 게시판 리스트 겟요청
-      axios.get('/api/board', {
-      params: {
-        project_id: this.project_id
-      }
     })
-      .then((res) => {
-        const boardData = res.data;
-        this.dbData.bList = res.data;
-        // console.log(boardData[0].board_order);
-        // console.log(boardData[1].board_order);
-        // console.log(boardData[2].board_order);
-      })
-      .catch((err) => console.log(err));
-  },
+    .catch((err) => console.log(err));
+
+    // 게시판 리스트 겟요청
+    axios.get('/api/board', {
+    params: {
+      project_id: this.project_id
+    }
+    })
+    .then((res) => {
+      const boardData = res.data;
+      this.dbData.bList = res.data;
+      // console.log(boardData[0].board_order);
+      // console.log(boardData[1].board_order);
+      // console.log(boardData[2].board_order);
+    })
+    .catch((err) => console.log(err));
+    },
   components: {
     SideBar: sidebar,
     MeetingNotes: meetingNotes,
@@ -124,7 +122,7 @@ export default {
 
     // 게시판 추가
     async createBoardItem(boardInfo) {
-      console.log(`createBoardInfo: ${boardInfo.name}`);
+      // console.log(`createBoardInfo: ${boardInfo.name}`);
       boardInfo.listIndex = this.dbData.bList.length; // 새로 추가된 게시판의 순서Index
       await axios.post('/api/board', boardInfo,{
         params: {
