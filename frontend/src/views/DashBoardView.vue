@@ -17,8 +17,9 @@
     <!-- 각 뷰들을 구성하는데 필요한 데이터들은 여기서 각 컴포넌트로 props -->
     <Setting v-else-if="currentView === 'setting'" :props="isOpen"></Setting>
     <GanttChart v-else-if="currentView === 'ganttChart'" :props="isOpen"></GanttChart>
-    <OpenChat v-else-if="currentView === 'openChat'" :isOpen="isOpen" :chatBoardId="boardId" :chatBoardName="boardName"
-    :key="boardId"></OpenChat>
+    <OpenChat v-else-if="currentView === 'openChat'" :isOpen="isOpen"
+            :chatBoardId="boardId" :chatBoardName="boardName"
+            :key="boardId"></OpenChat>
     <Modal v-if="showModal" @close="closeModal" @createBoard="createBoardItem"></Modal>
     
   </div>
