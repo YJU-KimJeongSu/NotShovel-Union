@@ -17,6 +17,7 @@
     <!-- 각 뷰들을 구성하는데 필요한 데이터들은 여기서 각 컴포넌트로 props -->
     <Setting v-else-if="currentView === 'setting'" :props="isOpen"></Setting>
     <GanttChart v-else-if="currentView === 'ganttChart'" :props="isOpen"></GanttChart>
+    <OpenChat v-else-if="currentView === 'openChat'" :isOpen="isOpen" :chatBoardId="boardId"></OpenChat>
     <Modal v-if="showModal" @close="closeModal" @createBoard="createBoardItem"></Modal>
     
   </div>
@@ -26,8 +27,9 @@
 <script>
 import sidebar from '../components/SideBar.vue'
 import meetingNotes from '../components/MeetingNotes.vue'
-import modal from '../components/AddBoardModal.vue'
 import ganttChart from '../components/GanttChart.vue'
+import openChat from '../components/OpenChat.vue'
+import modal from '../components/AddBoardModal.vue'
 import setting from '../components/Setting.vue'
 import { eventBus } from '../main.js';
 import axios from "axios";
@@ -39,6 +41,7 @@ export default {
       project_id: null,
       isOpen: false,
       currentView: "",
+      boardId: "",
       showModal: false,
       dbData: {
         // bList: [
@@ -73,44 +76,44 @@ export default {
         member_id: sessionStorage.getItem('member_id')
       }
     })
-      .then((res) => {
+    .then((res) => {
         const authData = res.data;
         this.dbData.admin_id = authData.admin_id;
         this.dbData.manager_ids = authData.manager_ids;
-      })
-      .catch((err) => console.log(err));
-
-
-
-      // 게시판 리스트 겟요청
-      axios.get('/api/board', {
-      params: {
-        project_id: this.project_id
-      }
     })
-      .then((res) => {
-        const boardData = res.data;
-        this.dbData.bList = res.data;
-        // console.log(boardData[0].board_order);
-        // console.log(boardData[1].board_order);
-        // console.log(boardData[2].board_order);
-      })
-      .catch((err) => console.log(err));
-  },
+    .catch((err) => console.log(err));
+
+    // 게시판 리스트 겟요청
+    axios.get('/api/board', {
+    params: {
+      project_id: this.project_id
+    }
+    })
+    .then((res) => {
+      const boardData = res.data;
+      this.dbData.bList = res.data;
+      // console.log(boardData[0].board_order);
+      // console.log(boardData[1].board_order);
+      // console.log(boardData[2].board_order);
+    })
+    .catch((err) => console.log(err));
+    },
   components: {
     SideBar: sidebar,
     MeetingNotes: meetingNotes,
     Modal: modal,
     Setting: setting,
     GanttChart: ganttChart,
+    OpenChat: openChat
   },
   methods: {
-    changeView(view) {
+    changeView(view, boardId) {
       if(view === 'dashMain') {
         this.currentView = "";
         return;
       }
       this.currentView = view;
+      this.boardId = boardId;
       sessionStorage.setItem('currentView', this.currentView);
     },
     addOneBoard() {
@@ -124,6 +127,7 @@ export default {
 
     // 게시판 추가
     async createBoardItem(boardInfo) {
+      // console.log(`createBoardInfo: ${boardInfo.name}`);
       boardInfo.listIndex = this.dbData.bList.length; // 새로 추가된 게시판의 순서Index
       await axios.post('/api/board', boardInfo,{
         params: {

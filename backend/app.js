@@ -6,6 +6,9 @@ const logger = require('morgan');
 const connect = require('./models');
 const app = express();
 const dotenv = require('dotenv');
+const SocketIO = require('socket.io');
+const cors = require('cors');
+
 dotenv.config();
 
 const PORT = process.env.PORT;
@@ -39,4 +42,29 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+
+
+const HttpServer = app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+
+const io = SocketIO(HttpServer, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
+// 소켓 연결 시 처리 로직
+io.on('connection', (socket) => {
+  console.log('소켓 연결이 이루어졌습니다.');
+  socket.emit("welcome");
+  socket.on("enter_openChat", roomName => {
+    socket.join(roomName);
+    socket.to(roomName).emit("welcome");
+  });
+  socket.on("new_message", (chat, done) => {
+    console.log(`receive msg: ${chat.msg}`);
+    socket.to(chat.roomName).emit("new_message", chat);
+    done();
+  })
+  
+});

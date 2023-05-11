@@ -21,14 +21,14 @@
                 <select class="form-select form-select mb-3" v-model="boardInfo.type">
                   <option selected disabled>종류를 선택해주세요</option>
                   <option value="meetingMinutes" >회의록</option>
-                  <option value="gantChart">간트 차트</option>
-                  <option value="openChatting">오픈 채팅</option>
+                  <option value="ganttCharts">간트 차트</option>
+                  <option value="openChattings">오픈 채팅</option>
                 </select>
               </div>
 
             </div>
             <!-- <div class="modal-footer"> -->
-              <button class="btn btn-dark" @click="createBoard()">Create</button>
+              <button class="btn btn-dark" @click="createBoard">Create</button>
             <!-- </div> -->
           </div>
           
