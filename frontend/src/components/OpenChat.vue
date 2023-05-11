@@ -3,7 +3,7 @@
     <section class="chat">
       <div class="header-chat">
         <i class="icon fa fa-user-o" aria-hidden="true"></i>
-        <p class="name">Megan Leib</p>
+        <p class="name">{{ chatBoardName }}</p>
         
       </div>
       <div class="messages-chat">
@@ -15,10 +15,7 @@
           <p class="text"> Hi, how are you ? </p>
         </div>
         -->
-        <div class="message text-only">
-          <p class="text"> What are you doing tonight ? Want to go take a drink ?</p>
-        </div>
-
+        
 
         <div v-for="(log, index) in logs" :key="index">
           <div v-if="log.member_id === member_id" class="message text-only">
@@ -79,6 +76,10 @@ export default {
       type: String,
       required: true
     },
+    chatBoardName: {
+      type: String,
+      required: true
+    },
   },
   data: function() {
     return {
@@ -87,7 +88,8 @@ export default {
       roomName: "",
       logs: [],
       member_id: "",
-      member_name: ""
+      member_name: "",
+      boardName: ""
     }
   },
   created() {
@@ -111,6 +113,7 @@ export default {
   beforeDestroy() {
     this.socket.off('new_message');
     this.socket.off("welcome");
+    this.socket.disconnect();
   },
   methods: {
     send() {
@@ -152,18 +155,18 @@ export default {
 
 @keyframes open {
   from {
-    left: 0;
+    left: 3%;
   }
   to {
-    left: 9%;
+    left: 12%;
   }
 }
 @keyframes close {
   from {
-    left: 9%;
+    left: 12%;
   }
   to {
-    left: 0;
+    left: 3%;
   }
 }
 </style>
