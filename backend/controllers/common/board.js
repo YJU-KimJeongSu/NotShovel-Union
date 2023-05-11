@@ -80,7 +80,7 @@ exports.getBoardList = async (req, res) => {
       let chatObj = chat.toObject();
       chatObj.type = 'openChat';
       chatObj.icon = 'bx bx-chat';
-      chatObj.clickMethod = '';           // 오픈 채팅 클릭 메소드 추가 예정
+      chatObj.clickMethod = 'openChat';           // 오픈 채팅 클릭 메소드 추가 예정
       console.log(`gant N order: ${chat.board_order}`);
       boards.push(chatObj);
     });

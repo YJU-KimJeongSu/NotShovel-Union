@@ -17,6 +17,7 @@
     <!-- 각 뷰들을 구성하는데 필요한 데이터들은 여기서 각 컴포넌트로 props -->
     <Setting v-else-if="currentView === 'setting'" :props="isOpen"></Setting>
     <GanttChart v-else-if="currentView === 'ganttChart'" :props="isOpen"></GanttChart>
+    <OpenChat v-else-if="currentView === 'openChat'" :isOpen="isOpen" :chatBoardId="boardId"></OpenChat>
     <Modal v-if="showModal" @close="closeModal" @createBoard="createBoardItem"></Modal>
     
   </div>
@@ -26,8 +27,9 @@
 <script>
 import sidebar from '../components/SideBar.vue'
 import meetingNotes from '../components/MeetingNotes.vue'
-import modal from '../components/AddBoardModal.vue'
 import ganttChart from '../components/GanttChart.vue'
+import openChat from '../components/OpenChat.vue'
+import modal from '../components/AddBoardModal.vue'
 import setting from '../components/Setting.vue'
 import { eventBus } from '../main.js';
 import axios from "axios";
@@ -39,6 +41,7 @@ export default {
       project_id: null,
       isOpen: false,
       currentView: "",
+      boardId: "",
       showModal: false,
       dbData: {
         // bList: [
@@ -101,14 +104,16 @@ export default {
     Modal: modal,
     Setting: setting,
     GanttChart: ganttChart,
+    OpenChat: openChat
   },
   methods: {
-    changeView(view) {
+    changeView(view, boardId) {
       if(view === 'dashMain') {
         this.currentView = "";
         return;
       }
       this.currentView = view;
+      this.boardId = boardId;
       sessionStorage.setItem('currentView', this.currentView);
     },
     addOneBoard() {
