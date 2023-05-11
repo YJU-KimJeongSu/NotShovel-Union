@@ -17,7 +17,8 @@
     <!-- 각 뷰들을 구성하는데 필요한 데이터들은 여기서 각 컴포넌트로 props -->
     <Setting v-else-if="currentView === 'setting'" :props="isOpen"></Setting>
     <GanttChart v-else-if="currentView === 'ganttChart'" :props="isOpen"></GanttChart>
-    <OpenChat v-else-if="currentView === 'openChat'" :isOpen="isOpen" :chatBoardId="boardId"></OpenChat>
+    <OpenChat v-else-if="currentView === 'openChat'" :isOpen="isOpen" :chatBoardId="boardId" :chatBoardName="boardName"
+    :key="boardId"></OpenChat>
     <Modal v-if="showModal" @close="closeModal" @createBoard="createBoardItem"></Modal>
     
   </div>
@@ -42,6 +43,7 @@ export default {
       isOpen: false,
       currentView: "",
       boardId: "",
+      boardName: "",
       showModal: false,
       dbData: {
         // bList: [
@@ -107,13 +109,14 @@ export default {
     OpenChat: openChat
   },
   methods: {
-    changeView(view, boardId) {
+    changeView(view, boardId, boardName) {
       if(view === 'dashMain') {
         this.currentView = "";
         return;
       }
       this.currentView = view;
       this.boardId = boardId;
+      this.boardName = boardName;
       sessionStorage.setItem('currentView', this.currentView);
     },
     addOneBoard() {

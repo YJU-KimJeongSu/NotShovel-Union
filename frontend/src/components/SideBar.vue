@@ -29,7 +29,7 @@
         <!-- 관리자 모드가 아닐 때(추가, 수정 버튼 제외) -->
         <li v-if="!((propsdata.member_id == propsdata.admin_id) && editMode)" v-for="(board, index) in propsdata.bList"
             :key="index"
-            @click="clickBoard(board.clickMethod, board._id)"
+            @click="clickBoard(board.clickMethod, board._id, board.board_name)"
         >
           <a href="#">
             <i v-bind:class="board.icon"></i>
@@ -159,8 +159,8 @@ export default {
     },
 
     //  아이콘 클릭에 따라, 각 이벤트 정보를 담고 DashBoard.vue로 emit
-    clickBoard(event, boardId) {
-      this.$emit('changeBoard', event, boardId);
+    clickBoard(event, boardId, boardName) {
+      this.$emit('changeBoard', event, boardId, boardName);
     },
     addBoard() {
       this.$emit('addBoard');
