@@ -2,6 +2,7 @@ const memberController = require('../controllers/members');
 const projectController = require('../controllers/projects');
 const ganttController = require('../controllers/gantt_charts');
 const boardController= require('../controllers/common/board');
+const meetingController = require('../controllers/meeting_minutes');
 
 module.exports = (app) => {
   //member
@@ -33,4 +34,7 @@ module.exports = (app) => {
   app.patch('/api/board/order', boardController.changeBoardOrder);
   app.post('/api/board', boardController.createBoard);
   app.get('/api/board', boardController.getBoardList);
+
+  // meeting_minutes
+  app.post('/api/meeting', meetingController.save);
 };

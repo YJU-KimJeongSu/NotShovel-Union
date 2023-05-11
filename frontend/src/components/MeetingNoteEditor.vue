@@ -3,9 +3,8 @@
     <div class="editor-form">
       <div class="editor-menu">
         <input type="text" class="form-control editor-title" v-model="title" placeholder="제목">
-        <input type="date" class="form-control editor-date" v-model="startDate"> 
-        <input type="date" class="form-control editor-date" v-model="endDate">
-        <input type="text" class="form-control editor-location" v-model="location" placeholder="장소">
+        <input type="date" class="form-control editor-date" v-model="date"> 
+        <input type="text" class="form-control editor-date" v-model="location" placeholder="장소">
       </div>
       <div class="editor-content">
         <Editor ref="toastEditor" initialEditType="wysiwyg" height="550px" previewStyle="vertical" />
@@ -13,7 +12,7 @@
     </div>
     <div class="editor-right">
       <div class="editor-right-menu">
-        <button type="button" class="btn btn-outline-primary">작성완료</button>
+        <button type="submit" class="btn btn-outline-primary" @click="save()">작성완료</button>
         <button type="button" class="btn btn-outline-secondary" @click="goMeetingNoteMain()">나가기</button>
       </div>
       <div class="editor-chat">
@@ -30,6 +29,7 @@
 </template>
  
 <script>
+import axios from 'axios'
 import { Editor } from '@toast-ui/vue-editor'
 import '@toast-ui/editor/dist/toastui-editor.css' // Editor style
 
@@ -37,8 +37,7 @@ export default {
   data() {
     return {
       title: '',
-      startDate: '',
-      endDate: '',
+      date: '',
       location: '',
       main: false, 
     }
@@ -50,6 +49,7 @@ export default {
     Editor,
   },
   mounted() {
+    this.date = new Date().toISOString().slice(0,10);
 	  window.addEventListener('beforeunload', this.leave)
   }, 
   beforeUnmount() {
@@ -61,7 +61,36 @@ export default {
       if (this.main === false && this.isWrite === true) {
       event.preventDefault();
       event.returnValue = '';
-    }
+      }
+    },
+    async save() {
+      if(this.title == '' || this.date == '' || this.place == ''){
+        alert('빈 값을 다 채워주세요');
+        return;
+      }
+      try {
+        const project_id = sessionStorage.getItem('project_id');
+        
+        // 추후 수정
+        const board_name = 'test';
+        const board_order = 1;
+
+        await axios.post('/api/meeting', {
+          project_id,
+          board_name,
+          board_order,
+          title: this.title,
+          date: this.date,
+          context: this.getContent(),
+          place: this.place
+        })
+        this.main = true;
+        alert('회의록 저장 완료');
+        this.$router.go();
+      } catch (err) {
+        console.error(err);
+        alert('회의록 저장 실패');
+      }
     },
     goMeetingNoteMain(){
       this.main = true;
@@ -72,10 +101,10 @@ export default {
       else return;
     },
     getContent() {
-      return this.$refs.toastEditor.invoke('getMarkdown')
+      return this.$refs.toastEditor.invoke('getMarkdown');
     },
     setContent(content) {
-      this.$refs.toastEditor.invoke('setMarkdown', content)
+      this.$refs.toastEditor.invoke('setMarkdown', content);
     },
   },
 }
@@ -114,7 +143,7 @@ export default {
 }
 
 .editor-date {
-  width: 20%;
+  width: 30%;
   margin-right: 10px;
 }
 .editor-location {
