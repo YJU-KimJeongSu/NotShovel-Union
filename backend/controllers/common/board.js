@@ -53,6 +53,7 @@ exports.getBoardList = async (req, res) => {
     
     const meetingMinutes = await meeting_minutes.find({ project_id: project_id }).sort({ board_order: 1 });
     const ganttCharts = await gantt_charts.find({ project_id: project_id }).sort({ board_order: 1 });
+    const openChattings = await chattings.find({ project_id: project_id }).sort({ board_order: 1 });
 
     meetingMinutes.forEach(meeting => {
       // 자바 스크립트 객체로 변환
@@ -72,6 +73,16 @@ exports.getBoardList = async (req, res) => {
       gantObj.clickMethod = 'ganttChart';
       console.log(`gant N order: ${gant.board_order}`);
       boards.push(gantObj);
+    });
+
+    openChattings.forEach(chat => {
+      // 자바 스크립트 객체로 변환
+      let chatObj = chat.toObject();
+      chatObj.type = 'openChat';
+      chatObj.icon = 'bx bx-chat';
+      chatObj.clickMethod = '';           // 오픈 채팅 클릭 메소드 추가 예정
+      console.log(`gant N order: ${chat.board_order}`);
+      boards.push(chatObj);
     });
 
 
@@ -116,6 +127,19 @@ exports.createBoard = async (req, res) => {
           board_order: req.body.listIndex
         });
         console.log('간트 차트 저장 성공');
+      } catch(err) {
+        console.log(err);
+      }
+      break;
+
+      case 'openChattings':
+      try {
+        await chattings.create({
+          project_id: req.query.project_id,
+          board_name: req.body.name,
+          board_order: req.body.listIndex
+        });
+        console.log('오픈 채팅 저장 성공');
       } catch(err) {
         console.log(err);
       }
