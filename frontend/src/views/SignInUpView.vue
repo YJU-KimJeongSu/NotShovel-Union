@@ -6,11 +6,15 @@
       <form action="#" class="form" id="form1">
         <h2 class="form__title">Sign Up</h2>
         <div class="user-box">
-          <input type="email" placeholder="Email" class="input" v-model="signup.email" />
+          <input type="email" placeholder="Email" class="input" v-model="signup.email" @keydown="authReset()" />
           <input type="password" placeholder="Password" class="input" v-model="signup.password" />
           <input type="password" placeholder="PasswordCheck" class="input" v-model="signup.passwordCheck" />
           <input type="text" placeholder="Name" class="input" v-model="signup.name" />
           <input type="text" placeholder="Phone" class="input" v-model="signup.phone_number">
+          <a href="#" v-if="authState == 0" @click="emailAuth()" class="authBtn">인증 메일 전송</a>
+          <input type="text" v-if="authState == 1" v-model="inputAuthCode" class="input" style="width: 40%; text-align: center;">
+          <a href="#" v-if="authState == 1" @click="authCheck()" class="authBtn">인증</a>
+          <p v-if="authState == 3" class="authBtn">메일 전송중입니다...</p>
         </div>
         <button class="btn" @click="signUp()">Sign Up</button>
       </form>
@@ -64,6 +68,9 @@ export default {
         email: null,
         password: null,
       },
+      _emailAuthCode: null,
+      authState: 0,  // 0 = 전송 전, 1 = 전송 후, 2 = 인증 성공, 3 = 로딩
+      inputAuthCode: null,
     }
   },
   methods: {
@@ -90,6 +97,8 @@ export default {
         this.signup.phone_number == ''
       ) {
         alert('비어있는 칸이 있습니다.');
+      } else if (this.authState != 2) {
+        alert('이메일 인증을 진행해주세요');
       } else {
         await axios.post("/api/member/signup", {
           name: this.signup.name,
@@ -146,15 +155,44 @@ export default {
             }
           })
       }
-    }
+    },
+    async emailAuth() {
+      this.authState = 3; // 0 = 전송 전, 1 = 전송 후, 2 = 인증 성공, 3 = 로딩
+      await axios.get('/api/member/emailAuth?email=' + this.signup.email) // 이메일 전송하기
+        .then((res) => {
+          this._emailAuthCode = res.data.num;
+          this.authState = 1; // 0 = 전송 전, 1 = 전송 후, 2 = 인증 성공, 3 = 로딩
+        })
+        .catch((err => {
+          console.log(err);
+          alert('메일 전송에 실패했습니다. 이메일을 확인해주세요.');
+          this.authState = 0; // 0 = 전송 전, 1 = 전송 후, 2 = 인증 성공, 3 = 로딩
+        }))
+    },
+    authCheck() {
+      if (this.inputAuthCode == this._emailAuthCode) {
+        this.authState = 2; // 0 = 전송 전, 1 = 전송 후, 2 = 인증 성공, 3 = 로딩
+        alert('이메일 인증에 성공했습니다');
+      } else {
+        if (confirm('인증코드가 잘못되었습니다. 다시 전송할까요?')) this.emailAuth();
+      }
+    },
+    authReset() {
+      this.authState = 0; // 0 = 전송 전, 1 = 전송 후, 2 = 인증 성공, 3 = 로딩
+      this.authState = false;
+    },
   },
-  // mounted() {
-  //   this.overlay__panelChange1();
-  // }
 }
 </script>
 
 <style scoped>
+.authBtn {
+  text-decoration: none;
+  margin: 5px;
+  color: black;
+  font-weight: 600;
+}
+
 .form__title {
   font-weight: 300;
   margin: 0;
@@ -179,12 +217,13 @@ export default {
   border-radius: 0.7rem;
   box-shadow: 0 0.9rem 1.7rem rgba(0, 0, 0, 0.25),
     0 0.7rem 0.7rem rgba(0, 0, 0, 0.22);
-  height: 520px;
+  /* height: 520px; */
+  height: 620px;
   max-width: 758px;
   overflow: hidden;
   position: relative;
   width: 100%;
-  transform: translate(0%, max(calc((100vh - 580px) / 2), 59px));
+  transform: translate(0%, max(calc((100vh - 690px) / 2), 59px));
 }
 
 .container__form {
@@ -350,7 +389,6 @@ export default {
   outline: none;
   background: transparent;
 }
-
 
 input:focus::placeholder {
   color: transparent;

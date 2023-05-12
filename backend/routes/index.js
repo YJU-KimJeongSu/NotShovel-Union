@@ -11,6 +11,7 @@ module.exports = (app) => {
   app.delete('/api/member/delete', memberController.deleteMemeber);
   app.post('/api/member/image', memberController.imageUpload);
   app.post('/api/member/chkPw', memberController.chkPW);
+  app.get('/api/member/emailAuth', memberController.emailAuth);
 
   // project
   app.post('/api/project', projectController.save);

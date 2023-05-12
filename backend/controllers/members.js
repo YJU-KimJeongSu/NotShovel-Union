@@ -2,6 +2,7 @@ const members = require('../models/members');
 const multer = require('multer');
 const path = require('path');
 const bcrypt = require('bcrypt');
+const { smtpTransport } = require('../config/email');
 
 exports.signUp = async (req, res, next) => {
     try {
@@ -137,3 +138,24 @@ exports.chkPW = async (req, res) => {
     return res.status(500).send(err);
   }
 };
+
+exports.emailAuth = async (req, res) => {
+  const num = Math.floor(Math.random() * (999999 - 111111 + 1)) + 111111; // 111111 ~ 999999
+  // const userEmail = req.body.email;
+  const userEmail = req.query.email;
+
+  console.log(userEmail);
+  const mailOptions = {
+    from: "Union",
+    to: userEmail,
+    subject: "[Union] 회원가입 인증 메일입니다.",
+    text: "다음 숫자를 입력해주세요 : " + num
+  };
+
+  await smtpTransport.sendMail(mailOptions, (err, result) => {
+    if (err) return res.status(400).send(err);
+    else return res.status(200).json({num: num});
+  });
+  
+  smtpTransport.close();
+}
