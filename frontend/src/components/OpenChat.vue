@@ -17,8 +17,7 @@
         -->
         
 
-      <div class="chat-box">
-      
+      <div class="chat-box" ref="chatBox">
         <div v-for="(log, index) in logs" :key="index">
           <div v-if="log.member_id === member_id" class="message text-only">
             <div class="response">
@@ -26,7 +25,6 @@
             </div>
           </div>
 
-          
           <div v-else class="message text-only">
             <p class="text">{{ log.msg }}</p>
           </div>
@@ -57,8 +55,8 @@
       </div>
       <div class="footer-chat">
         <i class="icon fa fa-smile-o clickable" style="font-size:25pt;" aria-hidden="true"></i>
-        <input type="text" class="write-message" placeholder="Type your message here" v-model="msg" @keyup.enter="send()"/>
-        <i class="icon send fa fa-paper-plane-o clickable" aria-hidden="true" @click="send()"></i>
+        <input type="text" class="write-message" placeholder="Type your message here" v-model="msg" @keyup.enter="send($event)"/>
+        <i class="icon send fa fa-paper-plane-o clickable" aria-hidden="true" @click="send($event)"></i>
       </div>
     </section>
   </div>
@@ -108,8 +106,12 @@ export default {
     this.socket.on("welcome", () => {console.log("new member join!")});
     this.socket.emit("enter_openChat", boardId);
     this.socket.on("new_message", chat => {
-      console.log(`${chat.msg}`);
+      // console.log(`${chat.msg}`);
       this.logs.push(chat);
+      this.$nextTick(() => {
+        // 모든 DOM 업데이트가 완료된 후에 실행
+          this.scrollToBottom();
+        });
     });
     this.roomName = boardId;
   },
@@ -119,8 +121,10 @@ export default {
     this.socket.disconnect();
   },
   methods: {
-    send() {
-      const chat = {
+    send(event) {
+      event.stopPropagation(); // 이벤트 전파를 멈춥니다.
+      if(this.msg !== "") {
+        const chat = {
         roomName: this.roomName,
         msg: this.msg,
         member_id: this.member_id,
@@ -129,9 +133,31 @@ export default {
       };
       this.socket.emit("new_message", chat, () => {
         this.logs.push(chat);
+        this.$nextTick(() => {
+        // 모든 DOM 업데이트가 완료된 후에 실행
+          this.scrollToBottom();
+        });
       });
       this.msg = "";
+      }
+      
+    },
+    scrollToBottom() {
+      this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
     }
+    
+  },
+  watch: {
+    // logs(newVal, oldVal) {
+    //   console.log("값 추가 감지");
+    //   this.scrollToBottom();
+    //   // this.$nextTick( ()  => {
+        
+    //   //   const chatBox = this.$refs.chatBox1;
+    //   //   console.log(chatBox);
+    //   //   chatBox.scrollIntoView({top: chatBox.scrollHeight, behavior: 'smooth'});
+    //   // });
+    // }
   }
 }
 </script>

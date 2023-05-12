@@ -146,7 +146,7 @@ exports.emailAuth = async (req, res) => {
 
   console.log(userEmail);
   const mailOptions = {
-    from: "Union",
+    from: "Union@gmail.com",
     to: userEmail,
     subject: "[Union] 회원가입 인증 메일입니다.",
     text: "다음 숫자를 입력해주세요 : " + num
