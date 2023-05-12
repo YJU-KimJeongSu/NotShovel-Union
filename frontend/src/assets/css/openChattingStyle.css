@@ -76,6 +76,7 @@
 
 .chat .messages-chat {
   padding: 25px 35px;
+  overflow: scroll;
 }
 
 .chat .messages-chat .message {
