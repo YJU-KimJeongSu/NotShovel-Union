@@ -17,6 +17,8 @@
         -->
         
 
+      <div class="chat-box">
+      
         <div v-for="(log, index) in logs" :key="index">
           <div v-if="log.member_id === member_id" class="message text-only">
             <div class="response">
@@ -29,6 +31,7 @@
             <p class="text">{{ log.msg }}</p>
           </div>
         </div>
+      </div>
 
 
         <!-- <p class="time"> 14h58</p>
