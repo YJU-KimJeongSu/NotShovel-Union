@@ -1,3 +1,4 @@
+const { trusted } = require('mongoose');
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
@@ -9,7 +10,7 @@ const meeting_minutes = new Schema({
     
     // 회의록 내용 - 채팅
     meeting_chattings: [{
-        context: { type: String}, // req
+        context: { type: String }, // req
         type: { type: String, enum: ['normal', 'reply', 'mention', 'file']}, // req
         date: { type: Date, default: Date.now },
         member_id: { type: Schema.Types.ObjectId, ref: 'members'}, // req
@@ -20,8 +21,8 @@ const meeting_minutes = new Schema({
     }],
 
     // 회의록 내용 - 본문
-    title: { type: String}, // req
-    context: { type: String}, // req
+    title: { type: String }, // req
+    context: { type: String }, // req
     date: { type: Date, default: Date.now }, // 회의한 날짜
     place: String,
     create_date: { type: Date, default: Date.now }, // 회의록 작성한 날짜
