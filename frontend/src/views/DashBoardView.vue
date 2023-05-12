@@ -45,6 +45,7 @@ export default {
       currentView: "",
       boardId: "",
       boardName: "",
+      boardOrder: null,
       showModal: false,
       dbData: {
         // bList: [
@@ -110,7 +111,7 @@ export default {
     OpenChat: openChat
   },
   methods: {
-    changeView(view, boardId, boardName) {
+    changeView(view, boardId, boardName, index) {
       if(view === 'dashMain') {
         this.currentView = "";
         return;
@@ -118,6 +119,7 @@ export default {
       this.currentView = view;
       this.boardId = boardId;
       this.boardName = boardName;
+      this.boardOrder = index;
       sessionStorage.setItem('currentView', this.currentView);
     },
     addOneBoard() {
@@ -171,6 +173,7 @@ export default {
         bList[i].newOrder = newOrder[i];
       }
       console.log('save Event 수신');
+
 
       await axios.patch('/api/board/order', bList, {
         params: {
