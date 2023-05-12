@@ -5,6 +5,8 @@
   height: 86vh;
   position: absolute;
   top: 30px;
+  display: flex;
+  /* overflow: scroll; */
 }
 
 
@@ -43,6 +45,7 @@
 
 .chat {
   width: calc(100%);
+  /* overflow: auto; */
 }
 
 .header-chat {
@@ -75,7 +78,10 @@
 }
 
 .chat .messages-chat {
+  
   padding: 25px 35px;
+  /* overflow: scroll; */
+  overflow: scroll;
 }
 
 .chat .messages-chat .message {
@@ -138,6 +144,7 @@
   bottom: 0;
   background-color: transparent;
   border-top: 2px solid #EEE;
+  z-index: 3;
   
 }
 
@@ -198,4 +205,9 @@
 
 .clickable {
   cursor: pointer;
+}
+
+.chat-box {
+  height: 60vh;
+  overflow: auto;
 }

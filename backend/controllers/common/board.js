@@ -6,9 +6,9 @@ const projects = require("../../models/projects");
 
 exports.changeBoardOrder = async (req, res) => {
   console.log('from change board event backend에서 수신');
-  const project_id = req.query.project_id;
 
-  try {
+  const project_id = req.query.project_id;
+  
     const bList = req.body;
     console.log(bList);
     console.log('bList prjid ' + project_id);
@@ -17,17 +17,86 @@ exports.changeBoardOrder = async (req, res) => {
     for(let i = 0; i < bList.length; i++) {
       try {
         console.log(`Updating board_order from ${bList[i].board_order} to ${-1 * (bList[i].newOrder + 1)}`);
-        await meeting_minutes.findOneAndUpdate(
-          { project_id: project_id , board_order: bList[i].board_order},
-          { $set: { board_order: -1 * (bList[i].newOrder + 1) } },
-        );
+
+        const boardType = bList[i].type;
+        switch(boardType) {
+          case "meetingMinutes":
+            console.log(`Type: ${boardType}, name: ${bList[i].board_name}`);
+            await meeting_minutes.findOneAndUpdate(
+            { project_id: project_id , board_order: bList[i].board_order},
+            { $set: { board_order: -1 * (bList[i].newOrder + 1) } },
+            )
+              .then(console.log('save minutes order'));
+          break;
+          case "openChat":
+            console.log(`Type: ${boardType}, name: ${bList[i].board_name}`);
+            await chattings.findOneAndUpdate(
+            { project_id: project_id , board_order: bList[i].board_order},
+            { $set: { board_order: -1 * (bList[i].newOrder + 1) } },
+            )
+              .then(console.log('save chatting order'));
+            break;
+          case "ganttChart":
+            console.log(`Type: ${boardType}, name: ${bList[i].board_name}`);
+            await gantt_charts.findOneAndUpdate(
+            { project_id: project_id , board_order: bList[i].board_order},
+            { $set: { board_order: -1 * (bList[i].newOrder + 1) } },
+            )
+              .then(console.log('save ganttchart order'));
+            break;
+        }
+        
       } catch(err) {
         console.log(err);
       }
     }
+  
+  
+  for(let i = 0; i < bList.length; i++) {
 
-    
-    for(let i = 0; i < bList.length; i++) {
+    const boardType = bList[i].type;
+    try {
+        console.log(`Updating board_order from ${bList[i].board_order} to ${-1 * (bList[i].newOrder + 1)}`);
+
+        const boardType = bList[i].type;
+        switch(boardType) {
+          case "meetingMinutes":
+            console.log(`Updating board_order from ${-1 * (bList[i].newOrder + 1)} to ${bList[i].newOrder}`);
+            await meeting_minutes.findOneAndUpdate(
+              { project_id: project_id , board_order: -1 * (bList[i].newOrder + 1) },
+              { $set: { board_order: bList[i].newOrder } },
+            )
+              .then(console.log('save minutes order'));
+          break;
+          case "openChat":
+            console.log(`Updating board_order from ${-1 * (bList[i].newOrder + 1)} to ${bList[i].newOrder}`);
+            await chattings.findOneAndUpdate(
+              { project_id: project_id , board_order: -1 * (bList[i].newOrder + 1) },
+              { $set: { board_order: bList[i].newOrder } },
+            )
+              .then(console.log('save chatting order'));
+            break;
+          case "ganttChart":
+            console.log(`Updating board_order from ${-1 * (bList[i].newOrder + 1)} to ${bList[i].newOrder}`);
+            await gantt_charts.findOneAndUpdate(
+              { project_id: project_id , board_order: -1 * (bList[i].newOrder + 1) },
+              { $set: { board_order: bList[i].newOrder } },
+            )
+              .then(console.log('save ganttchart order'));
+            break;
+        }
+        
+      } catch(err) {
+        console.log(err);
+      }
+
+
+
+
+
+
+
+
       try {
         console.log(`Updating board_order from ${-1 * (bList[i].newOrder + 1)} to ${bList[i].newOrder}`);
         await meeting_minutes.findOneAndUpdate(
@@ -38,10 +107,6 @@ exports.changeBoardOrder = async (req, res) => {
         console.log(err);
       }
     }
-
-  } catch(err) {
-    console.log(err);
-  }   
 };
 
 exports.getBoardList = async (req, res) => {
@@ -51,9 +116,9 @@ exports.getBoardList = async (req, res) => {
     console.log(`projectID: ${project_id}`);
     let boards = [];
     
-    const meetingMinutes = await meeting_minutes.find({ project_id: project_id }).sort({ board_order: 1 });
-    const ganttCharts = await gantt_charts.find({ project_id: project_id }).sort({ board_order: 1 });
-    const openChattings = await chattings.find({ project_id: project_id }).sort({ board_order: 1 });
+    const meetingMinutes = await meeting_minutes.find({ project_id: project_id });
+    const ganttCharts = await gantt_charts.find({ project_id: project_id });
+    const openChattings = await chattings.find({ project_id: project_id });
 
     meetingMinutes.forEach(meeting => {
       // 자바 스크립트 객체로 변환

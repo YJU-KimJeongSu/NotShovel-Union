@@ -171,6 +171,7 @@ export default {
       let bList = this.dbData.bList;
       for (let i = 0; i < bList.length; i++) {
         bList[i].newOrder = newOrder[i];
+        console.log(`Blist newOrder: ${bList[i].newOrder}, name: ${bList[i].board_name}`);
       }
       console.log('save Event 수신');
 
