@@ -21,13 +21,14 @@ const meeting_minutes = new Schema({
     }],
 
     // 회의록 내용 - 본문
-    title: { type: String }, // req
-    context: { type: String }, // req
-    date: { type: Date, default: Date.now }, // 회의한 날짜
-    place: String,
-    create_date: { type: Date, default: Date.now }, // 회의록 작성한 날짜
-    modify_date: [ { type: Date, default: Date.now } ],
-    member_ids: { type: Schema.Types.ObjectId, ref: 'members' }
+    meeting_minutes : [ {title: { type: String }, // req
+        context: { type: String }, // req
+        date: { type: Date, default: Date.now }, // 회의한 날짜
+        place: String,
+        create_date: { type: Date, default: Date.now }, // 회의록 작성한 날짜
+        modify_date: [ { type: Date, default: Date.now } ],
+        member_ids: { type: Schema.Types.ObjectId, ref: 'members' }
+    }]
 });
 
 module.exports = mongoose.model('meeting_minutes', meeting_minutes);

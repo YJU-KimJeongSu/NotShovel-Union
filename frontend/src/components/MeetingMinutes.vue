@@ -2,7 +2,7 @@
   <div class="section" v-bind:class="{ open: props }">
     <!-- 글 작성 -->
     <div class="meeting-form" v-show="isWrite">
-      <MeetingNoteEditor :isWrite="this.isWrite"></MeetingNoteEditor>
+      <MeetingMinuteEditor :isWrite="this.isWrite"></MeetingMinuteEditor>
     </div>
     <!-- 글 목록 -->
     <div class="meeting-form" v-show="!isWrite">
@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import meetingNoteEditor from "@/components/MeetingNoteEditor.vue"
+import meetingMinuteEditor from "@/components/MeetingMinuteEditor.vue"
 
 export default {
   data() {
@@ -72,7 +72,7 @@ export default {
   },
   props: ['props'],
   components: {
-    MeetingNoteEditor: meetingNoteEditor
+    MeetingMinuteEditor: meetingMinuteEditor
   },
   methods: {
     goEditor(){

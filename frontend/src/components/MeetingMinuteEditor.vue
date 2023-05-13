@@ -13,7 +13,7 @@
     <div class="editor-right">
       <div class="editor-right-menu">
         <button type="submit" class="btn btn-outline-primary" @click="save()">작성완료</button>
-        <button type="button" class="btn btn-outline-secondary" @click="goMeetingNoteMain()">나가기</button>
+        <button type="button" class="btn btn-outline-secondary" @click="goMeetingMinutes()">나가기</button>
       </div>
       <div class="editor-chat">
         <div class="editor-chat-content">
@@ -36,9 +36,11 @@ import '@toast-ui/editor/dist/toastui-editor.css' // Editor style
 export default {
   data() {
     return {
-      title: '',
-      date: '',
-      location: '',
+      board_id: null,
+      member_id: null,
+      title: null,
+      date: null,
+      location: null,
       main: false, 
     }
   },
@@ -49,11 +51,13 @@ export default {
     Editor,
   },
   mounted() {
+    this.member_id = sessionStorage.getItem('member_id');
+    this.board_id = sessionStorage.getItem('board_id');
     this.date = new Date().toISOString().slice(0,10);
-	  window.addEventListener('beforeunload', this.leave)
+	  window.addEventListener('beforeunload', this.leave);
   }, 
   beforeUnmount() {
-    window.removeEventListener('beforeunload', this.leave)
+    window.removeEventListener('beforeunload', this.leave);
   },
   methods: {
     leave(event) {
@@ -69,20 +73,16 @@ export default {
         return;
       }
       try {
-        const project_id = sessionStorage.getItem('project_id');
-        
-        // 추후 수정
-        const board_name = 'test';
-        const board_order = 1;
+        const board_id = this.board_id;
+        const member_id = this.member_id;
 
         await axios.post('/api/meeting', {
-          project_id,
-          board_name,
-          board_order,
+          board_id,
           title: this.title,
           date: this.date,
           context: this.getContent(),
-          place: this.place
+          place: this.place,
+          member_id 
         })
         this.main = true;
         alert('회의록 저장 완료');
@@ -92,7 +92,7 @@ export default {
         alert('회의록 저장 실패');
       }
     },
-    goMeetingNoteMain(){
+    goMeetingMinutes(){
       this.main = true;
       const chk = confirm('저장되지 않은 변경 사항이 있습니다. 정말 나가시겠습니까?');
       if(chk) {
