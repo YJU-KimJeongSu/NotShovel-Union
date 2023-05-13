@@ -12,7 +12,7 @@
               @openBar="changeBar"
               @saveOrder="saveOrderItems"
     ></SideBar>
-    <MeetingNotes v-if="currentView === 'meetingMinutes'" :props="isOpen"></MeetingNotes>
+    <MeetingMinutes v-if="currentView === 'meetingMinutes'" :props="isOpen"></MeetingMinutes>
     <!-- 추후에 각 게시판 종류별로 컴포넌트 추가(ex: 차트, 오픈채팅 등) -->
     <!-- 각 뷰들을 구성하는데 필요한 데이터들은 여기서 각 컴포넌트로 props -->
     <Setting v-else-if="currentView === 'setting'" :props="isOpen"></Setting>
@@ -28,7 +28,7 @@
 
 <script>
 import sidebar from '../components/SideBar.vue'
-import meetingNotes from '../components/MeetingNotes.vue'
+import meetingMinutes from '../components/MeetingMinutes.vue'
 import ganttChart from '../components/GanttChart.vue'
 import openChat from '../components/OpenChat.vue'
 import modal from '../components/AddBoardModal.vue'
@@ -49,7 +49,7 @@ export default {
       showModal: false,
       dbData: {
         // bList: [
-        // {name: '회의록', type: 'meetingNotes', icon: 'bx bx-folder', clickMethod: 'meetingNotes'},
+        // {name: '회의록', type: 'MeetingMinutes', icon: 'bx bx-folder', clickMethod: 'MeetingMinutes'},
         // {name: 'User', type: '', icon: 'bx bx-user', clickMethod: ''},
         // {name: 'Messages', type: 'openChat', icon: 'bx bx-chat', clickMethod: ''},
         // {name: 'Gantt Chart', type: 'ganttChart', icon: 'bx bx-pie-chart-alt-2', clickMethod: 'ganttChart'},
@@ -104,7 +104,7 @@ export default {
     },
   components: {
     SideBar: sidebar,
-    MeetingNotes: meetingNotes,
+    MeetingMinutes: meetingMinutes,
     Modal: modal,
     Setting: setting,
     GanttChart: ganttChart,
@@ -120,6 +120,7 @@ export default {
       this.boardId = boardId;
       this.boardName = boardName;
       this.boardOrder = index;
+      sessionStorage.setItem('board_id', this.boardId);
       sessionStorage.setItem('currentView', this.currentView);
     },
     addOneBoard() {
