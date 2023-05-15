@@ -4,59 +4,26 @@
     <div class="meeting-form" v-show="isWrite">
       <MeetingMinuteEditor :isWrite="this.isWrite"></MeetingMinuteEditor>
     </div>
-    <!-- 글 목록 -->
     <div class="meeting-form" v-show="!isWrite">
-      <div class="select-menu">
-        <div class="select-btn" @click="clickSelectBtn">
-          <span class="sBtn-text">Select your option</span>
-          <i class="bx bx-chevron-down"></i>
-        </div>
-        <ul class="options">
-          <li class="option">
-            <i class="bx bxl-github" style="color: #171515;"></i>
-            <span class="option-text">Github</span>
-          </li>
-          <li class="option">
-            <i class="bx bxl-instagram-alt" style="color: #E1306C;"></i>
-            <span class="option-text">Instagram</span>
-          </li>
-        </ul>
-      </div>
       <button type="button" class="btn btn-outline-secondary" @click="goEditor()">글 작성</button>
-      <table height="200px">
+      <!-- 테이블 -->
+      <table>
         <thead>
           <tr>
-            <th colspan="">No.</th>
-            <th colspan="">Title</th>
-            <th colspan="" id="x">Date</th>
+            <th class="title">제목</th>
+            <th>작성자</th>
+            <th>작성일</th>
           </tr>
-
         </thead>
         <tbody>
-          <tr>
-            <td>1</td>
-            <td>Start Union Project!</td>
-            <td>
-              <i class="material-icons button edit">2022-03-07</i>
-
-            </td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Start Story Board!</td>
-            <td>
-              <i class="material-icons button edit">2023-01-10</i>
-            </td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td>Start Coding!</td>
-            <td>
-              <i class="material-icons button edit">2023-03-15</i>
-            </td>
+          <tr v-for="meetingMinute in meetingMinuteList">
+            <td>{{ meetingMinute.title }}</td>
+            <td>{{ meetingMinute.writer_name }}</td>
+            <td>{{ String(meetingMinute.date).slice(5,10) }}</td>
           </tr>
         </tbody>
       </table>
+      <!-- 테이블 -->
     </div>
   </div>
 </template>
@@ -64,6 +31,7 @@
 <script>
 import axios from 'axios'
 import meetingMinuteEditor from "@/components/MeetingMinuteEditor.vue"
+import axios from "axios";
 
 export default {
   data() {
@@ -71,6 +39,7 @@ export default {
       isWrite: false,
       board_id: null,
       member_id: null,
+      meetingMinuteList: [],
     }
   },
   props: ['props'],
@@ -104,34 +73,116 @@ export default {
         console.error(err);
       }
     },
-    clickSelectBtn: function () {
-      const optionMenu = document.querySelector(".select-menu");
-      const options = optionMenu.querySelectorAll(".option");
-      optionMenu.classList.toggle("active");
-      options.forEach(option => {
-        option.addEventListener("click", () => {
-          let selectedOption = option.querySelector(".option-text").innerText;
-          sBtn_text.innerText = selectedOption;
-          optionMenu.classList.remove("active");
-        });
-      });
-    },
-
+  },
+  async mounted() {
+    try {
+      const projectId = sessionStorage.getItem('project_id')
+      const res = await axios.get("/api/meeting/" + projectId);
+      this.meetingMinuteList = res.data;
+    } catch (err) {
+      console.log(err);
+    }
   }
 }
 </script>
 
 <style scoped>
-@import url('../assets/css/tableStyle.css');
-@import url('../assets/css/selectStyle.css');
 @import url('https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css');
 
-.meeting-form{
+body {
+  padding: 1.5em;
+  background: #f5f5f5
+}
+
+table {
+  border: 1px 11101C solid;
+  font-size: .9em;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, .25);
+  width: 75%;
+  border-collapse: collapse;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+th {
+  text-align: left;
+}
+
+thead {
+  font-weight: bold;
+  color: #fff;
+  background: #11101C;
+}
+
+td,
+th {
+  padding: 1em .5em;
+  vertical-align: middle;
+}
+
+td {
+  border-bottom: 1px solid rgba(0, 0, 0, .1);
+  background: #fff;
+}
+
+
+@media all and (max-width: 768px) {
+
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+  }
+
+  th {
+    text-align: right;
+  }
+
+  table {
+    position: relative;
+    padding-bottom: 0;
+    border: none;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+  }
+
+  thead {
+    float: left;
+    white-space: nowrap;
+  }
+
+  tbody {
+    overflow-x: auto;
+    overflow-y: hidden;
+    position: relative;
+    white-space: nowrap;
+  }
+
+  tr {
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  th {
+    border-bottom: 1px solid #a39485;
+  }
+
+  td {
+    border-bottom: 1px solid #e5e5e5;
+  }
+
+
+}
+
+.meeting-form {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
+
 .section {
   position: relative;
   animation-name: close;
@@ -144,6 +195,20 @@ export default {
   animation-name: open;
   animation-duration: 1s;
   animation-fill-mode: forwards;
+}
+
+.btn {
+  margin: 1rem 13.5% 1rem;
+  align-self: flex-end;
+}
+
+.title {
+  width: 80%;
+}
+
+th, td {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 }
 
 @keyframes open {
@@ -164,5 +229,4 @@ export default {
   to {
     left: 0;
   }
-}
-</style>
+}</style>

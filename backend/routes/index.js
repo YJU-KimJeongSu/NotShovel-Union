@@ -20,7 +20,7 @@ module.exports = (app) => {
   app.get('/api/project', projectController.findProjects);
   app.patch('/api/project', projectController.updateProject);
   app.delete('/api/project', projectController.deleteProject);
-
+  
   app.post('/api/project/upload', projectController.imageUpload);
   app.get('/api/project/authority', projectController.findAuth);
 
@@ -28,7 +28,7 @@ module.exports = (app) => {
   app.post('/api/project/grade', projectController.changeGrade);
   app.delete('/api/project/exit', projectController.exitProject);
   app.patch('/api/project/register', projectController.registerToProject);
-
+  
   // gantt
   app.post('/api/gantt', ganttController.save);
 
@@ -36,10 +36,11 @@ module.exports = (app) => {
   app.patch('/api/board/order', boardController.changeBoardOrder);
   app.post('/api/board', boardController.createBoard);
   app.get('/api/board', boardController.getBoardList);
-
+  
   // meeting_minutes
   app.post('/api/meeting', meetingController.save);
   app.patch('/api/meeting', meetingController.update);
+  app.get('/api/meeting/:id', meetingController.getAllList)
 
   // chattings
   app.post('/api/chat', chatController.insertChat);
