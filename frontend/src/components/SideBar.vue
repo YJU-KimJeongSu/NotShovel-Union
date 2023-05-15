@@ -42,7 +42,7 @@
 
 
 
-        <li>
+        <li @click="clickBoard('setting', '', 'setting', -1)">
           <a href="#">
             <i class="bx bx-cog"></i>
             <!-- <i class='bx bx-folder' ></i> -->
