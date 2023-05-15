@@ -17,7 +17,6 @@ exports.changeBoardOrder = async (req, res) => {
     for(let i = 0; i < bList.length; i++) {
       try {
         console.log(`Updating board_order from ${bList[i].board_order} to ${-1 * (bList[i].newOrder + 1)}`);
-
         const boardType = bList[i].type;
         switch(boardType) {
           case "meetingMinutes":
@@ -53,7 +52,6 @@ exports.changeBoardOrder = async (req, res) => {
   
   
   for(let i = 0; i < bList.length; i++) {
-
     const boardType = bList[i].type;
     try {
         console.log(`Updating board_order from ${bList[i].board_order} to ${-1 * (bList[i].newOrder + 1)}`);
@@ -89,13 +87,6 @@ exports.changeBoardOrder = async (req, res) => {
       } catch(err) {
         console.log(err);
       }
-
-
-
-
-
-
-
 
       try {
         console.log(`Updating board_order from ${-1 * (bList[i].newOrder + 1)} to ${bList[i].newOrder}`);

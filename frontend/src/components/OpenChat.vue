@@ -21,12 +21,12 @@
         <div v-for="(log, index) in logs" :key="index">
           <div v-if="log.member_id === member_id" class="message text-only">
             <div class="response">
-              <p class="text"> {{ log.msg }}</p>
+              <p class="text"> {{ log.context }}</p>
             </div>
           </div>
 
           <div v-else class="message text-only">
-            <p class="text">{{ log.msg }}</p>
+            <p class="text">{{ log.context }}</p>
           </div>
         </div>
       </div>
@@ -55,7 +55,7 @@
       </div>
       <div class="footer-chat">
         <i class="icon fa fa-smile-o clickable" style="font-size:25pt;" aria-hidden="true"></i>
-        <input type="text" class="write-message" placeholder="Type your message here" v-model="msg" @keyup.enter="send($event)"/>
+        <input type="text" class="write-message" placeholder="Type your message here" v-model="context" @keyup.enter="send($event)"/>
         <i class="icon send fa fa-paper-plane-o clickable" aria-hidden="true" @click="send($event)"></i>
       </div>
     </section>
@@ -65,6 +65,7 @@
 <script>
 
 import io from "socket.io-client";
+import axios from "axios";
 
 export default {
 
@@ -85,7 +86,7 @@ export default {
   data: function() {
     return {
       socket: null, // 소켓 클라이언트
-      msg: "",
+      context: "",
       roomName: "",
       logs: [],
       member_id: "",
@@ -97,10 +98,33 @@ export default {
     this.member_id = sessionStorage.getItem("member_id");
     this.member_name = sessionStorage.getItem("member_name");
   },
+
+  beforeMount() {
+   
+  },
+
   mounted() {
+    const list = axios.get('/api/chat/list',{
+      params: {
+        boardId: this.$props.chatBoardId
+      }
+    })
+      .then((res) => {
+        console.log(res);
+        this.logs = res.data.chattings;
+        this.$nextTick(() => { 
+      this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight; 
+    });
+      })
+      .catch((err) => console.log(err));
+    console.log(list.data);
+
+
+    
+
     // alert(this.$props.chatBoardId);
     const boardId = this.$props.chatBoardId;
-    
+    // 다른 네트워크 주소로 통신할 경우 url을 변경해줘야함
     const serverUrl = 'http://localhost:3000';
     this.socket = io(serverUrl);
     this.socket.on("welcome", () => {console.log("new member join!")});
@@ -110,12 +134,12 @@ export default {
       this.logs.push(chat);
       this.$nextTick(() => {
         // 모든 DOM 업데이트가 완료된 후에 실행
-          this.scrollToBottom();
+          this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
         });
     });
     this.roomName = boardId;
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.socket.off('new_message');
     this.socket.off("welcome");
     this.socket.disconnect();
@@ -123,10 +147,10 @@ export default {
   methods: {
     send(event) {
       event.stopPropagation(); // 이벤트 전파를 멈춥니다.
-      if(this.msg !== "") {
+      if(this.context !== "") {
         const chat = {
         roomName: this.roomName,
-        msg: this.msg,
+        context: this.context,
         member_id: this.member_id,
         member_name: this.member_name,
         type: 'normal'
@@ -135,15 +159,23 @@ export default {
         this.logs.push(chat);
         this.$nextTick(() => {
         // 모든 DOM 업데이트가 완료된 후에 실행
-          this.scrollToBottom();
+          // this.scrollToBottom();
+          this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
+          axios.post('/api/chat', chat, {
+            params: {
+              boardId: this.$props.chatBoardId
+            }
+          })
+            .then((res) => console.log(res))
+            .catch((err) => console.log(err));
         });
       });
-      this.msg = "";
+      this.context = "";
       }
       
     },
     scrollToBottom() {
-      this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
+      
     }
     
   },

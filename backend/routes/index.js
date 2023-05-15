@@ -3,6 +3,7 @@ const projectController = require('../controllers/projects');
 const ganttController = require('../controllers/gantt_charts');
 const boardController= require('../controllers/common/board');
 const meetingController = require('../controllers/meeting_minutes');
+const chatController = require('../controllers/chattings');
 
 module.exports = (app) => {
   //member
@@ -38,4 +39,8 @@ module.exports = (app) => {
 
   // meeting_minutes
   app.post('/api/meeting', meetingController.save);
+
+  // chattings
+  app.post('/api/chat', chatController.insertChat);
+  app.get('/api/chat/list', chatController.getChatList);
 };
