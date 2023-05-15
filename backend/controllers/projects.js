@@ -94,28 +94,31 @@ exports.imageUpload = (req, res) => {
 };
 
 exports.findAuth = async (req, res, next) => {
-  try {
-    const member_id = req.query.member_id;
+  // try {
+    console.log('findAuth----------');
+    const project_id = req.query.project_id;
+    console.log(`prj_id findAuth: ${project_id}`)
     // console.log(`user id: ${member_id}`);
     // console.log('findAuth 실행중');
     // const member = await projects.findById(member_id, "member_ids");
-    const project = await projects.findOne({ member_ids: member_id });
+    const project = await projects.findOne({ _id: project_id});
+    res.json(project);
 
-    if (project) {
-      const admin = project.admin_id;
-      const managers = project.manager_ids;
-      // console.log(`admin: ${admin}`);
-      // console.log(`manager: ${managers}`);
+  //   if (project) {
+  //     const admin = project.admin_id;
+  //     const managers = project.manager_ids;
+  //     // console.log(`admin: ${admin}`);
+  //     // console.log(`manager: ${managers}`);
 
-      const jsonData = { admin_id: admin, manager_ids: [] };
-      for (const manager of managers) {
-        jsonData.manager_ids.push(manager);
-      }
-      return res.json(jsonData);
-    } else { console.log('가져오기 실패'); }
-  } catch (err) {
-    return res.status(400).send(err);
-  }
+  //     const jsonData = { admin_id: admin, manager_ids: [] };
+  //     for (const manager of managers) {
+  //       jsonData.manager_ids.push(manager);
+  //     }
+  //     return res.json(jsonData);
+  //   } else { console.log('가져오기 실패'); }
+  // } catch (err) {
+  //   return res.status(400).send(err);
+  // }
 };
 
 exports.updateProject = async (req, res) => {

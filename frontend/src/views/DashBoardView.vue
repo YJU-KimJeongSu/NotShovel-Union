@@ -77,13 +77,14 @@ export default {
     
     axios.get('/api/project/authority/', {
       params: {
-        member_id: sessionStorage.getItem('member_id')
+        project_id: sessionStorage.getItem('project_id')
       }
     })
     .then((res) => {
-        const authData = res.data;
-        this.dbData.admin_id = authData.admin_id;
-        this.dbData.manager_ids = authData.manager_ids;
+        const authData = res.data.admin_id;
+        console.log(`authData 수신: ${authData}`);
+        this.dbData.admin_id = authData;
+        // this.dbData.manager_ids = authData.manager_ids;
     })
     .catch((err) => console.log(err));
 
