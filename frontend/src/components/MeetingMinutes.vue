@@ -29,7 +29,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import meetingMinuteEditor from "@/components/MeetingMinuteEditor.vue"
 import axios from "axios";
 
