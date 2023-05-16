@@ -22,7 +22,7 @@ module.exports = (app) => {
   app.delete('/api/project', projectController.deleteProject);
 
   app.post('/api/project/upload', projectController.imageUpload);
-  app.get('/api/project/authority/', projectController.findAuth);
+  app.get('/api/project/authority', projectController.findAuth);
 
   app.get('/api/project/members', projectController.findMembers);
   app.post('/api/project/grade', projectController.changeGrade);

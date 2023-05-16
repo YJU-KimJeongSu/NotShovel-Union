@@ -102,7 +102,7 @@ exports.findAuth = async (req, res, next) => {
     // console.log('findAuth 실행중');
     // const member = await projects.findById(member_id, "member_ids");
     const project = await projects.findOne({ _id: project_id});
-    res.json(project);
+    return res.json(project);
 
   //   if (project) {
   //     const admin = project.admin_id;

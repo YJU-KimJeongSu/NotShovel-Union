@@ -96,12 +96,13 @@ export default {
     this.project.description = sessionStorage.getItem('project_description');
     this.member_id = sessionStorage.getItem('member_id');
 
-    await axios.get('/api/project/authority/', {
+    await axios.get('/api/project/authority', {
       params: {
-        member_id: sessionStorage.getItem('member_id')
+        project_id: this.project.id 
       }
     })
       .then((res) => {
+        console.log(res);
         const authData = res.data;
         this.admin_id = authData.admin_id;
         this.manager_ids = authData.manager_ids;
