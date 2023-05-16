@@ -73,26 +73,25 @@ export default {
     this.dbData.project_name = sessionStorage.getItem('project_name');
     this.dbData.member_id = sessionStorage.getItem('member_id');
   },
-  mounted: function() {
-    
-    axios.get('/api/project/authority/', {
+  async mounted() {
+    await axios.get('/api/project/authority', {
       params: {
-        project_id: sessionStorage.getItem('project_id')
+        project_id: this.project_id
       }
     })
     .then((res) => {
-        const authData = res.data.admin_id;
-        console.log(`authData 수신: ${authData}`);
-        this.dbData.admin_id = authData;
+        const authData = res.data;
+        this.dbData.admin_id = authData.admin_id;
+        console.log(`authData 수신: ${authData.admin_id}`);
         // this.dbData.manager_ids = authData.manager_ids;
     })
     .catch((err) => console.log(err));
 
     // 게시판 리스트 겟요청
-    axios.get('/api/board', {
-    params: {
-      project_id: this.project_id
-    }
+    await axios.get('/api/board', {
+      params: {
+        project_id: this.project_id
+      }
     })
     .then((res) => {
       const boardData = res.data;

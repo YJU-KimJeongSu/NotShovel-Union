@@ -112,9 +112,9 @@ export default {
   },
   async mounted() {
     console.log('axios 요청 시도 from sidebar');
-    await axios.get('/api/project/authority/', {
+    await axios.get('/api/project/authority', {
       params: {
-        member_id: sessionStorage.getItem('member_id')
+        project_id: sessionStorage.getItem('project_id')
       }
     })
       .then((res) => {
