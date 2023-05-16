@@ -24,6 +24,7 @@
         </tbody>
       </table>
       <!-- 테이블 -->
+      
     </div>
   </div>
 </template>
@@ -53,16 +54,14 @@ export default {
     async goEditor(){  
       try {
         this.isWrite=true;
-        const board_id = this.board_id;
-        const member_id = this.member_id;
 
         await axios.post('/api/meeting', {
-          board_id,
+          board_id: sessionStorage.getItem('board_id'),
           title: null,
           date: null,
           context: null,
           place: null,
-          member_id 
+          member_id: sessionStorage.getItem('member_id')
         })
         .then((res)=> {
           const data = res.data.result.meeting_minutes;
