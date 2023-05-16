@@ -75,17 +75,20 @@ export default {
       try {
         const board_id = this.board_id;
         const member_id = this.member_id;
+        const meetingMinuteId = sessionStorage.getItem('meetingMinuteId');
 
-        await axios.post('/api/meeting', {
+        await axios.patch('/api/meeting', {
           board_id,
           title: this.title,
           date: this.date,
           context: this.getContent(),
           place: this.place,
-          member_id 
+          member_id,
+          meetingMinuteId
         })
         this.main = true;
         alert('회의록 저장 완료');
+        sessionStorage.removeItem('meetingMinuteId');
         this.$router.go();
       } catch (err) {
         console.error(err);
