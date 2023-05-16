@@ -62,21 +62,47 @@
 </template>
 
 <script>
+import axios from 'axios'
 import meetingMinuteEditor from "@/components/MeetingMinuteEditor.vue"
 
 export default {
   data() {
     return {
       isWrite: false,
+      board_id: null,
+      member_id: null,
     }
   },
   props: ['props'],
   components: {
     MeetingMinuteEditor: meetingMinuteEditor
   },
+  mounted() {
+    this.member_id = sessionStorage.getItem('member_id');
+    this.board_id = sessionStorage.getItem('board_id');
+  }, 
   methods: {
-    goEditor(){
-      this.isWrite=true;
+    async goEditor(){  
+      try {
+        this.isWrite=true;
+        const board_id = this.board_id;
+        const member_id = this.member_id;
+
+        await axios.post('/api/meeting', {
+          board_id,
+          title: null,
+          date: null,
+          context: null,
+          place: null,
+          member_id 
+        })
+        .then((res)=> {
+          const data = res.data.result.meeting_minutes;
+          sessionStorage.setItem('meetingMinuteId', data[data.length-1]._id);
+        })   
+      } catch (err) {
+        console.error(err);
+      }
     },
     clickSelectBtn: function () {
       const optionMenu = document.querySelector(".select-menu");

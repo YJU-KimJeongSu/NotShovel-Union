@@ -39,6 +39,7 @@ module.exports = (app) => {
 
   // meeting_minutes
   app.post('/api/meeting', meetingController.save);
+  app.patch('/api/meeting', meetingController.update);
 
   // chattings
   app.post('/api/chat', chatController.insertChat);
