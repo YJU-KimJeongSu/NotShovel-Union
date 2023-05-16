@@ -5,7 +5,7 @@
       <button class="manage-btn" @click="selectProjectMenu('member')">회원 관리</button>
     </div>
 
-    <div class="mb-3 project-form" v-if="menu === 'project'">
+    <div v-if="menu === 'project'">
       <button class="manage-btn" @click="selectProjectMenu('projectDelete')">프로젝트 삭제</button>
       <button class="manage-btn" @click="selectProjectMenu('projectUpdate')">프로젝트 수정</button>
     </div>
@@ -27,8 +27,19 @@
       <button type="button" class="btn btn-secondary" @click="deleteProject()">프로젝트 삭제</button>
     </div>
 
-    <div class="mb-3" v-if="menu === 'member'">
-      <h2>멤버 관리</h2>
+    <div v-if="menu === 'member'">
+      <button class="manage-btn" @click="selectProjectMenu('memberInvite')">초대 링크</button>
+      <button class="manage-btn" @click="selectProjectMenu('memberUD')">등급 수정/추방</button>
+    </div>
+    <div v-if="menu === 'memberInvite'" class="mb-3 project-form">
+      <h2>초대링크 생성</h2>
+      <p>해당 링크를 초대할 사람에게 전송해주세요!</p>
+        <input type="text" v-model="link" class="link">
+        <button type="button" @click="linkCopy">복사</button>
+
+    </div>
+    <div v-if="menu === 'memberUD'">
+      <h2>회원 관리</h2>
       <table>
         <tr>
           <th>이메일</th>
@@ -63,6 +74,7 @@
           </td>
         </tr>
       </table>
+
     </div>
   </div>
 </template>
@@ -80,6 +92,7 @@ export default {
         name: null,
         description: null,
         image: 'default.jpg',
+        link: null
       },
       member_id: null, // 회원 본인 아이디
       admin_pw: null,
@@ -95,6 +108,7 @@ export default {
     this.project.name = sessionStorage.getItem('project_name');
     this.project.description = sessionStorage.getItem('project_description');
     this.member_id = sessionStorage.getItem('member_id');
+    this.link = `http://localhost:8080/register?id=${this.project.id}`;
 
     await axios.get('/api/project/authority', {
       params: {
@@ -142,6 +156,10 @@ export default {
         console.error(err);
         alert('프로젝트 추가 실패');
       }
+    },
+    linkCopy() {
+      this.$copyText(this.link);
+      alert(this.link + ' 복사 완료!');
     },
 
     async saveImage() {
@@ -239,6 +257,9 @@ export default {
 </script>
 
 <style scoped>
+.link{
+  width: 300px;
+}
 .form {
   height: 90vh;
   display: flex;
@@ -252,12 +273,11 @@ export default {
   height: 500px;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: space-evenly;
   align-items: center;
   border: 1px solid rgb(205, 205, 205);
   border-radius: 10px;
   padding: 30px;
-
   position: absolute;
   left: 50%;
   top: 50%;
@@ -292,7 +312,9 @@ table {
 .manage-btn {
   width: 300px;
   height: 200px;
-  border: 1px solid gray;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  margin-left: 10px;
 }
 
 .manage-btn:hover {

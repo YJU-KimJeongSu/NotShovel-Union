@@ -39,9 +39,6 @@
           <span class="tooltip">{{board.board_name}}</span>
         </li>
       
-
-
-
         <li @click="clickBoard('setting', '', 'setting', -1)">
           <a href="#">
             <i class="bx bx-cog"></i>
@@ -162,6 +159,10 @@ export default {
     clickBoard(event, boardId, boardName, index) {
       // alert(index);
       this.$emit('changeBoard', event, boardId, boardName);
+
+      if(sessionStorage.getItem('currentView') == 'setting'){
+        this.$router.go();
+      }
     },
     addBoard() {
       this.$emit('addBoard');
