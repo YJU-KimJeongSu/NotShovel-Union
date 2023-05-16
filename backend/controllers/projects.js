@@ -102,7 +102,7 @@ exports.findAuth = async (req, res, next) => {
     // console.log('findAuth 실행중');
     // const member = await projects.findById(member_id, "member_ids");
     const project = await projects.findOne({ _id: project_id});
-    res.json(project);
+    return res.json(project);
 
   //   if (project) {
   //     const admin = project.admin_id;
@@ -148,8 +148,10 @@ exports.deleteProject = async (req, res) => {
 
     const deleteProject = await projects.deleteOne({ _id: project_id });
     if (deleteProject.deletedCount > 0) {
+      await members.updateMany({}, { $pull: { project_ids: project_id } });
       return res.status(200).json({ message: '프로젝트가 삭제되었습니다.' });
-    } else {
+    } 
+    else {
       return res.status(404).json({ error: '프로젝트를 찾을 수 없습니다.' });
     }
   } catch (err) {

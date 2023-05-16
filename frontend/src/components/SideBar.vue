@@ -39,9 +39,6 @@
           <span class="tooltip">{{board.board_name}}</span>
         </li>
       
-
-
-
         <li @click="clickBoard('setting', '', 'setting', -1)">
           <a href="#">
             <i class="bx bx-cog"></i>
@@ -112,9 +109,9 @@ export default {
   },
   async mounted() {
     console.log('axios 요청 시도 from sidebar');
-    await axios.get('/api/project/authority/', {
+    await axios.get('/api/project/authority', {
       params: {
-        member_id: sessionStorage.getItem('member_id')
+        project_id: sessionStorage.getItem('project_id')
       }
     })
       .then((res) => {
@@ -162,6 +159,10 @@ export default {
     clickBoard(event, boardId, boardName, index) {
       // alert(index);
       this.$emit('changeBoard', event, boardId, boardName);
+
+      if(sessionStorage.getItem('currentView') == 'setting'){
+        this.$router.go();
+      }
     },
     addBoard() {
       this.$emit('addBoard');

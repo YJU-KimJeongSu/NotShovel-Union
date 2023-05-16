@@ -4,8 +4,9 @@
     <div class="inner2" v-if="projects.length != 0">
       <Flicking :options="{ circular: true }" :plugins="plugins">
         <!-- 해당 아이디가 소속한 프로젝트 도는 반복문 -->
-        <div class="card-panel" v-for="(project, index) in projects" :key="index" @click="selectProject(project)"
-          :style="`background-image: url(http://localhost:3000/images/${project.image})`">
+        <div class="card-panel" v-for="(project, index) in projects" :key="index" @click="selectProject(project)">
+        <!-- <div class="card-panel" v-for="(project, index) in projects" :key="index" @click="selectProject(project)"
+          :style="`background-image: url(http://localhost:3000/images/${project.image})`"> -->
           {{ project.name }}
         </div>
       </Flicking>
@@ -34,15 +35,17 @@ export default {
     }
   },
   async mounted() {
-    await axios.get('/api/project', {
-      params: {
-        member_id: sessionStorage.getItem('member_id')
-      }
-    })
-      .then((res) => {
-        this.projects = res.data;
-      })
-      .catch((err) => console.log(err));
+    try {
+      const member_id = sessionStorage.getItem('member_id');
+      const res = await axios.get('/api/project', {
+        params: {
+          member_id: member_id
+        }
+      });
+      this.projects = res.data;
+    } catch (err) {
+      console.error(err);
+    }
   },
   methods: {
     selectProject(index) {
