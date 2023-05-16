@@ -21,7 +21,6 @@
             :chatBoardId="boardId" :chatBoardName="boardName"
             :key="boardId"></OpenChat>
     <Modal v-if="showModal" @close="closeModal" @createBoard="createBoardItem"></Modal>
-    
   </div>
   
 </template>
@@ -111,11 +110,13 @@ export default {
     OpenChat: openChat
   },
   methods: {
-    changeView(view, boardId, boardName, index) {
+    async changeView(view, boardId, boardName, index) {
       if(view === 'dashMain') {
         this.currentView = "";
         return;
       }
+      this.currentView = '';
+      await this.$nextTick(); // v-if에서 빠른 상태 변화를 인지하지 못해 한틱 대기
       this.currentView = view;
       this.boardId = boardId;
       this.boardName = boardName;

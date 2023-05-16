@@ -159,10 +159,9 @@ export default {
     clickBoard(event, boardId, boardName, index) {
       // alert(index);
       this.$emit('changeBoard', event, boardId, boardName);
-
-      if(sessionStorage.getItem('currentView') == 'setting'){
-        this.$router.go();
-      }
+      // if(sessionStorage.getItem('currentView') == 'setting'){
+      //   this.$router.go();
+      // }
     },
     addBoard() {
       this.$emit('addBoard');
