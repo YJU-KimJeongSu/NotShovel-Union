@@ -73,9 +73,9 @@ exports.update = async (req, res) => {
 
 exports.getAllList = async (req, res) => {
   try {
-    const project_id = req.params.id;
+    const boardId = req.params.id;
     const result = await meetingMinutes
-      .findOne({ project_id }, { "_id": false, "meeting_minutes": true })
+      .findOne({ _id: boardId }, { "_id": false, "meeting_minutes": true })
       .populate({
         path: 'meeting_minutes.member_ids',
         model: 'members',

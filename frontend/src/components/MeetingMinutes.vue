@@ -76,8 +76,8 @@ export default {
   },
   async mounted() {
     try {
-      const projectId = sessionStorage.getItem('project_id')
-      const res = await axios.get("/api/meeting/" + projectId);
+      const boardId = sessionStorage.getItem('board_id')
+      const res = await axios.get("/api/meeting/" + boardId);
       this.meetingMinuteList = res.data;
     } catch (err) {
       console.log(err);
