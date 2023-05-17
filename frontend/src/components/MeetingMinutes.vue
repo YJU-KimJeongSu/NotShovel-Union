@@ -2,7 +2,7 @@
   <div class="section" v-bind:class="{ open: props }">
     <!-- 글 작성 -->
     <div class="meeting-form" v-show="isWrite">
-      <MeetingMinuteEditor :isWrite="this.isWrite"></MeetingMinuteEditor>
+      <MeetingMinuteEditor :isWrite="this.isWrite" ref="meetingMinuteEditor"></MeetingMinuteEditor>
     </div>
     <div class="meeting-form" v-show="!isWrite">
       <button type="button" class="btn btn-outline-secondary" @click="goEditor()">글 작성</button>
@@ -16,10 +16,10 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="meetingMinute in meetingMinuteList">
-            <td>{{ meetingMinute.title }}</td>
-            <td>{{ meetingMinute.writer_name }}</td>
-            <td>{{ String(meetingMinute.date).slice(5,10) }}</td>
+          <tr v-for="meetingMinute in meetingMinuteList" @click="getDetailMeetingMinute(meetingMinute._id)">
+              <td>{{ meetingMinute.title }}</td>
+              <td>{{ meetingMinute.writer_name }}</td>
+              <td>{{ String(meetingMinute.date).slice(5,10) }}</td>
           </tr>
         </tbody>
       </table>
@@ -32,6 +32,7 @@
 <script>
 import meetingMinuteEditor from "@/components/MeetingMinuteEditor.vue"
 import axios from "axios";
+
 
 export default {
   data() {
@@ -49,11 +50,13 @@ export default {
   mounted() {
     this.member_id = sessionStorage.getItem('member_id');
     this.board_id = sessionStorage.getItem('board_id');
+    this.$store.commit('setMeetingMinute', null);
   }, 
   methods: {
     async goEditor(){  
       try {
-        this.isWrite=true;
+        this.isWrite = true;
+        this.$store.commit('setMeetingMinute', null);
 
         await axios.post('/api/meeting', {
           board_id: sessionStorage.getItem('board_id'),
@@ -71,10 +74,22 @@ export default {
         console.error(err);
       }
     },
+    async getDetailMeetingMinute(_id) {
+      try {
+        const boardId = sessionStorage.getItem('board_id');
+        const res = await axios.get(`/api/meeting/${boardId}/${_id}`);
+        this.$refs.meetingMinuteEditor.loadSavedMeetingMinute(res.data);
+        
+        // this.$store.commit('setMeetingMinute', res.data);
+        this.isWrite = true;
+      } catch (err) {
+        console.log(err);
+      }
+    }
   },
   async mounted() {
     try {
-      const boardId = sessionStorage.getItem('board_id')
+      const boardId = sessionStorage.getItem('board_id');
       const res = await axios.get("/api/meeting/" + boardId);
       this.meetingMinuteList = res.data;
     } catch (err) {

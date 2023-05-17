@@ -51,6 +51,7 @@ export default {
     Editor,
   },
   mounted() {
+    // const savedMeetingMinute = this.$store.getters.getMeetingMinute;
     this.member_id = sessionStorage.getItem('member_id');
     this.board_id = sessionStorage.getItem('board_id');
     this.date = new Date().toISOString().slice(0,10);
@@ -109,6 +110,13 @@ export default {
     setContent(content) {
       this.$refs.toastEditor.invoke('setMarkdown', content);
     },
+    loadSavedMeetingMinute(meetingMinute) {
+      this.title = meetingMinute.title;
+      this.setContent(meetingMinute.context);
+      this.date = meetingMinute.date;
+      this.place = meetingMinute.place;
+      sessionStorage.setItem('meetingMinuteId', meetingMinute._id);
+    }
   },
 }
 </script>
