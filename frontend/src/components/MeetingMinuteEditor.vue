@@ -113,7 +113,7 @@ export default {
     loadSavedMeetingMinute(meetingMinute) {
       this.title = meetingMinute.title;
       this.setContent(meetingMinute.context);
-      this.date = meetingMinute.date;
+      this.date = meetingMinute.date.slice(0, 10);
       this.place = meetingMinute.place;
       sessionStorage.setItem('meetingMinuteId', meetingMinute._id);
     }
