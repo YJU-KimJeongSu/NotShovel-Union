@@ -4,7 +4,7 @@
       <div class="editor-menu">
         <input type="text" class="form-control editor-title" v-model="title" placeholder="제목">
         <input type="date" class="form-control editor-date" v-model="date"> 
-        <input type="text" class="form-control editor-date" v-model="location" placeholder="장소">
+        <input type="text" class="form-control editor-date" v-model="place" placeholder="장소">
       </div>
       <div class="editor-content">
         <Editor ref="toastEditor" initialEditType="wysiwyg" height="550px" previewStyle="vertical" />
@@ -40,7 +40,7 @@ export default {
       member_id: null,
       title: null,
       date: null,
-      location: null,
+      place: null,
       main: false, 
     }
   },
