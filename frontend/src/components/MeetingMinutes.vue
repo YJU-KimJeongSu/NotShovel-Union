@@ -14,7 +14,7 @@
     <!-- 캘린더 형식 글 보기 -->
     <div class="calendar" v-show="toggle == 'calendar'">
       <div class="fullcalendar-container">
-        <FullCalendar :options="calendarOptions"></FullCalendar>
+        <FullCalendar :key="calendarKey" :options="calendarOptions"></FullCalendar>
       </div>
     </div>
     <div class="meeting-form" v-show="!isWrite && toggle == 'list'">
@@ -44,7 +44,6 @@
 
 <script>
 import meetingMinuteEditor from "@/components/MeetingMinuteEditor.vue"
-// import calendar from "@/components/Calendar.vue"
 import axios from "axios";
 import FullCalendar from '@fullcalendar/vue'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -80,22 +79,24 @@ export default {
       board_id: null,
       member_id: null,
       meetingMinuteList: [],
-      toggle: 'calendar',
+      toggle: 'list',
+      calendarKey: 1,
     }
   },
   props: ['props'],
   components: {
     MeetingMinuteEditor: meetingMinuteEditor,
-    // Calendar: calendar,
     FullCalendar,
   },
-  mounted() {
-    this.member_id = sessionStorage.getItem('member_id');
-    this.board_id = sessionStorage.getItem('board_id');
-    this.$store.commit('setMeetingMinute', null);
-  }, 
+  watch: {
+    toggle(newValue) {
+      if (newValue === 'calendar') {
+        this.calendarKey += 1;
+      }
+    }
+  },
   methods: {
-    async goEditor(){  
+    async goEditor() {  
       try {
         this.isWrite = true;
         this.$store.commit('setMeetingMinute', null);
@@ -139,6 +140,9 @@ export default {
     },
   },
   async mounted() {
+    this.member_id = sessionStorage.getItem('member_id');
+    this.board_id = sessionStorage.getItem('board_id');
+    this.$store.commit('setMeetingMinute', null);
     try {
       const boardId = sessionStorage.getItem('board_id');
       const res = await axios.get("/api/meeting/" + boardId);
@@ -146,7 +150,7 @@ export default {
     } catch (err) {
       console.log(err);
     }
-  }
+  },
 }
 </script>
 
@@ -308,8 +312,8 @@ td {
   background: #f5f5f5;
   border: 1px solid #ccc;
   position: absolute;
-  margin: 30px;
-  margin-left: 100px;
+  margin: 15px;
+  margin-left: 175px;
 }
 
 .toggle-radio>input:checked+label {
