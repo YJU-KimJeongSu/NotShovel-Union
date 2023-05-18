@@ -12,7 +12,7 @@
       <MeetingMinuteEditor :isWrite="this.isWrite" ref="meetingMinuteEditor"></MeetingMinuteEditor>
     </div>
     <!-- 캘린더 형식 글 보기 -->
-    <div class="calendar" v-show="toggle == 'calendar'">
+    <div class="calendar" v-show="!isWrite && toggle == 'calendar'">
       <div class="fullcalendar-container">
         <FullCalendar :key="calendarKey" :options="calendarOptions"></FullCalendar>
       </div>
@@ -56,24 +56,13 @@ export default {
         plugins: [dayGridPlugin, interactionPlugin],
         initialView: 'dayGridMonth',
         eventClick: this.handleEventClick,
-        dateClick: this.handleDateClick,
+        // dateClick: this.handleDateClick,
         headerToolbar: {
           start: '',
           center: '',
           end: 'today prev,next'
         },
-        events: [
-          { title: '1', date: '2023-05-14', customData: '11' },
-          { title: '2', date: '2023-05-15' },
-          { title: '3', date: '2023-05-16' },
-          { title: '4', date: '2023-05-15' },
-          { title: '5', date: '2023-05-15' },
-          { title: '5', date: '2023-05-15' },
-          { title: '5', date: '2023-05-15' },
-          { title: '5', date: '2023-05-15' },
-          { title: '5', date: '2023-05-15' },
-          { title: '5', date: '2023-05-15' },
-        ]
+        events: [],
       },
       isWrite: false,
       board_id: null,
@@ -129,11 +118,9 @@ export default {
         console.log(err);
       }
     },
-    handleEventClick(arg) {
-      console.log(arg.event.extendedProps.customData);
-    },
-    handleDateClick(arg) {
-      console.log(arg);
+    async handleEventClick(arg) {
+      // console.log(arg);
+      await this.getDetailMeetingMinute(arg.event.extendedProps._id);
     },
     setEvents(events) {
       console.log(events);
@@ -147,6 +134,15 @@ export default {
       const boardId = sessionStorage.getItem('board_id');
       const res = await axios.get("/api/meeting/" + boardId);
       this.meetingMinuteList = res.data;
+
+      this.meetingMinuteList.forEach((m) => {
+        const event = {
+          title: m.title,
+          date: String(m.date).slice(0, 10),
+          _id: m._id,
+        };
+        this.calendarOptions.events.push(event);
+      });
     } catch (err) {
       console.log(err);
     }
