@@ -50,3 +50,70 @@ exports.update = async (req, res) => {
     res.status(500).json({ message: "회의록 저장 실패" });
   }
 };
+
+// exports.getAllList = async (req, res) => {
+//   try {
+//     const project_id = req.params.id;
+//     const result = await meetingMinutes.findOne({ project_id }, { "_id": false, "meeting_minutes": true });
+//     // console.log(result.meeting_minutes);
+
+//     const data = result.meeting_minutes.map((minute) => {
+//       return {
+//         title: minute.title,
+//         date: minute.date,
+//         member_ids: minute.member_ids,
+//       };
+//     });
+//     console.log(data);
+//   } catch (err) {
+//     console.log(err);
+//   }
+// };
+
+exports.getAllList = async (req, res) => {
+  try {
+    const boardId = req.params.id;
+    const result = await meetingMinutes
+      .findOne({ _id: boardId }, { "_id": true, "meeting_minutes": true })
+      .populate({
+        path: 'meeting_minutes.member_ids',
+        model: 'members',
+        select: 'name',
+      });
+
+    const data = result.meeting_minutes.map((minute) => {
+      return {
+        _id: minute._id,
+        title: minute.title,
+        date: minute.date,
+        writer_name: minute.member_ids.name,
+      };
+    });
+    console.log(data);
+
+    return res.status(200).json(data);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "회의록 불러오기 실패" });
+  }
+};
+
+exports.getDetailMeetingMinute = async (req, res) => {
+  try {
+    const boardId = req.params.boardId;
+    const _id = req.params.id;
+
+    const meetingMinute = await meetingMinutes.findOne(
+      { _id: boardId, "meeting_minutes._id": _id },
+      { "meeting_minutes.$": 1 }
+    );
+    console.log(meetingMinute.meeting_minutes[0]);
+
+    res.status(200).json(meetingMinute.meeting_minutes[0]);
+
+    return res.status(200);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "회의록 불러오기 실패" });
+  }
+};

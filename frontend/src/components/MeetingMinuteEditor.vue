@@ -4,7 +4,7 @@
       <div class="editor-menu">
         <input type="text" class="form-control editor-title" v-model="title" placeholder="제목">
         <input type="date" class="form-control editor-date" v-model="date"> 
-        <input type="text" class="form-control editor-date" v-model="location" placeholder="장소">
+        <input type="text" class="form-control editor-date" v-model="place" placeholder="장소">
       </div>
       <div class="editor-content">
         <Editor ref="toastEditor" initialEditType="wysiwyg" height="550px" previewStyle="vertical" />
@@ -40,7 +40,7 @@ export default {
       member_id: null,
       title: null,
       date: null,
-      location: null,
+      place: null,
       main: false, 
     }
   },
@@ -51,6 +51,7 @@ export default {
     Editor,
   },
   mounted() {
+    // const savedMeetingMinute = this.$store.getters.getMeetingMinute;
     this.member_id = sessionStorage.getItem('member_id');
     this.board_id = sessionStorage.getItem('board_id');
     this.date = new Date().toISOString().slice(0,10);
@@ -109,6 +110,13 @@ export default {
     setContent(content) {
       this.$refs.toastEditor.invoke('setMarkdown', content);
     },
+    loadSavedMeetingMinute(meetingMinute) {
+      this.title = meetingMinute.title;
+      this.setContent(meetingMinute.context);
+      this.date = meetingMinute.date.slice(0, 10);
+      this.place = meetingMinute.place;
+      sessionStorage.setItem('meetingMinuteId', meetingMinute._id);
+    }
   },
 }
 </script>
