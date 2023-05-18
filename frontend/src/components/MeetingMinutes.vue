@@ -13,7 +13,9 @@
     </div>
     <!-- 캘린더 형식 글 보기 -->
     <div class="calendar" v-show="toggle == 'calendar'">
-      <Calendar ref="calendar"></Calendar>
+      <div class="fullcalendar-container">
+        <FullCalendar :options="calendarOptions"></FullCalendar>
+      </div>
     </div>
     <div class="meeting-form" v-show="!isWrite && toggle == 'list'">
       <button type="button" class="btn btn-outline-secondary" @click="goEditor()">글 작성</button>
@@ -42,12 +44,38 @@
 
 <script>
 import meetingMinuteEditor from "@/components/MeetingMinuteEditor.vue"
-import calendar from "@/components/Calendar.vue"
+// import calendar from "@/components/Calendar.vue"
 import axios from "axios";
+import FullCalendar from '@fullcalendar/vue'
+import dayGridPlugin from '@fullcalendar/daygrid'
+import interactionPlugin from '@fullcalendar/interaction'
 
 export default {
   data() {
     return {
+      calendarOptions: {
+        plugins: [dayGridPlugin, interactionPlugin],
+        initialView: 'dayGridMonth',
+        eventClick: this.handleEventClick,
+        dateClick: this.handleDateClick,
+        headerToolbar: {
+          start: '',
+          center: '',
+          end: 'today prev,next'
+        },
+        events: [
+          { title: '1', date: '2023-05-14', customData: '11' },
+          { title: '2', date: '2023-05-15' },
+          { title: '3', date: '2023-05-16' },
+          { title: '4', date: '2023-05-15' },
+          { title: '5', date: '2023-05-15' },
+          { title: '5', date: '2023-05-15' },
+          { title: '5', date: '2023-05-15' },
+          { title: '5', date: '2023-05-15' },
+          { title: '5', date: '2023-05-15' },
+          { title: '5', date: '2023-05-15' },
+        ]
+      },
       isWrite: false,
       board_id: null,
       member_id: null,
@@ -58,7 +86,8 @@ export default {
   props: ['props'],
   components: {
     MeetingMinuteEditor: meetingMinuteEditor,
-    Calendar: calendar,
+    // Calendar: calendar,
+    FullCalendar,
   },
   mounted() {
     this.member_id = sessionStorage.getItem('member_id');
@@ -98,6 +127,15 @@ export default {
       } catch (err) {
         console.log(err);
       }
+    },
+    handleEventClick(arg) {
+      console.log(arg.event.extendedProps.customData);
+    },
+    handleDateClick(arg) {
+      console.log(arg);
+    },
+    setEvents(events) {
+      console.log(events);
     },
   },
   async mounted() {
@@ -326,5 +364,42 @@ td {
 .label-txt {
   font-weight: 600;
   color: #11101C;
+}
+</style>
+<!-- scoped 있으면 FullCalendar에 안먹어서 따로 지정 -->
+<style>
+.fullcalendar-container > * {
+  width: 100%;
+  height: 80%;
+}
+
+.fc .fc-daygrid-day-frame {
+  min-height: 100%;
+  max-height: 100%;
+  height: 100%;
+  overflow-y: scroll;
+}
+
+.fc .fc-daygrid-day-frame::-webkit-scrollbar {
+  width: 4px;
+}
+
+.fc .fc-daygrid-day-frame::-webkit-scrollbar-thumb {
+  background-color: #c8c8c8;
+  border-radius: 10px;
+}
+
+.fc-scrollgrid-sync-table > tbody > tr {
+  height: 100px;
+}
+
+.fullcalendar-container {
+  width: 80%;
+  height: 100%;
+  padding: 2%;
+}
+
+.fc-view-harness {
+  height: 100vh !important;
 }
 </style>
