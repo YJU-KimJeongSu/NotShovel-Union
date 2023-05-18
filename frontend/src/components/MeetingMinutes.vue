@@ -1,10 +1,21 @@
 <template>
   <div class="section" v-bind:class="{ open: props }">
+    <div class="toggle-radio" v-show="!isWrite">
+      <input type="radio" name="default" id="default_Option1" value="list" v-model="toggle">
+      <label for="default_Option1" class="label-txt">리스트</label>
+    
+      <input type="radio" name="default" id="default_Option2" value="calendar" v-model="toggle">
+      <label for="default_Option2" class="label-txt">캘린더</label>
+    </div>
     <!-- 글 작성 -->
     <div class="meeting-form" v-show="isWrite">
       <MeetingMinuteEditor :isWrite="this.isWrite" ref="meetingMinuteEditor"></MeetingMinuteEditor>
     </div>
-    <div class="meeting-form" v-show="!isWrite">
+    <!-- 캘린더 형식 글 보기 -->
+    <div class="calendar" v-show="toggle == 'calendar'">
+      <Calendar ref="calendar"></Calendar>
+    </div>
+    <div class="meeting-form" v-show="!isWrite && toggle == 'list'">
       <button type="button" class="btn btn-outline-secondary" @click="goEditor()">글 작성</button>
       <!-- 테이블 -->
       <table>
@@ -31,8 +42,8 @@
 
 <script>
 import meetingMinuteEditor from "@/components/MeetingMinuteEditor.vue"
+import calendar from "@/components/Calendar.vue"
 import axios from "axios";
-
 
 export default {
   data() {
@@ -41,11 +52,13 @@ export default {
       board_id: null,
       member_id: null,
       meetingMinuteList: [],
+      toggle: 'calendar',
     }
   },
   props: ['props'],
   components: {
-    MeetingMinuteEditor: meetingMinuteEditor
+    MeetingMinuteEditor: meetingMinuteEditor,
+    Calendar: calendar,
   },
   mounted() {
     this.member_id = sessionStorage.getItem('member_id');
@@ -85,7 +98,7 @@ export default {
       } catch (err) {
         console.log(err);
       }
-    }
+    },
   },
   async mounted() {
     try {
@@ -115,6 +128,7 @@ table {
   border-collapse: collapse;
   border-radius: 5px;
   overflow: hidden;
+  margin-bottom: 75px;
 }
 
 th {
@@ -189,6 +203,13 @@ td {
 
 }
 
+.calendar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
 .meeting-form {
   display: flex;
   flex-direction: column;
@@ -219,7 +240,8 @@ td {
   width: 80%;
 }
 
-th, td {
+th,
+td {
   padding-left: 1.5rem;
   padding-right: 1.5rem;
 }
@@ -242,4 +264,67 @@ th, td {
   to {
     left: 0;
   }
-}</style>
+}
+
+.toggle-radio {
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+  position: absolute;
+  margin: 30px;
+  margin-left: 100px;
+}
+
+.toggle-radio>input:checked+label {
+  background: burlywood;
+}
+
+.toggle-radio>input+label:not(:last-of-type) {
+  border-right: 1px solid #ccc;
+}
+
+.toggle-radio {
+  border-radius: 4px;
+  z-index: 1;
+}
+
+.toggle-radio {
+  display: inline-flex;
+}
+
+.toggle-radio>input[type='radio'] {
+  display: none;
+}
+
+.toggle-radio>input[disabled]+label {
+  opacity: 0.50;
+}
+
+.toggle-radio>input[disabled]+label:hover {
+  cursor: not-allowed;
+}
+
+.toggle-radio>input+label {
+  display: inline-block;
+  margin-bottom: 0;
+  padding: 5px 10px;
+  float: left;
+  cursor: pointer;
+}
+
+.toggle-radio>input:checked+label {
+  transition: background 300ms linear;
+}
+
+.toggle-radio[data-style='rounded'] {
+  border-radius: 500px;
+}
+
+.toggle-radio[data-style='square'] {
+  border-radius: 0;
+}
+
+.label-txt {
+  font-weight: 600;
+  color: #11101C;
+}
+</style>
