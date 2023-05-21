@@ -88,7 +88,7 @@ export default {
         board_id: this.board_id,
         gantt_data: {
           data: this.activity_list,
-          links: this.tasks.links
+          links: gantt.getLinks()
         }
       })
         .then((res) => {
