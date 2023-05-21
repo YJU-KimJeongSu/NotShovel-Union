@@ -1,85 +1,180 @@
 <template>
-     <div class="section" v-bind:class="{open: props}">
-        <div class="gant-form">
-            <h3>간트차트</h3>
-            <p>시작일: <input type="date" v-model="activity.activity_start_date"></p>
-            <p>기간: <input type="number" v-model="activity.activity_duration"> 일</p>
-            <p>내용: <input type="text"  v-model="activity.activity_name"></p>
-            <p>진행도: <input type="number" v-model="activity.activity_progress" value="0"> %</p>
-            <p>담당자: <input type="text" v-model="activity.activity_manager"></p>
-            <button @click="addActivity()">추가</button>
-            <ul>
-                <li v-for="index in activityList">
-                    {{ index.activity_start_date }}
-                    ({{ index.activity_duration }}일)
-                    - {{ index.activity_name }}
-                    - {{ index.activity_progress }} %
-                    - 담당 : [ {{ index.activity_manager }} ] 
-                </li>
-            </ul>
-            <button @click="saveActivity()">저장</button>
-        </div>
-       
-     </div>
+  <div class="section" v-bind:class="{ open: props }">
+    <div class="menu">
+      <h4>{{ board_name }}</h4>
+      <button @click="saveActivity()" class="btn btn-outline-primary">저장</button>
+    </div>
+    <div class="container" ref="gantt">
+      <div class="left-container" :tasks="tasks">
+      </div>
+    </div>
+  </div>
 </template>
 <script>
 import axios from "axios";
+import { gantt } from 'dhtmlx-gantt';
 
 export default {
-    props: ['props'],
-    data() {
-        return {
-            project_id: null,
-            board_id: null,
-            activity : {
-                activity_name: null,
-                activity_start_date: null,
-                activity_duration: null,
-                activity_progress: 0,
-                activity_manager: null,
-            },
-            activityList: []
-        }
-    },
-    created() {
-        this.project_id = sessionStorage.getItem('project_id');
-        this.board_id = sessionStorage.getItem('board_id');
-    },
-    methods: {
-        addActivity(){
-            this.activityList.push({
-                activity_name: this.activity.activity_name,
-                activity_start_date: this.activity.activity_start_date,
-                activity_duration: this.activity.activity_duration,
-                activity_progress: this.activity.activity_progress,
-                activity_manager: this.activity.activity_manager
-            });
-            this.activity = {
-                activity_name: null,
-                activity_start_date: null,
-                activity_duration: null,
-                activity_progress: 0,
-                activity_manager: null,
-            };
-            console.log(this.activityList);
-        },
-        async saveActivity(){
-            axios.post('/api/gantt', {
-                board_id: this.board_id,
-                activityList: this.activityList
-            })
-            .then((res) => console.log(res))
-            .catch((err) => console.log(err));
-        }
-    }
-}
+  props: ['props'],
 
+  data() {
+    return {
+      project_id: null,
+      board_name: null,
+      board_id: null,
+      activity_list: [],
+      tasks: {
+        data: [ 
+          // { id: 1, text: '작업 #1', start_date: '2020-01-17', duration: 3, progress: 0.6 },
+        ],
+        links: [
+          // { id: 1, source: 1, target: 2, type: '0' }
+        ]
+      },
+    }
+  },
+  created() {
+    this.project_id = sessionStorage.getItem('project_id');
+    this.board_name = sessionStorage.getItem('board_name');
+    this.board_id = sessionStorage.getItem('board_id');
+  },
+  async mounted() {
+    gantt.config.xml_date = '%Y-%m-%d';
+    gantt.init(this.$refs.gantt);
+
+    await this.fetchGanttData();
+    this.$nextTick(() => {
+        gantt.clearAll();
+        gantt.parse(this.tasks);
+    });
+  },
+  methods: {
+    async fetchGanttData() {
+      try {
+        const res = await axios.get(`/api/gantt/${this.board_id}`);
+        const ganttData = res.data;
+        this.tasks.data = ganttData.gantt_data.data.map(item => ({
+          id: item.id,
+          text: item.activity_name,
+          start_date: item.activity_start_date,
+          duration: item.activity_duration,
+          progress: item.activity_progress,
+          parent: item.parent
+        }));
+        this.tasks.links = ganttData.gantt_data.links;
+        // console.log(this.tasks);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    async saveActivity() {
+      this.activity_list = [];
+      
+      const taskDataStore = gantt.getDatastore("task");
+      taskDataStore.eachItem((task) => {
+        const activity = {
+          id: task.id, // 고유한 ID
+          activity_name: task.text,
+          activity_start_date: task.start_date,
+          activity_duration: task.duration,
+          activity_progress: task.progress,
+          parent: task.parent
+        };
+
+        this.activity_list.push(activity);
+      });
+      console.log(this.activity_list);
+
+      await axios.post('/api/gantt', {
+        board_id: this.board_id,
+        gantt_data: {
+          data: this.activity_list,
+          links: gantt.getLinks()
+        }
+      })
+        .then((res) => {
+          alert('저장 완료!');
+          this.activity_list = [];
+          console.log(res)
+          this.$router.go();
+        })
+        .catch((err) => {
+          alert('서버 문제로 저장에 실패하였습니다. 잠시 후 다시 시도해주세요');
+          console.log(err)
+        });
+    }
+  }
+
+}
 </script>
 <style scoped>
-.gant-form {
+@import "~dhtmlx-gantt/codebase/dhtmlxgantt.css";
+
+@media all and (max-width: 768px) {
+  .container {
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
+  }
+
+  .left-container {
+    overflow: hidden;
+    position: relative;
+    height: 100%;
+  }
+}
+
+.menu {
+  margin-top: 10px;
+  height: 5vh;
+  width: 80%;
+  display: flex;
+  justify-content: space-between;
+}
+.container {
+  margin-top: 20px;
+  height: 80vh;
+}
+.section {
+  position: relative;
+  animation-name: close;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+}
+
+.section.open {
+  position: relative;
+  animation-name: open;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes open {
+  from {
+    left: 0;
+  }
+
+  to {
+    left: 9%;
+  }
+}
+
+@keyframes close {
+  from {
+    left: 9%;
+  }
+
+  to {
+    left: 0;
+  }
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 </style>

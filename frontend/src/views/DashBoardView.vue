@@ -62,7 +62,7 @@ export default {
       
     }
   },
-  created: function() {
+  created() {
     eventBus.$on('project', (project)=>{
       this.project = project;
       console.log(project);
@@ -122,6 +122,7 @@ export default {
       this.boardName = boardName;
       this.boardOrder = index;
       sessionStorage.setItem('board_id', this.boardId);
+      sessionStorage.setItem('board_name', this.boardName);
       sessionStorage.setItem('currentView', this.currentView);
     },
     addOneBoard() {
@@ -196,4 +197,11 @@ export default {
 
 <style scoped> 
 
+.menu {
+  margin-top: 10px;
+  height: 5vh;
+  width: 80%;
+  display: flex;
+  justify-content: space-between;
+}
 </style>
