@@ -31,6 +31,7 @@ module.exports = (app) => {
   
   // gantt
   app.post('/api/gantt', ganttController.save);
+  app.get('/api/gantt/:board_id', ganttController.getGanttData);
 
   // board
   app.patch('/api/board/order', boardController.changeBoardOrder);

@@ -1,9 +1,11 @@
 <template>
   <div class="section" v-bind:class="{ open: props }">
+     <div class="menu">
+      <h4>{{ board_name }}</h4>
+     </div>
     <div class="toggle-radio" v-show="!isWrite">
       <input type="radio" name="default" id="default_Option1" value="list" v-model="toggle">
       <label for="default_Option1" class="label-txt">리스트</label>
-    
       <input type="radio" name="default" id="default_Option2" value="calendar" v-model="toggle">
       <label for="default_Option2" class="label-txt">캘린더</label>
     </div>
@@ -65,6 +67,7 @@ export default {
         events: [],
       },
       isWrite: false,
+      board_name: null,
       board_id: null,
       member_id: null,
       meetingMinuteList: [],
@@ -127,6 +130,7 @@ export default {
     },
   },
   async mounted() {
+    this.board_name = sessionStorage.getItem('board_name');
     this.member_id = sessionStorage.getItem('member_id');
     this.board_id = sessionStorage.getItem('board_id');
     this.$store.commit('setMeetingMinute', null);
@@ -401,5 +405,13 @@ td {
 
 .fc-view-harness {
   height: 100vh !important;
+}
+
+.menu {
+  margin-top: 10px;
+  height: 5vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 </style>
