@@ -58,7 +58,8 @@ export default {
           text: item.activity_name,
           start_date: item.activity_start_date,
           duration: item.activity_duration,
-          progress: item.activity_progress
+          progress: item.activity_progress,
+          parent: item.parent
         }));
         this.tasks.links = ganttData.gantt_data.links;
         // console.log(this.tasks);
@@ -77,7 +78,8 @@ export default {
           activity_name: task.text,
           activity_start_date: task.start_date,
           activity_duration: task.duration,
-          activity_progress: task.progress
+          activity_progress: task.progress,
+          parent: task.parent
         };
 
         this.activity_list.push(activity);

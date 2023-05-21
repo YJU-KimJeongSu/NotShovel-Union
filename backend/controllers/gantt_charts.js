@@ -16,16 +16,19 @@ exports.getGanttData = async (req, res) => {
   }
 };
 
-
 exports.save = async (req, res) => {
   try {
     const { board_id, gantt_data } = req.body;
-    const formattedData = gantt_data.data.map(item => ({
-      id: item.id, // 고유한 ID
-      activity_name: item.activity_name,
-      activity_start_date: item.activity_start_date,
-      activity_duration: item.activity_duration,
-      activity_progress: item.activity_progress
+
+    const { data, links } = gantt_data; // tasks와 links를 추출
+
+    const formattedData = data.map(task => ({
+      id: task.id,
+      activity_name: task.activity_name,
+      activity_start_date: task.activity_start_date,
+      activity_duration: task.activity_duration,
+      activity_progress: task.activity_progress,
+      parent: task.parent
     }));
 
     let result;
@@ -34,27 +37,8 @@ exports.save = async (req, res) => {
       const existingGanttChart = await ganttCharts.findById(board_id);
 
       if (existingGanttChart) {
-        const existingDataIds = existingGanttChart.gantt_data.data.map(item => item.id);
-
-        formattedData.forEach(item => {
-          const existingIndex = existingDataIds.indexOf(item.id);
-          if (existingIndex !== -1) {
-            // 이미 있는 작업인 경우 업데이트
-            existingGanttChart.gantt_data.data[existingIndex] = item;
-          } else {
-            // 새로운 작업인 경우 추가
-            existingGanttChart.gantt_data.data.push(item);
-          }
-        });
-
-        // 삭제할 작업 찾기
-        const deleteDataIds = existingDataIds.filter(id => !formattedData.some(item => item.id === id));
-        existingGanttChart.gantt_data.data = existingGanttChart.gantt_data.data.filter(item => !deleteDataIds.includes(item.id));
-
-        existingGanttChart.gantt_data.links = [
-          ...existingGanttChart.gantt_data.links,
-          ...gantt_data.links
-        ];
+        existingGanttChart.gantt_data.data = formattedData;
+        existingGanttChart.gantt_data.links = links;
 
         result = await existingGanttChart.save();
       } else {
@@ -66,7 +50,7 @@ exports.save = async (req, res) => {
         board_order: gantt_data.board_order,
         gantt_data: {
           data: formattedData,
-          links: gantt_data.links
+          links: links
         }
       });
 

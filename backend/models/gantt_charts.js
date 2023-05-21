@@ -16,6 +16,7 @@ const gantt_charts = new Schema({
         activity_start_date: { type: Date, default: Date.now },
         activity_duration: Number,
         activity_progress: { type: Number, default: 0, min: 0, max: 100 },
+        parent : Number
       },
     ],
     links: [
