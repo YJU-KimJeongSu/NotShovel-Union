@@ -81,7 +81,7 @@ export default {
   
   
     // 채팅
-    const boardId = this.$props.chatBoardId;
+    // const boardId = this.$props.chatBoardId;
     // 다른 네트워크 주소로 통신할 경우 url을 변경해줘야함
     const serverUrl = 'http://localhost:3000';
     this.socket = io(serverUrl);
