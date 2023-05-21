@@ -116,4 +116,16 @@ exports.getDetailMeetingMinute = async (req, res) => {
     console.log(err);
     res.status(500).json({ message: "회의록 불러오기 실패" });
   }
+
+
+  // 회의록 채팅 저장 추가
+  // exports.saveMinuteChattings = async(req, res) {
+    
+  //   try {
+
+  //   } catch(err) {
+  //     console.log(err);
+  //     res.status(500).json({ message: "채팅 불러오기 실패" });
+  //   }
+  // }
 };

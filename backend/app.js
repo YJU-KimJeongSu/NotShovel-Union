@@ -62,7 +62,7 @@ io.on('connection', (socket) => {
     socket.to(roomName).emit("welcome");
   });
   socket.on("new_message", (chat, done) => {
-    console.log(`receive context: ${chat.context}`);
+    console.log(`receive chat: ${chat.context}, ${chat.roomName}, ${chat.member_id}`);
     socket.to(chat.roomName).emit("new_message", chat);
     done();
   })
