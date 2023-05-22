@@ -77,17 +77,30 @@ export default {
     // this.roomName = sessionStorage.getItem('meetingMinuteId');
 
     this.date = new Date().toISOString().slice(0, 10);
-    window.addEventListener('beforeunload', this.leave);
+    // window.addEventListener('beforeunload', this.leave);
   },
-  beforeUnmount() {
-    window.removeEventListener('beforeunload', this.leave);
-  },
+  // beforeUnmount() {
+  //   window.removeEventListener('beforeunload', this.leave);
+  // },
   methods: {
-    leave(event) {
-      // 리스트에 있거나 나가기 버튼 외에 새로고침 방지 메소드
-      if (this.main === false && this.isWrite === true) {
-        event.preventDefault();
-        event.returnValue = '';
+    // leave(event) {
+    //   // 리스트에 있거나 나가기 버튼 외에 새로고침 방지 메소드
+    //   if (this.main === false && this.isWrite === true) {
+    //     event.preventDefault();
+    //     event.returnValue = '';
+    //   }
+    // },
+    async beforeDestroy() {
+      if (this.title == null
+        || this.title == ""
+        || this.date == null
+        || this.date == ""
+        || this.place == null
+        || this.place == "") {
+        const meetingMinuteId = sessionStorage.getItem('meetingMinuteId');
+        await axios.delete(`/api/meeting?board_id=${this.board_id}&meetingMinuteId=${meetingMinuteId}`);
+      } else {
+        await this.save();
       }
     },
     async onUploadImage(blob, callback) {
