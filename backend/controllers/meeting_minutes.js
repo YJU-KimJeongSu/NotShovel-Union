@@ -1,3 +1,4 @@
+const chattings = require("../models/chattings");
 const meetingMinutes = require("../models/meeting_minutes");
 
 exports.save = async (req, res) => {
@@ -40,7 +41,13 @@ exports.update = async (req, res) => {
 
     const result = await meetingMinutes.findOneAndUpdate(
       { "_id": board_id, "meeting_minutes._id": meetingMinuteId }, 
-      { $set: { "meeting_minutes.$": updatedMeetingMinutes} }, 
+      { $set: {
+        "meeting_minutes.$.title": title,
+        "meeting_minutes.$.date": date,
+        "meeting_minutes.$.context": context,
+        "meeting_minutes.$.place": place,
+        "meeting_minutes.$.member_ids": member_id
+      }}, 
       { new: true } 
     );
 
@@ -119,13 +126,53 @@ exports.getDetailMeetingMinute = async (req, res) => {
 
 
   // 회의록 채팅 저장 추가
-  // exports.saveMinuteChattings = async(req, res) {
-    
-  //   try {
+};
+exports.saveMinuteChattings = async(req, res) => {
+  const chattings = req.body;
+  // console.log('왜 이상한거 저장되냐고 ' + chattings.minute_id);
 
-  //   } catch(err) {
-  //     console.log(err);
-  //     res.status(500).json({ message: "채팅 불러오기 실패" });
-  //   }
-  // }
+  try {  
+    const meetingMinute = await meetingMinutes.findOneAndUpdate(
+      { _id: chattings.board_id },
+      { $push: {
+          meeting_chattings: {
+            roomName: chattings.minute_id,
+            context: chattings.context,
+            type: chattings.type,
+            member_id: chattings.member_id,
+            name: chattings.name
+        }
+      }}
+    );
+  } catch(err) {
+    console.log(err);
+    res.status(500).json({ message: "채팅 불러오기 실패" });
+  }
+};
+
+
+
+// 회의록 채팅 불러오기 추가
+exports.getMinuteChattings = async(req, res) => {
+  const board_id = req.query.board_id;
+  const minute_id = req.query.minute_id;
+
+  try {  
+    const readChat = await meetingMinutes.findOne(
+      { _id: board_id}
+    ).populate('meeting_chattings.member_id');
+
+
+    let chatLogs = [];
+    readChat.meeting_chattings.forEach((chat) => {
+      if(chat.roomName == minute_id) {
+        chatLogs.push(chat);
+      }
+    });
+
+    res.status(200).json(chatLogs);
+  } catch(err) {
+    console.log(err);
+    res.status(500).json({ message: "채팅 불러오기 실패" });
+  }
 };

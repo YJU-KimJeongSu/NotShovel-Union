@@ -114,7 +114,10 @@ export default {
         const boardId = sessionStorage.getItem('board_id');
         const res = await axios.get(`/api/meeting/${boardId}/${_id}`);
         this.$refs.meetingMinuteEditor.loadSavedMeetingMinute(res.data);
+
+
         
+    
         // this.$store.commit('setMeetingMinute', res.data);
         this.isWrite = true;
       } catch (err) {
