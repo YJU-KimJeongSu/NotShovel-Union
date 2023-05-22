@@ -17,7 +17,7 @@
     <div class="editor-right">
       <div class="editor-right-menu">
         <button type="submit" class="btn btn-outline-primary" @click="save()">작성완료</button>
-        <button type="button" class="btn btn-outline-secondary" @click="goMeetingMinutes()">나가기</button>
+        <button type="button" class="btn btn-outline-secondary" @click="deleteMeetingMinutes()">삭제</button>
       </div>
       <div class="editor-chat">
         <div class="editor-chat-content" ref="chatBox">
@@ -148,13 +148,20 @@ export default {
         alert('회의록 저장 실패');
       }
     },
-    goMeetingMinutes() {
-      this.main = true;
-      const chk = confirm('저장되지 않은 변경 사항이 있습니다. 정말 나가시겠습니까?');
-      if (chk) {
-        this.$router.go();
+    async deleteMeetingMinutes() {
+      try {
+        const meetingMinuteId = sessionStorage.getItem('meetingMinuteId');
+        const chk = confirm('삭제하면 되돌릴 수 없습니다. 정말 삭제하시겠습니까?');
+        if (chk) {
+          await axios.delete(`/api/meeting?board_id=${this.board_id}&meetingMinuteId=${meetingMinuteId}`);
+          this.main = true;
+          this.$router.go();
+        }
+        else return;
+      } catch (err) {
+        console.log(err);
       }
-      else return;
+
     },
     getContent() {
       return this.$refs.toastEditor.invoke('getMarkdown');
