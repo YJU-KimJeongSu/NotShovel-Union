@@ -16,12 +16,22 @@
         <button type="button" class="btn btn-outline-secondary" @click="goMeetingMinutes()">나가기</button>
       </div>
       <div class="editor-chat">
-        <div class="editor-chat-content">
+        <div class="editor-chat-content" ref="chatBox">
+
+
+
           채팅내용
+        <div v-for="(log, index) in logs" :key="index">
+          <div>
+            <p class="text">{{log.name}}: {{ log.context }}</p>
+          </div>
+        </div>
+
+
         </div>
         <div class="input-group mb-3">
-        <input type="text" class="form-control" placeholder="채팅" aria-describedby="button-addon2">
-        <button class="btn btn-outline-secondary" type="button" id="button-addon2">전송</button>
+        <input type="text" class="form-control" placeholder="채팅" aria-describedby="button-addon2" @keyup.enter="send($event)" v-model="context">
+        <button class="btn btn-outline-secondary" type="button" id="button-addon2" @click="send($event)">전송</button>
       </div>
     </div>
     </div>
@@ -32,6 +42,7 @@
 import axios from 'axios'
 import { Editor } from '@toast-ui/vue-editor'
 import '@toast-ui/editor/dist/toastui-editor.css' // Editor style
+import io from "socket.io-client"
 
 export default {
   data() {
@@ -42,6 +53,9 @@ export default {
       date: null,
       place: null,
       main: false, 
+      logs: [],
+      roomName: null,
+      context: null,
     }
   },
   props:{
@@ -50,12 +64,18 @@ export default {
   components: {
     Editor,
   },
-  mounted() {
+  async mounted() {
     // const savedMeetingMinute = this.$store.getters.getMeetingMinute;
     this.member_id = sessionStorage.getItem('member_id');
     this.board_id = sessionStorage.getItem('board_id');
+    // this.roomName = sessionStorage.getItem('meetingMinuteId');
+
     this.date = new Date().toISOString().slice(0,10);
 	  window.addEventListener('beforeunload', this.leave);
+
+
+    
+
   }, 
   beforeUnmount() {
     window.removeEventListener('beforeunload', this.leave);
@@ -116,7 +136,71 @@ export default {
       this.date = meetingMinute.date.slice(0, 10);
       this.place = meetingMinute.place;
       sessionStorage.setItem('meetingMinuteId', meetingMinute._id);
-    }
+
+      console.log('sessionId load 체크: ' + sessionStorage.getItem('meetingMinuteId'));
+
+      console.log('대화요청');
+      // console.log(this.minute_id);
+      console.log('session MinuteId: ' + sessionStorage.getItem('meetingMinuteId'));
+      axios.get('/api/meeting/chat', {
+        params: {
+          board_id: sessionStorage.getItem('board_id'),
+          minute_id: sessionStorage.getItem('meetingMinuteId')
+        }
+      })
+        .then((res) => {
+          console.log(res);
+          this.logs = res.data;
+          this.$nextTick(() => { 
+            this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight; 
+          });
+        })
+        .catch((err) => console.log(err));
+        
+        const serverUrl = 'http://localhost:3000';
+        this.socket = io(serverUrl);
+        this.socket.on("welcome", () => {console.log("new member join!")});
+        this.socket.emit("enter_openChat", sessionStorage.getItem('meetingMinuteId'));
+        this.socket.on("new_message", chat => {
+          // console.log(`${chat.context}`);
+          this.logs.push(chat);
+          this.$nextTick(() => {
+            // 모든 DOM 업데이트가 완료된 후에 실행
+              this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
+            });
+        });
+    },
+
+    send(event) {
+      event.stopPropagation(); // 이벤트 전파를 멈춥니다.
+      console.log("room체크: " + sessionStorage.getItem('meetingMinuteId'));
+      if(this.context !== "") {
+        const chat = {
+          roomName: sessionStorage.getItem('meetingMinuteId'),
+          context: this.context,
+          member_id: this.member_id,
+          name: sessionStorage.getItem('member_name'),
+          type: 'normal'
+        };
+        this.logs.push(chat);
+        // this.logs.member_id.push(chat);
+        this.context = "";
+        this.socket.emit("new_message", chat, () => {
+          this.$nextTick(() => {
+          // 모든 DOM 업데이트가 완료된 후에 실행
+            // this.scrollToBottom();
+            // this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
+            chat.board_id = this.board_id;
+            chat.minute_id = sessionStorage.getItem('meetingMinuteId');
+            axios.post('/api/meeting/chat', chat)
+              .then((res) => console.log(res))
+              .catch((err) => console.log(err));
+          });
+        });
+        
+      }
+    },
+    
   },
 }
 </script>
@@ -185,6 +269,7 @@ export default {
 }
 .editor-chat-content{
   height: 512px;
+  overflow: scroll;
 }
 
 .btn {

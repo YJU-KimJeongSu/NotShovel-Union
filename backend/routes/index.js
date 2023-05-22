@@ -42,8 +42,10 @@ module.exports = (app) => {
   // meeting_minutes
   app.post('/api/meeting', meetingController.save);
   app.patch('/api/meeting', meetingController.update);
+  app.get('/api/meeting/chat', meetingController.getMinuteChattings);
   app.get('/api/meeting/:id', meetingController.getAllList);
   app.get('/api/meeting/:boardId/:id', meetingController.getDetailMeetingMinute);
+  app.post('/api/meeting/chat', meetingController.saveMinuteChattings);
 
   // chattings
   app.post('/api/chat', chatController.insertChat);
