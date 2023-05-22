@@ -3,11 +3,15 @@
     <div class="editor-form">
       <div class="editor-menu">
         <input type="text" class="form-control editor-title" v-model="title" placeholder="제목">
-        <input type="date" class="form-control editor-date" v-model="date"> 
+        <input type="date" class="form-control editor-date" v-model="date">
         <input type="text" class="form-control editor-date" v-model="place" placeholder="장소">
       </div>
       <div class="editor-content">
-        <Editor ref="toastEditor" initialEditType="wysiwyg" height="550px" previewStyle="vertical" />
+        <Editor ref="toastEditor" 
+        initialEditType="wysiwyg" 
+        height="550px" 
+        previewStyle="vertical"
+        :options="options" />
       </div>
     </div>
     <div class="editor-right">
@@ -17,23 +21,19 @@
       </div>
       <div class="editor-chat">
         <div class="editor-chat-content" ref="chatBox">
-
-
-
           채팅내용
-        <div v-for="(log, index) in logs" :key="index">
-          <div>
-            <p class="text">{{log.name}}: {{ log.context }}</p>
+          <div v-for="(log, index) in logs" :key="index">
+            <div>
+              <p class="text">{{ log.name }}: {{ log.context }}</p>
+            </div>
           </div>
         </div>
-
-
-        </div>
         <div class="input-group mb-3">
-        <input type="text" class="form-control" placeholder="채팅" aria-describedby="button-addon2" @keyup.enter="send($event)" v-model="context">
-        <button class="btn btn-outline-secondary" type="button" id="button-addon2" @click="send($event)">전송</button>
+          <input type="text" class="form-control" placeholder="채팅" aria-describedby="button-addon2"
+            @keyup.enter="send($event)" v-model="context">
+          <button class="btn btn-outline-secondary" type="button" id="button-addon2" @click="send($event)">전송</button>
+        </div>
       </div>
-    </div>
     </div>
   </div>
 </template>
@@ -52,17 +52,23 @@ export default {
       title: null,
       date: null,
       place: null,
-      main: false, 
+      main: false,
       logs: [],
       roomName: null,
       context: null,
+      options: {
+        language: "ko",
+        hooks: {
+          addImageBlobHook: this.onUploadImage
+        }
+      },
     }
   },
-  props:{
+  props: {
     isWrite: Boolean
   },
   components: {
-    Editor,
+    Editor
   },
   async mounted() {
     // const savedMeetingMinute = this.$store.getters.getMeetingMinute;
@@ -70,13 +76,9 @@ export default {
     this.board_id = sessionStorage.getItem('board_id');
     // this.roomName = sessionStorage.getItem('meetingMinuteId');
 
-    this.date = new Date().toISOString().slice(0,10);
-	  window.addEventListener('beforeunload', this.leave);
-
-
-    
-
-  }, 
+    this.date = new Date().toISOString().slice(0, 10);
+    window.addEventListener('beforeunload', this.leave);
+  },
   beforeUnmount() {
     window.removeEventListener('beforeunload', this.leave);
   },
@@ -86,11 +88,40 @@ export default {
       if (this.main === false && this.isWrite === true) {
         event.preventDefault();
         event.returnValue = '';
-        
       }
     },
+    async onUploadImage(blob, callback) {
+      const formData = new FormData();
+      formData.append('file', blob);
+
+      try {
+        const imageUrl = await this.saveImage(formData);
+        callback(imageUrl);
+      } catch (error) {
+        console.error('이미지 업로드 오류:', error);
+        throw error;
+      }
+    },
+    async saveImage(formData) {
+      try {
+        const res = await axios.get('/api/s3/url', {
+          params: { filename: formData.get('file').name },
+        });
+        const encodedFileName = res.data.encodedFileName;
+        const presignedUrl = res.data.presignedUrl;
+
+        await axios.put(presignedUrl, formData.get('file'));
+        const imageUrl = `https://notshovel-union-bucket.s3.ap-northeast-2.amazonaws.com/public/${encodedFileName}`;
+        console.log('이미지 업로드 완료');
+        return imageUrl;
+      } catch (error) {
+        console.error('이미지 업로드 오류:', error);
+        throw error;
+      }
+    },
+  
     async save() {
-      if(this.title == '' || this.date == '' || this.place == ''){
+      if (this.title == '' || this.date == '' || this.place == '') {
         alert('빈 값을 다 채워주세요');
         return;
       }
@@ -117,10 +148,10 @@ export default {
         alert('회의록 저장 실패');
       }
     },
-    goMeetingMinutes(){
+    goMeetingMinutes() {
       this.main = true;
       const chk = confirm('저장되지 않은 변경 사항이 있습니다. 정말 나가시겠습니까?');
-      if(chk) {
+      if (chk) {
         this.$router.go();
       }
       else return;
@@ -152,30 +183,30 @@ export default {
         .then((res) => {
           console.log(res);
           this.logs = res.data;
-          this.$nextTick(() => { 
-            this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight; 
+          this.$nextTick(() => {
+            this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
           });
         })
         .catch((err) => console.log(err));
-        
-        const serverUrl = 'http://localhost:3000';
-        this.socket = io(serverUrl);
-        this.socket.on("welcome", () => {console.log("new member join!")});
-        this.socket.emit("enter_openChat", sessionStorage.getItem('meetingMinuteId'));
-        this.socket.on("new_message", chat => {
-          // console.log(`${chat.context}`);
-          this.logs.push(chat);
-          this.$nextTick(() => {
-            // 모든 DOM 업데이트가 완료된 후에 실행
-              this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
-            });
+
+      const serverUrl = 'http://localhost:3000';
+      this.socket = io(serverUrl);
+      this.socket.on("welcome", () => { console.log("new member join!") });
+      this.socket.emit("enter_openChat", sessionStorage.getItem('meetingMinuteId'));
+      this.socket.on("new_message", chat => {
+        // console.log(`${chat.context}`);
+        this.logs.push(chat);
+        this.$nextTick(() => {
+          // 모든 DOM 업데이트가 완료된 후에 실행
+          this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
         });
+      });
     },
 
     send(event) {
       event.stopPropagation(); // 이벤트 전파를 멈춥니다.
       console.log("room체크: " + sessionStorage.getItem('meetingMinuteId'));
-      if(this.context !== "") {
+      if (this.context !== "") {
         const chat = {
           roomName: sessionStorage.getItem('meetingMinuteId'),
           context: this.context,
@@ -188,7 +219,7 @@ export default {
         this.context = "";
         this.socket.emit("new_message", chat, () => {
           this.$nextTick(() => {
-          // 모든 DOM 업데이트가 완료된 후에 실행
+            // 모든 DOM 업데이트가 완료된 후에 실행
             // this.scrollToBottom();
             // this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
             chat.board_id = this.board_id;
@@ -198,10 +229,10 @@ export default {
               .catch((err) => console.log(err));
           });
         });
-        
+
       }
     },
-    
+
   },
 }
 </script>
@@ -234,6 +265,7 @@ export default {
   width: 70%;
   margin-right: 10px;
 }
+
 .editor-content {
   width: 100%;
 }
@@ -242,9 +274,11 @@ export default {
   width: 30%;
   margin-right: 10px;
 }
+
 .editor-location {
   width: 30%;
 }
+
 .editor-right {
   margin-left: 10px;
   height: 90vh;
@@ -254,6 +288,7 @@ export default {
   align-items: center;
   justify-content: center;
 }
+
 .editor-right-menu {
   margin: 10px;
   height: 5vh;
@@ -262,18 +297,19 @@ export default {
   align-items: center;
   justify-content: flex-end;
 }
-.editor-chat{
+
+.editor-chat {
   border: 1px solid #ccc;
   height: 550px;
   width: 100%;
   border-radius: 10px;
 }
-.editor-chat-content{
+
+.editor-chat-content {
   height: 512px;
   overflow: scroll;
 }
 
 .btn {
   margin-left: 10px;
-}
-</style>
+}</style>
