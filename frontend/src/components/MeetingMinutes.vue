@@ -91,7 +91,7 @@ export default {
     async goEditor() {  
       try {
         this.isWrite = true;
-        this.$store.commit('setMeetingMinute', null);
+        // this.$store.commit('setMeetingMinute', null);
 
         await axios.post('/api/meeting', {
           board_id: sessionStorage.getItem('board_id'),
@@ -136,7 +136,7 @@ export default {
     this.board_name = sessionStorage.getItem('board_name');
     this.member_id = sessionStorage.getItem('member_id');
     this.board_id = sessionStorage.getItem('board_id');
-    this.$store.commit('setMeetingMinute', null);
+    // this.$store.commit('setMeetingMinute', null);
     try {
       const boardId = sessionStorage.getItem('board_id');
       const res = await axios.get("/api/meeting/" + boardId);

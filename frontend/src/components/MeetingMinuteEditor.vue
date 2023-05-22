@@ -84,8 +84,9 @@ export default {
     leave(event) {
       // 리스트에 있거나 나가기 버튼 외에 새로고침 방지 메소드
       if (this.main === false && this.isWrite === true) {
-      event.preventDefault();
-      event.returnValue = '';
+        event.preventDefault();
+        event.returnValue = '';
+        
       }
     },
     async save() {
