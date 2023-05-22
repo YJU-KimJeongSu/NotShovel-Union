@@ -1,7 +1,5 @@
 const members = require("../models/members");
 const projects = require("../models/projects");
-const multer = require('multer');
-const path = require('path');
 
 exports.save = async (req, res) => {
   try {
@@ -68,27 +66,6 @@ exports.findProjects = async (req, res) => {
   } catch (err) {
     return res.status(400).send(err);
   }
-};
-
-exports.imageUpload = (req, res) => {
-  const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, 'public/images');
-    },
-    filename: function (req, file, cb) {
-      cb(null, Date.now() + path.extname(file.originalname));
-    }
-  });
-  const upload = multer({ storage: storage });
-
-  upload.single('image')(req, res, function (err) {
-    if (err) {
-      return res.status(400).json({ message: '이미지 업로드 실패' });
-    }
-    const { filename, mimetype, size } = req.file;
-    return res.json({ filename: filename });
-
-  });
 };
 
 exports.findAuth = async (req, res, next) => {
