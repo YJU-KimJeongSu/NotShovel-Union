@@ -17,7 +17,7 @@
     <div class="editor-right">
       <div class="editor-right-menu">
         <button type="submit" class="btn btn-outline-primary" @click="save()">작성완료</button>
-        <button type="button" class="btn btn-outline-secondary" @click="goMeetingMinutes()">나가기</button>
+        <button type="button" class="btn btn-outline-secondary" @click="deleteMeetingMinutes()">삭제</button>
       </div>
       <div class="editor-chat">
         <div class="editor-chat-content" ref="chatBox">
@@ -77,19 +77,32 @@ export default {
     // this.roomName = sessionStorage.getItem('meetingMinuteId');
 
     this.date = new Date().toISOString().slice(0, 10);
-    window.addEventListener('beforeunload', this.leave);
+    // window.addEventListener('beforeunload', this.leave);
   },
-  beforeUnmount() {
-    window.removeEventListener('beforeunload', this.leave);
+  // beforeUnmount() {
+  //   window.removeEventListener('beforeunload', this.leave);
+  // },
+  async beforeDestroy() {
+    if (this.title == null
+      || this.title == ""
+      || this.date == null
+      || this.date == ""
+      || this.place == null
+      || this.place == "") {
+      const meetingMinuteId = sessionStorage.getItem('meetingMinuteId');
+      await axios.delete(`/api/meeting?board_id=${this.board_id}&meetingMinuteId=${meetingMinuteId}`);
+    } else {
+      await this.save();
+    }
   },
   methods: {
-    leave(event) {
-      // 리스트에 있거나 나가기 버튼 외에 새로고침 방지 메소드
-      if (this.main === false && this.isWrite === true) {
-        event.preventDefault();
-        event.returnValue = '';
-      }
-    },
+    // leave(event) {
+    //   // 리스트에 있거나 나가기 버튼 외에 새로고침 방지 메소드
+    //   if (this.main === false && this.isWrite === true) {
+    //     event.preventDefault();
+    //     event.returnValue = '';
+    //   }
+    // },
     async onUploadImage(blob, callback) {
       const formData = new FormData();
       formData.append('file', blob);
@@ -148,13 +161,20 @@ export default {
         alert('회의록 저장 실패');
       }
     },
-    goMeetingMinutes() {
-      this.main = true;
-      const chk = confirm('저장되지 않은 변경 사항이 있습니다. 정말 나가시겠습니까?');
-      if (chk) {
-        this.$router.go();
+    async deleteMeetingMinutes() {
+      try {
+        const meetingMinuteId = sessionStorage.getItem('meetingMinuteId');
+        const chk = confirm('삭제하면 되돌릴 수 없습니다. 정말 삭제하시겠습니까?');
+        if (chk) {
+          await axios.delete(`/api/meeting?board_id=${this.board_id}&meetingMinuteId=${meetingMinuteId}`);
+          this.main = true;
+          this.$router.go();
+        }
+        else return;
+      } catch (err) {
+        console.log(err);
       }
-      else return;
+
     },
     getContent() {
       return this.$refs.toastEditor.invoke('getMarkdown');

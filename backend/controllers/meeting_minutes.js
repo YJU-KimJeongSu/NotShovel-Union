@@ -97,7 +97,7 @@ exports.getAllList = async (req, res) => {
         writer_name: minute.member_ids.name,
       };
     });
-    console.log(data);
+    // console.log(data);
 
     return res.status(200).json(data);
   } catch (err) {
@@ -177,3 +177,18 @@ exports.getMinuteChattings = async(req, res) => {
     res.status(500).json({ message: "채팅 불러오기 실패" });
   }
 };
+
+exports.deleteMeetingMinute = async (req, res) => {
+  const { meetingMinuteId, board_id } = req.query;
+  console.log("meetingMinuteId", meetingMinuteId);
+  console.log("board_id", board_id);
+  try {
+    const filter = { _id: board_id };
+    const update = { $pull: { meeting_minutes: { _id: meetingMinuteId} } };
+    await meetingMinutes.updateOne(filter, update);
+    res.status(200).send();
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: '삭제 실패' });
+  }
+}
