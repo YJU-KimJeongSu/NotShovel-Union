@@ -9,10 +9,12 @@ const meeting_minutes = new Schema({
     
     // 회의록 내용 - 채팅
     meeting_chattings: [{
+        roomName: { type: String },
         context: { type: String }, // req
         type: { type: String, enum: ['normal', 'reply', 'mention', 'file']}, // req
         date: { type: Date, default: Date.now },
-        member_id: { type: Schema.Types.ObjectId, ref: 'members'}, // req
+        member_id: { type: Schema.Types.ObjectId, ref: 'members'}, // req,
+        name: { type: String },
         attached_file: {
             file_name: { type: String}, // req
             file_extension: String, // 확장자 없는 파일 올렸을 때 에러 방지용으로 required설정 x
@@ -26,7 +28,7 @@ const meeting_minutes = new Schema({
         place: String,
         create_date: { type: Date, default: Date.now }, // 회의록 작성한 날짜
         modify_date: [ { type: Date, default: Date.now } ],
-        member_ids: { type: Schema.Types.ObjectId, ref: 'members' }
+        member_ids: { type: Schema.Types.ObjectId, ref: 'members' },
     }]
 });
 
