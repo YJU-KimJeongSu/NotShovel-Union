@@ -91,7 +91,7 @@ export default {
         id: null,
         name: null,
         description: null,
-        image: 'default.jpg',
+        image: null,
         link: null
       },
       member_id: null, // 회원 본인 아이디

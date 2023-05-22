@@ -35,7 +35,7 @@ export default {
       name: null,
       description: null,
       member_id: sessionStorage.getItem('member_id'),
-      image: null,
+      image: 'https://notshovel-union-bucket.s3.ap-northeast-2.amazonaws.com/dafaultImage.png',
       link: null,      
     }
   },
@@ -44,6 +44,10 @@ export default {
       try {
         if (this.name == null) {
           alert('프로젝트 이름을 입력해주세요.');
+          return;
+        }
+        if(this.description == null) {
+          alert('프로젝트 설명을 입력해주세요.');
           return;
         }
 
