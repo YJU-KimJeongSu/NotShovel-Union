@@ -15,7 +15,7 @@
     <!-- 초대링크 -->
     <div class="mb-3 project-form" v-else>
       <h2>생성 완료</h2>
-      <img :src="`http://localhost:3000/images/${image}`"  class="project-photo">
+      <img :src="image"  class="project-photo">
       <p>{{ this.name }} 프로젝트가 생성 완료되었습니다!</p>
       <p>초대링크
         <input type="text" v-model="link">
@@ -35,8 +35,8 @@ export default {
       name: null,
       description: null,
       member_id: sessionStorage.getItem('member_id'),
-      image: 'DefaultImage.png',
-      link: null,
+      image: null,
+      link: null,      
     }
   },
   methods: {
@@ -67,18 +67,48 @@ export default {
         alert('프로젝트 추가 실패');
       }
     },
-
-    async saveImage(){
-      const formData = new FormData();
-        const image = this.$refs['image'].files[0];
-        formData.append('image', image);
-
-        const { data: { filename } } = await axios.post('/api/project/upload', 
-        formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
+    async saveImage() {
+      try {
+        const selectedFile = this.$refs.image.files[0];
+        const maxSize = 5 * 1024 * 1024;
+        const fileSize = selectedFile.size;
+        if (fileSize > maxSize) {
+          alert("첨부파일 사이즈는 5MB 이내로 등록 가능합니다.");
+          return;
+        }
+        const filename = selectedFile.name;  
+        const type = filename.split('.').pop().toLowerCase();
+        
+        const res = await axios.get('/api/s3/url', {
+          params: { filename },
         });
-        this.image = filename;
+        const encodedFileName = res.data.encodedFileName;
+        const presignedUrl = res.data.presignedUrl;
+        
+        await axios.put(presignedUrl, selectedFile)
+        .then((res) => {
+          this.image = 'https://notshovel-union-bucket.s3.ap-northeast-2.amazonaws.com/public/'+encodedFileName;
+          
+          // console.log(res);
+        })
+
+        console.log('이미지 업로드 완료');
+      } catch (error) {
+        console.error('이미지 업로드 오류:', error);
+      }
     },
+
+    // async saveImage(){
+    //   const formData = new FormData();
+    //     const image = this.$refs['image'].files[0];
+    //     formData.append('image', image);
+
+    //     const { data: { filename } } = await axios.post('/api/project/upload', 
+    //     formData, {
+    //       headers: { 'Content-Type': 'multipart/form-data' }
+    //     });
+    //     this.image = filename;
+    // },
 
     linkCopy() {
       this.$copyText(this.link);

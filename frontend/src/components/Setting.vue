@@ -136,10 +136,15 @@ export default {
     },
     async updateProject() {
       try {
-        if (this.project.name == null) {
+        if (this.project.name == null || this.project.name == '') {
           alert('프로젝트 이름을 입력해주세요.');
           return;
         }
+        if(this.project.description == null || this.project.description == '') {
+          alert('프로젝트 설명을 입력해주세요.');
+          return;
+        }
+
         await axios.patch('/api/project', {
           name: this.project.name,
           description: this.project.description,
@@ -154,7 +159,7 @@ export default {
 
       } catch (err) {
         console.error(err);
-        alert('프로젝트 추가 실패');
+        alert('프로젝트 수정 실패');
       }
     },
     linkCopy() {
@@ -163,15 +168,31 @@ export default {
     },
 
     async saveImage() {
-      const formData = new FormData();
-      const image = this.$refs['image'].files[0];
-      formData.append('image', image);
+      try {
+        const selectedFile = this.$refs.image.files[0];
+        const maxSize = 5 * 1024 * 1024;
+        const fileSize = selectedFile.size;
+        if (fileSize > maxSize) {
+          alert("첨부파일 사이즈는 5MB 이내로 등록 가능합니다.");
+          return;
+        }
+        const filename = selectedFile.name; 
 
-      const { data: { filename } } = await axios.post('/api/project/upload',
-        formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      this.project.image = filename;
+        const res = await axios.get('/api/s3/url', {
+          params: { filename },
+        });
+        const encodedFileName = res.data.encodedFileName;
+        const presignedUrl = res.data.presignedUrl;
+        
+        await axios.put(presignedUrl, selectedFile)
+        .then((res) => {
+          this.project.image = 'https://notshovel-union-bucket.s3.ap-northeast-2.amazonaws.com/public/'+encodedFileName;
+        })
+
+        console.log('이미지 업로드 완료');
+      } catch (error) {
+        console.error('이미지 업로드 오류:', error);
+      }
     },
 
     async chkPw() {

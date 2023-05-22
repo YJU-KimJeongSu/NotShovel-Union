@@ -70,8 +70,6 @@ exports.findProjects = async (req, res) => {
   }
 };
 
-
-
 exports.imageUpload = (req, res) => {
   const storage = multer.diskStorage({
     destination: function (req, file, cb) {

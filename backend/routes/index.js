@@ -4,6 +4,7 @@ const ganttController = require('../controllers/gantt_charts');
 const boardController= require('../controllers/common/board');
 const meetingController = require('../controllers/meeting_minutes');
 const chatController = require('../controllers/chattings');
+const s3Controller = require('../controllers/s3');
 
 module.exports = (app) => {
   //member
@@ -21,7 +22,7 @@ module.exports = (app) => {
   app.patch('/api/project', projectController.updateProject);
   app.delete('/api/project', projectController.deleteProject);
   
-  app.post('/api/project/upload', projectController.imageUpload);
+  // app.post('/api/project/upload', projectController.imageUpload);
   app.get('/api/project/authority', projectController.findAuth);
 
   app.get('/api/project/members', projectController.findMembers);
@@ -49,4 +50,7 @@ module.exports = (app) => {
   // chattings
   app.post('/api/chat', chatController.insertChat);
   app.get('/api/chat/list', chatController.getChatList);
+
+  // s3
+  app.get('/api/s3/url',  s3Controller.getPresignedURL);
 };
