@@ -20,7 +20,8 @@ const meeting_minutes = new Schema({
     }],
 
     // 회의록 내용 - 본문
-    meeting_minutes : [ {title: { type: String }, // req
+    meeting_minutes : [ {
+        title: { type: String }, // req
         context: { type: String }, // req
         date: { type: Date, default: Date.now }, // 회의한 날짜
         place: String,

@@ -39,11 +39,18 @@ exports.update = async (req, res) => {
     };
 
     const result = await meetingMinutes.findOneAndUpdate(
-      { "_id": board_id, "meeting_minutes._id": meetingMinuteId }, 
-      { $set: { "meeting_minutes.$": updatedMeetingMinutes} }, 
-      { new: true } 
+      { "_id": board_id, "meeting_minutes._id": meetingMinuteId },
+      { $set: {
+          "meeting_minutes.$.title": title,
+          "meeting_minutes.$.date": date,
+          "meeting_minutes.$.context": context,
+          "meeting_minutes.$.place": place,
+          "meeting_minutes.$.member_ids": member_id
+        }
+      }, 
+      { new: true }
     );
-
+    
     res.status(200).json({ message: "회의록 저장 완료", data: result });
   } catch (error) {
     console.error(error);

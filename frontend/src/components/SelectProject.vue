@@ -4,9 +4,8 @@
     <div class="inner2" v-if="projects.length != 0">
       <Flicking :options="{ circular: true }" :plugins="plugins">
         <!-- 해당 아이디가 소속한 프로젝트 도는 반복문 -->
-        <div class="card-panel" v-for="(project, index) in projects" :key="index" @click="selectProject(project)">
-        <!-- <div class="card-panel" v-for="(project, index) in projects" :key="index" @click="selectProject(project)"
-          :style="`background-image: url(http://localhost:3000/images/${project.image})`"> -->
+        <div class="card-panel" v-for="(project, index) in projects" :key="index" @click="selectProject(project)"
+          :style="`background-image: url(${project.image})`">
           {{ project.name }}
         </div>
       </Flicking>
