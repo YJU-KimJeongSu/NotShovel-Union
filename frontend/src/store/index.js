@@ -6,22 +6,35 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    // meetingMinute: {}, // MeetingMinutes에서 MeetingMinuteEditor 페이지로 이동할 때 사용
+    token: null,
+    // meetingMinute: {},
   },
   getters: {
     // getMeetingMinute(state) {
     //   return state.meetingMinute;
-    // }
+    // },
+    getToken(state) {
+      return state.token;
+    }
   },
   mutations: {
     // setMeetingMinute(state, meetingMinute) {
     //   state.meetingMinute = meetingMinute;
     // },
+    setToken(state, token) {
+      state.token = token;
+    },
+    clearToken(state) {
+      state.token = null;
+    }
   },
   actions: {
-
-  },
-  modules: {
+    login({ commit }, token) {
+      commit('setToken', token);
+    },
+    logout({ commit }) {
+      commit('clearToken');
+    }
   },
   plugins: [createPersistedState()],
 })

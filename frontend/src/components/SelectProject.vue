@@ -34,18 +34,21 @@ export default {
     }
   },
   async mounted() {
-    try {
-      const member_id = sessionStorage.getItem('member_id');
-      const res = await axios.get('/api/project', {
-        params: {
-          member_id: member_id
-        }
-      });
-      this.projects = res.data;
-    } catch (err) {
-      console.error(err);
-    }
-  },
+  try {
+    const member_id = sessionStorage.getItem('member_id');
+    const res = await axios.get('/api/project', {
+      params: {
+        member_id: member_id
+      },
+      headers: {
+        Authorization: `Bearer ${this.$store.state.token}` // 헤더에 토큰 추가
+      }
+    });
+    this.projects = res.data;
+  } catch (err) {
+    console.error(err);
+  }
+},
   methods: {
     selectProject(index) {
       eventBus.$emit('project', index);

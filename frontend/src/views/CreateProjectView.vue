@@ -56,6 +56,10 @@ export default {
           description: this.description,
           image: this.image,
           member_id: this.member_id,
+        }, {
+          headers: {
+        Authorization: `Bearer ${this.$store.state.token}` // 헤더에 토큰 추가
+      }
         })
           .catch((err) => {
             if (err.response.status === 404) {
@@ -85,6 +89,9 @@ export default {
         
         const res = await axios.get('/api/s3/url', {
           params: { filename },
+          headers: {
+        Authorization: `Bearer ${this.$store.state.token}` // 헤더에 토큰 추가
+      }
         });
         const encodedFileName = res.data.encodedFileName;
         const presignedUrl = res.data.presignedUrl;

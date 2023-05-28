@@ -1,58 +1,7 @@
 const members = require('../models/members');
 const multer = require('multer');
 const path = require('path');
-const bcrypt = require('bcrypt');
 const { smtpTransport } = require('../config/email');
-
-exports.signUp = async (req, res, next) => {
-    try {
-      const member = await members.findOne({email: req.body.email});
-      if (member) return res.status(409).send({error: 'duplicate email'});
-
-      const phoneCheck = await members.findOne({phone_number: req.body.phone_number});
-      if (phoneCheck) return res.status(409).send({error: 'duplicate phone'});
-
-      const newMember = {
-        email: req.body.email,
-        password: await bcrypt.hash(req.body.password, 11),
-        name: req.body.name,
-        phone_number: req.body.phone_number, 
-      }
-      await members.create(newMember);
-      return res.status(201).send();
-    } catch (err) {
-      console.log(err);
-      return res.status(500).send(err);
-    }
-};
-
-exports.signIn = async (req, res, next) => {
-    try {
-      const email = req.body.email;
-      const reqPassword = req.body.password;
-      const member = await members.findOne({email});
-      if (!member) return res.status(401).send('wrong');
-      else if (member.state === '0') return res.status(404).send('Member not found');
-      bcrypt.compare(reqPassword, member.password, (err, result) => {
-        if (err) {
-          console.log(err);
-          return res.status(500).send(err);
-        } else if (result) {
-          const loginData = {
-            member_id: member._id,
-            name: member.name,
-            image: member.image || 'DefaultImage.png',
-          }
-          return res.status(201).send(loginData);
-        } else {
-          return res.status(401).send('wrong');
-        }
-      })
-    } catch(err) {
-      console.log(err);
-      return res.status(500).send(err);
-    }
-};
 
 exports.editMember = async (req, res, next) => {
   const filter = { _id: req.body.member_id };
