@@ -143,6 +143,7 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin-left: 25%;
 }
 
 .container > h2 {

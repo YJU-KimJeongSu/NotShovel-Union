@@ -2,6 +2,7 @@ const members = require('../models/members');
 const multer = require('multer');
 const path = require('path');
 const { smtpTransport } = require('../config/email');
+const bcrypt = require('bcrypt');
 
 exports.editMember = async (req, res, next) => {
   const filter = { _id: req.body.member_id };
