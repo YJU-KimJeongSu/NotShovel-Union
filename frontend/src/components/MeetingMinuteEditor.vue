@@ -206,10 +206,9 @@ export default {
     loadSavedMeetingMinute(meetingMinute) {
       this.title = meetingMinute.title;
       this.setContent(meetingMinute.context);
-      this.date = meetingMinute.date.slice(0, 10);
+      if (meetingMinute.date != null) this.date = meetingMinute.date.slice(0, 10);
       this.place = meetingMinute.place;
       sessionStorage.setItem('meetingMinuteId', meetingMinute._id);
-
       console.log('sessionId load 체크: ' + sessionStorage.getItem('meetingMinuteId'));
 
       console.log('대화요청');

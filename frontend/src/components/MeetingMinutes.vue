@@ -32,7 +32,7 @@
         </thead>
         <tbody>
           <tr v-for="meetingMinute in meetingMinuteList" @click="getDetailMeetingMinute(meetingMinute._id)">
-              <td>{{ meetingMinute.title || String(meetingMinute.date).slice(0,10) + " - 제목 없는 회의록" }}&nbsp;&nbsp;&nbsp;<span class="new" v-if="newMeetingMinuteChecker(meetingMinute.date)">N</span></td>
+              <td>{{ meetingMinute.title || temporalTitle(meetingMinute.date) }}&nbsp;&nbsp;&nbsp;<span class="new" v-if="newMeetingMinuteChecker(meetingMinute.date)">N</span></td>
               <td>{{ meetingMinute.writer_name }}</td>
               <td>{{ String(meetingMinute.date).slice(5,10) }}</td>
           </tr>
@@ -144,7 +144,11 @@ export default {
       let mDate = new Date(date);
       mDate.setHours(0, 0, 0, 0);
       return mDate >= threeDaysAgo;
-    }
+    },
+    temporalTitle(date) {
+      if (date != null) return String(date).slice(0,10) + " - 제목 없는 회의록";
+      return '제목 없는 회의록';
+    },
   },
   async mounted() {
     this.board_name = sessionStorage.getItem('board_name');
