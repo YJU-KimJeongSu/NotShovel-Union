@@ -21,7 +21,7 @@ exports.save = async (req, res) => {
     );
 
     if (member) {
-      res.json({ id: project_id }); // 원래 member 객체를 보냈으나, member는 안쓰이는 것 같아서 project_id만 보내게 수정
+      res.json({ id: project_id });
     } else {
       res.status(404).send();
     }

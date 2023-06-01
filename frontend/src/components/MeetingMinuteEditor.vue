@@ -7,11 +7,7 @@
         <input type="text" class="form-control editor-date" v-model="place" placeholder="장소">
       </div>
       <div class="editor-content">
-        <Editor ref="toastEditor" 
-        initialEditType="wysiwyg" 
-        height="550px" 
-        previewStyle="vertical"
-        :options="options" />
+        <Editor ref="toastEditor" initialEditType="wysiwyg" height="550px" previewStyle="vertical" :options="options" />
       </div>
     </div>
     <div class="editor-right">
@@ -90,7 +86,14 @@ export default {
       || this.place == null
       || this.place == "") {
       const meetingMinuteId = sessionStorage.getItem('meetingMinuteId');
-      await axios.delete(`/api/meeting?board_id=${this.board_id}&meetingMinuteId=${meetingMinuteId}`);
+      await axios.delete(`/api/meeting?board_id=${this.board_id}&meetingMinuteId=${meetingMinuteId}`, {
+        headers: this.$store.getters.headers
+      })
+      .catch((err)=>{
+        if (err.response.status === 419) {
+            this.$store.dispatch('handleTokenExpired');
+        }
+      });
     } else {
       await this.save();
     }
@@ -119,6 +122,7 @@ export default {
       try {
         const res = await axios.get('/api/s3/url', {
           params: { filename: formData.get('file').name },
+          headers: this.$store.getters.headers
         });
         const encodedFileName = res.data.encodedFileName;
         const presignedUrl = res.data.presignedUrl;
@@ -128,11 +132,14 @@ export default {
         console.log('이미지 업로드 완료');
         return imageUrl;
       } catch (error) {
-        console.error('이미지 업로드 오류:', error);
+        if (err.response.status === 419) {
+            this.$store.dispatch('handleTokenExpired');
+          }
+        else console.error('이미지 업로드 오류:', error);
         throw error;
       }
     },
-  
+
     async save() {
       if (this.title == '' || this.date == '' || this.place == '') {
         alert('빈 값을 다 채워주세요');
@@ -151,14 +158,21 @@ export default {
           place: this.place,
           member_id,
           meetingMinuteId
+        }, {
+          headers: this.$store.getters.headers
         })
         this.main = true;
         alert('회의록 저장 완료');
         sessionStorage.removeItem('meetingMinuteId');
         this.$router.go();
       } catch (err) {
-        console.error(err);
-        alert('회의록 저장 실패');
+        if (err.response.status === 419) {
+            this.$store.dispatch('handleTokenExpired');
+          }
+        else {
+          console.error(err);
+          alert('회의록 저장 실패');
+        }
       }
     },
     async deleteMeetingMinutes() {
@@ -166,13 +180,18 @@ export default {
         const meetingMinuteId = sessionStorage.getItem('meetingMinuteId');
         const chk = confirm('삭제하면 되돌릴 수 없습니다. 정말 삭제하시겠습니까?');
         if (chk) {
-          await axios.delete(`/api/meeting?board_id=${this.board_id}&meetingMinuteId=${meetingMinuteId}`);
+          await axios.delete(`/api/meeting?board_id=${this.board_id}&meetingMinuteId=${meetingMinuteId}`, {
+            headers: this.$store.getters.headers
+          });
           this.main = true;
           this.$router.go();
         }
         else return;
       } catch (err) {
-        console.log(err);
+        if (err.response.status === 419) {
+            this.$store.dispatch('handleTokenExpired');
+          }
+        else console.log(err);
       }
 
     },
@@ -198,7 +217,7 @@ export default {
         params: {
           board_id: sessionStorage.getItem('board_id'),
           minute_id: sessionStorage.getItem('meetingMinuteId')
-        }
+        }, headers: this.$store.getters.headers
       })
         .then((res) => {
           console.log(res);
@@ -207,7 +226,12 @@ export default {
             this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
           });
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          if (err.response.status === 419) {
+            this.$store.dispatch('handleTokenExpired');
+          }
+          else console.log(err)
+        });
 
       const serverUrl = 'http://localhost:3000';
       this.socket = io(serverUrl);
@@ -244,9 +268,16 @@ export default {
             // this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
             chat.board_id = this.board_id;
             chat.minute_id = sessionStorage.getItem('meetingMinuteId');
-            axios.post('/api/meeting/chat', chat)
+            axios.post('/api/meeting/chat', chat, {
+              headers: this.$store.getters.headers
+            })
               .then((res) => console.log(res))
-              .catch((err) => console.log(err));
+              .catch((err) => {
+                if (err.response.status === 419) {
+                  this.$store.dispatch('handleTokenExpired');
+                }
+                else console.log(err)
+              });
           });
         });
 
@@ -332,4 +363,5 @@ export default {
 
 .btn {
   margin-left: 10px;
-}</style>
+}
+</style>

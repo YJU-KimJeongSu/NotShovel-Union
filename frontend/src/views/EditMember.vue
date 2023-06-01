@@ -42,6 +42,8 @@ export default {
           password: this.password,
           phone_number: this.phone_number,
           image: filename,
+        },{
+          headers: this.$store.getters.headers
         })
           .then((res) => {
             alert('정상적으로 수정되었습니다.');
@@ -50,8 +52,13 @@ export default {
             location.href = '/';
           })
           .catch((err) => {
-            console.log(err);
-            alert('수정에 실패했습니다.');
+            if (err.response.status === 419) {
+              this.$store.dispatch('handleTokenExpired');
+            }
+            else {
+              console.log(err);
+              alert('수정에 실패했습니다.');
+            }
           })
       }
     },
@@ -83,7 +90,8 @@ export default {
           data: {
             member_id: this.member_id,
             password: this.password
-          },
+          }, 
+          headers: this.$store.getters.headers
         })
           .then(() => {
             alert('정상적으로 탈퇴 처리가 되었습니다.');
@@ -95,7 +103,11 @@ export default {
             console.log(err);
             if (err.response.status === 404) {
               alert('잘못된 비밀번호입니다');
-            } else {
+            } 
+            else if (err.response.status === 419) {
+              this.$store.dispatch('handleTokenExpired');
+            }
+            else {
               alert('탈퇴에 실패했습니다.')
             }
           })

@@ -1,29 +1,23 @@
 <template>
   <div class="home">
-    <div class="inner" v-if="loginState == false">포트폴리오 들어갈 자리</div>
+    <PortFolio v-if="!this.$store.getters.getToken"></PortFolio>
     <SelectProject v-else></SelectProject>
   </div>
 </template>
 <script>
 import selectProject from '@/components/SelectProject.vue';
+import portFolio from '@/components/Portfolio.vue';
 
 export default {
-    data(){
-        return {
-            loginState: false // false면 로그아웃 상태, true면 로그인 상태
-        }
-    },
     mounted(){
-        if(sessionStorage.getItem('member_id')){
-            this.loginState = true;
-        }
         sessionStorage.removeItem('project_id');
         sessionStorage.removeItem('currentView');
         sessionStorage.removeItem('project_description');
         sessionStorage.removeItem('project_name');
     },
     components :{
-         SelectProject: selectProject
+         SelectProject: selectProject,
+         PortFolio: portFolio
     },
   }
 </script>
@@ -38,10 +32,4 @@ export default {
   transform: translateY(-50%);
 }
 
-.inner {
-  width: 70%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 </style>

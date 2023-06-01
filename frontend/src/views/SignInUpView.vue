@@ -100,7 +100,7 @@ export default {
       } else if (this.authState != 2) {
         alert('이메일 인증을 진행해주세요');
       } else {
-        await axios.post("/api/member/signup", {
+        await axios.post("/api/auth/signup", {
           name: this.signup.name,
           email: this.signup.email,
           password: this.signup.password,
@@ -109,7 +109,7 @@ export default {
           .then((res) => {
             console.log(res);
             alert('회원가입에 성공했습니다.');
-            router.go(0); // 새로고침
+            router.go(0);
           })
           .catch((err) => {
             if (err.response.status === 409) {
@@ -133,15 +133,15 @@ export default {
       ) {
         alert('비어있는 칸이 있습니다');
       } else {
-        await axios.post("/api/member/signin", {
+        await axios.post("/api/auth/signin", {
           email: this.signin.email,
           password: this.signin.password,
         })
           .then((res) => {
-            // console.log(res.data);
             sessionStorage.setItem('member_id', res.data.member_id);
             sessionStorage.setItem('member_name', res.data.name);
             sessionStorage.setItem('member_image', res.data.image);
+            this.$store.dispatch('login', res.data.token);
             location.href = '/';
           })
           .catch((err) => {

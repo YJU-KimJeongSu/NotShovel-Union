@@ -4,19 +4,21 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const connect = require('./models');
-const app = express();
 const dotenv = require('dotenv');
-const SocketIO = require('socket.io');
 const cors = require('cors');
+const SocketIO = require('socket.io');
+const passport = require("passport");
+const session = require("express-session");
 
-dotenv.config();
-
+const app = express();
+const passportConfig = require("./passport");
 const PORT = process.env.PORT;
+dotenv.config();
+passportConfig();
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-// db 연결
 connect();
 
 app.use(logger('dev'));
@@ -25,15 +27,29 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 // app.use(express.static(path.join(__dirname, '/public')));
 app.use(express.static(__dirname + '/public'));
+app.use(
+  session({
+    resave: false,
+    saveUninitialized: false,
+    secret: process.env.COOKIE_SECRET,
+    cookie: {
+      httpOnly: true,
+      secure: false,
+    },
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(cors({
+  credentials: true,
+}));
 
 require('./routes')(app);
 
-// catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
 
-// error handler
 app.use(function(err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -41,8 +57,6 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
-
 
 const HttpServer = app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
 

@@ -4,9 +4,9 @@
         <router-link to="/" class="navbar-brand"><img src="../assets/logo2.png" width="120"></router-link>
         <p v-if="member_name" class="name">{{ member_name }}님 환영합니다!</p>
         <form class="d-flex" role="search">
-          <button v-if="!loginState" class="btn btn-outline-light" @click="$router.push('signinup')" >로그인</button>
-          <button v-if="loginState" class="btn btn-outline-light" @click="$router.push('editmember')" >회원정보 수정</button>
-          <button v-if="loginState" class="btn btn-outline-light" @click="logout()" >로그아웃</button>
+          <button v-if="!this.$store.getters.getToken" class="btn btn-outline-light" @click="$router.push('signinup')" >로그인</button>
+          <button v-if="this.$store.getters.getToken" class="btn btn-outline-light" @click="$router.push('editmember')" >회원정보 수정</button>
+          <button v-if="this.$store.getters.getToken" class="btn btn-outline-light" @click="logout()" >로그아웃</button>
         </form>
       </div>
     </nav>
@@ -18,26 +18,18 @@ export default {
   name: 'Header',
 
   data() {
-    return {
-      loginState: false, // false면 로그아웃 상태, true면 로그인 상태
-      member_name: sessionStorage.getItem('member_name'),
+    return {      
+      member_name: null,
     }
   },
   methods: {
-    logout() {
-      sessionStorage.removeItem('member_id');
-      sessionStorage.removeItem('member_name');
-      this.loginState = false;
-      this.member_name = null;
+    logout() {  
+      this.$store.dispatch('logout'); 
       location.href = '/';
     },
   },
   mounted() {
-    if (!sessionStorage.getItem('member_id')) {
-      this.loginState = false;
-    } else {
-      this.loginState = true;
-    }
+    this.member_name =sessionStorage.getItem('member_name');
   }
 }
 </script>
