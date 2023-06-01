@@ -2,11 +2,11 @@
   <div class="editor-all">
     <div class="editor-form">
       <div class="editor-menu">
-        <input type="text" class="form-control editor-title" v-model="title" placeholder="제목">
-        <input type="date" class="form-control editor-date" v-model="date">
-        <input type="text" class="form-control editor-date" v-model="place" placeholder="장소">
+        <input type="text" class="form-control editor-title" v-model="title" placeholder="제목" @keyup="socketIoTitle()">
+        <input type="date" class="form-control editor-date" v-model="date" @change="socketIoDate()">
+        <input type="text" class="form-control editor-date" v-model="place" placeholder="장소" @keyup="socketIoPlace()">
       </div>
-      <div class="editor-content">
+      <div class="editor-content" @keyup="socketIoContext()">
         <Editor ref="toastEditor" initialEditType="wysiwyg" height="550px" previewStyle="vertical" :options="options" />
       </div>
     </div>
@@ -56,7 +56,7 @@ export default {
         language: "ko",
         hooks: {
           addImageBlobHook: this.onUploadImage
-        }
+        },
       },
     }
   },
@@ -72,20 +72,20 @@ export default {
     this.board_id = sessionStorage.getItem('board_id');
     // this.roomName = sessionStorage.getItem('meetingMinuteId');
 
-    this.date = new Date().toISOString().slice(0, 10);
+    // 작성 버튼 -> 나가기만해도 date가 있어서 저장이 되는 관계로 삭제
+    // this.date = new Date().toISOString().slice(0, 10);
     // window.addEventListener('beforeunload', this.leave);
   },
   // beforeUnmount() {
   //   window.removeEventListener('beforeunload', this.leave);
   // },
   async beforeDestroy() {
-    if (this.title == null
-      || this.title == ""
-      || this.date == null
-      || this.date == ""
-      || this.place == null
-      || this.place == "") {
-      const meetingMinuteId = sessionStorage.getItem('meetingMinuteId');
+    const meetingMinuteId = sessionStorage.getItem('meetingMinuteId');
+    if (meetingMinuteId == null) return;
+    
+    if ((this.title == null || this.title == "")
+      && (this.date == null || this.date == "")
+      && (this.place == null || this.place == "")) {
       await axios.delete(`/api/meeting?board_id=${this.board_id}&meetingMinuteId=${meetingMinuteId}`, {
         headers: this.$store.getters.headers
       })
@@ -106,6 +106,41 @@ export default {
     //     event.returnValue = '';
     //   }
     // },
+    socketIoTitle() {
+      if (this.socket == null) return;
+      const data = {
+        roomName: sessionStorage.getItem('meetingMinuteId'),
+        title: this.title,
+      };
+      this.socket.emit('titleModified', data);
+    },
+    socketIoDate() {
+      // console.log(this.date);
+      if (this.socket == null) return;
+      const data = {
+        roomName: sessionStorage.getItem('meetingMinuteId'),
+        date: this.date,
+      };
+      this.socket.emit('dateModified', data);
+    },
+    socketIoPlace() {
+      // console.log(this.place);
+      if (this.socket == null) return;
+      const data = {
+        roomName: sessionStorage.getItem('meetingMinuteId'),
+        place: this.place,
+      };
+      this.socket.emit('placeModified', data);
+    },
+    socketIoContext() {
+      // console.log(this.getContent());
+      if (this.socket == null) return;
+      const data = {
+        roomName: sessionStorage.getItem('meetingMinuteId'),
+        content: this.getContent(),
+      };
+      this.socket.emit('contentModified', data);
+    },
     async onUploadImage(blob, callback) {
       const formData = new FormData();
       formData.append('file', blob);
@@ -141,7 +176,9 @@ export default {
     },
 
     async save() {
-      if (this.title == '' || this.date == '' || this.place == '') {
+      if ((this.title == null || this.title == "")
+      && (this.date == null || this.date == "")
+      && (this.place == null || this.place == "")) {
         alert('빈 값을 다 채워주세요');
         return;
       }
@@ -203,11 +240,10 @@ export default {
     },
     loadSavedMeetingMinute(meetingMinute) {
       this.title = meetingMinute.title;
-      this.setContent(meetingMinute.context);
-      this.date = meetingMinute.date.slice(0, 10);
+      if (meetingMinute.context != null) this.setContent(meetingMinute.context);
+      if (meetingMinute.date != null) this.date = meetingMinute.date.slice(0, 10);
       this.place = meetingMinute.place;
       sessionStorage.setItem('meetingMinuteId', meetingMinute._id);
-
       console.log('sessionId load 체크: ' + sessionStorage.getItem('meetingMinuteId'));
 
       console.log('대화요청');
@@ -244,6 +280,18 @@ export default {
           // 모든 DOM 업데이트가 완료된 후에 실행
           this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
         });
+      });
+      this.socket.on('titleModified', (title) => {
+        this.title = title;
+      });
+      this.socket.on('dateModified', (date) => {
+        this.date = date;
+      });
+      this.socket.on('placeModified', (place) => {
+        this.place = place;
+      });
+      this.socket.on('contentModified', (content) => {
+        this.setContent(content)
       });
     },
 

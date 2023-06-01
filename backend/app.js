@@ -80,5 +80,16 @@ io.on('connection', (socket) => {
     socket.to(chat.roomName).emit("new_message", chat);
     done();
   })
-  
+  socket.on('titleModified', (data) => {
+    socket.to(data.roomName).emit('titleModified', data.title);
+  });
+  socket.on('dateModified', (data) => {
+    socket.to(data.roomName).emit('dateModified', data.date);
+  });
+  socket.on('placeModified', (data) => {
+    socket.to(data.roomName).emit('placeModified', data.place);
+  });
+  socket.on('contentModified', (data) => {
+    socket.to(data.roomName).emit('contentModified', data.content);
+  });
 });

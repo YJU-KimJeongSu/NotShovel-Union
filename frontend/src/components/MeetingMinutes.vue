@@ -32,7 +32,7 @@
         </thead>
         <tbody>
           <tr v-for="meetingMinute in meetingMinuteList" @click="getDetailMeetingMinute(meetingMinute._id)">
-              <td>{{ meetingMinute.title }}</td>
+              <td>{{ meetingMinute.title || temporalTitle(meetingMinute.date) }}&nbsp;&nbsp;&nbsp;<span class="new" v-if="newMeetingMinuteChecker(meetingMinute.date)">N</span></td>
               <td>{{ meetingMinute.writer_name }}</td>
               <td>{{ String(meetingMinute.date).slice(5,10) }}</td>
           </tr>
@@ -136,6 +136,19 @@ export default {
     setEvents(events) {
       console.log(events);
     },
+    newMeetingMinuteChecker(date) {
+      const today = new Date();
+      let threeDaysAgo = new Date();
+      threeDaysAgo.setDate(today.getDate() - 3);
+      threeDaysAgo.setHours(0, 0, 0, 0);
+      let mDate = new Date(date);
+      mDate.setHours(0, 0, 0, 0);
+      return mDate >= threeDaysAgo;
+    },
+    temporalTitle(date) {
+      if (date != null) return String(date).slice(0,10) + " - 제목 없는 회의록";
+      return '제목 없는 회의록';
+    },
   },
   async mounted() {
     this.board_name = sessionStorage.getItem('board_name');
@@ -164,6 +177,7 @@ export default {
       else console.log(err);
     }
   },
+
 }
 </script>
 
@@ -256,6 +270,12 @@ td {
   }
 
 
+}
+
+.new {
+  color: red;
+  font-weight: 1000;
+  font-size: 11px;
 }
 
 .calendar {
@@ -362,7 +382,6 @@ td {
   display: inline-block;
   margin-bottom: 0;
   padding: 5px 10px;
-  float: left;
   cursor: pointer;
 }
 
