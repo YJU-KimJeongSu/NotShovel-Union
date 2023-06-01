@@ -32,7 +32,7 @@
         </thead>
         <tbody>
           <tr v-for="meetingMinute in meetingMinuteList" @click="getDetailMeetingMinute(meetingMinute._id)">
-              <td>{{ meetingMinute.title }}&nbsp;&nbsp;&nbsp;<span class="new" v-if="newMeetingMinuteChecker(meetingMinute.date)">N</span></td>
+              <td>{{ meetingMinute.title || String(meetingMinute.date).slice(0,10) + " - 제목 없는 회의록" }}&nbsp;&nbsp;&nbsp;<span class="new" v-if="newMeetingMinuteChecker(meetingMinute.date)">N</span></td>
               <td>{{ meetingMinute.writer_name }}</td>
               <td>{{ String(meetingMinute.date).slice(5,10) }}</td>
           </tr>
@@ -136,6 +136,15 @@ export default {
     setEvents(events) {
       console.log(events);
     },
+    newMeetingMinuteChecker(date) {
+      const today = new Date();
+      let threeDaysAgo = new Date();
+      threeDaysAgo.setDate(today.getDate() - 3);
+      threeDaysAgo.setHours(0, 0, 0, 0);
+      let mDate = new Date(date);
+      mDate.setHours(0, 0, 0, 0);
+      return mDate >= threeDaysAgo;
+    }
   },
   async mounted() {
     this.board_name = sessionStorage.getItem('board_name');
@@ -164,15 +173,7 @@ export default {
       else console.log(err);
     }
   },
-  newMeetingMinuteChecker(date) {
-    const today = new Date();
-    let threeDaysAgo = new Date();
-    threeDaysAgo.setDate(today.getDate() - 3);
-    threeDaysAgo.setHours(0, 0, 0, 0);
-    let mDate = new Date(date);
-    mDate.setHours(0, 0, 0, 0);
-    return mDate >= threeDaysAgo;
-  }
+
 }
 </script>
 
@@ -377,7 +378,6 @@ td {
   display: inline-block;
   margin-bottom: 0;
   padding: 5px 10px;
-  float: left;
   cursor: pointer;
 }
 
