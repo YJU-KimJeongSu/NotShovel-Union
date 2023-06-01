@@ -72,19 +72,17 @@ export default {
     this.board_id = sessionStorage.getItem('board_id');
     // this.roomName = sessionStorage.getItem('meetingMinuteId');
 
-    this.date = new Date().toISOString().slice(0, 10);
+    // 작성 버튼 -> 나가기만해도 date가 있어서 저장이 되는 관계로 삭제
+    // this.date = new Date().toISOString().slice(0, 10);
     // window.addEventListener('beforeunload', this.leave);
   },
   // beforeUnmount() {
   //   window.removeEventListener('beforeunload', this.leave);
   // },
   async beforeDestroy() {
-    if (this.title == null
-      || this.title == ""
-      || this.date == null
-      || this.date == ""
-      || this.place == null
-      || this.place == "") {
+    if ((this.title == null || this.title == "")
+      && (this.date == null || this.date == "")
+      && (this.place == null || this.place == "")) {
       const meetingMinuteId = sessionStorage.getItem('meetingMinuteId');
       await axios.delete(`/api/meeting?board_id=${this.board_id}&meetingMinuteId=${meetingMinuteId}`, {
         headers: this.$store.getters.headers
@@ -141,7 +139,9 @@ export default {
     },
 
     async save() {
-      if (this.title == '' || this.date == '' || this.place == '') {
+      if ((this.title == null || this.title == "")
+      && (this.date == null || this.date == "")
+      && (this.place == null || this.place == "")) {
         alert('빈 값을 다 채워주세요');
         return;
       }
