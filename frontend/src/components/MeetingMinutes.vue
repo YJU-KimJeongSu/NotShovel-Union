@@ -32,7 +32,7 @@
         </thead>
         <tbody>
           <tr v-for="meetingMinute in meetingMinuteList" @click="getDetailMeetingMinute(meetingMinute._id)">
-              <td>{{ meetingMinute.title }}</td>
+              <td>{{ meetingMinute.title }}&nbsp;&nbsp;&nbsp;<span class="new" v-if="newMeetingMinuteChecker(meetingMinute.date)">N</span></td>
               <td>{{ meetingMinute.writer_name }}</td>
               <td>{{ String(meetingMinute.date).slice(5,10) }}</td>
           </tr>
@@ -164,6 +164,15 @@ export default {
       else console.log(err);
     }
   },
+  newMeetingMinuteChecker(date) {
+    const today = new Date();
+    let threeDaysAgo = new Date();
+    threeDaysAgo.setDate(today.getDate() - 3);
+    threeDaysAgo.setHours(0, 0, 0, 0);
+    let mDate = new Date(date);
+    mDate.setHours(0, 0, 0, 0);
+    return mDate >= threeDaysAgo;
+  }
 }
 </script>
 
@@ -256,6 +265,12 @@ td {
   }
 
 
+}
+
+.new {
+  color: red;
+  font-weight: 1000;
+  font-size: 11px;
 }
 
 .calendar {
