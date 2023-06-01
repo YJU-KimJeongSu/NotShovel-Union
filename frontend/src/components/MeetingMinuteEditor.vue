@@ -80,10 +80,12 @@ export default {
   //   window.removeEventListener('beforeunload', this.leave);
   // },
   async beforeDestroy() {
+    const meetingMinuteId = sessionStorage.getItem('meetingMinuteId');
+    if (meetingMinuteId == null) return;
+    
     if ((this.title == null || this.title == "")
       && (this.date == null || this.date == "")
       && (this.place == null || this.place == "")) {
-      const meetingMinuteId = sessionStorage.getItem('meetingMinuteId');
       await axios.delete(`/api/meeting?board_id=${this.board_id}&meetingMinuteId=${meetingMinuteId}`, {
         headers: this.$store.getters.headers
       })
