@@ -1,7 +1,7 @@
 <template>
   <div class="form">
     <div class="manage-form" v-if="!select">
-      <button class="manage-btn" v-if="member_id == admin_id" @click="selectProjectMenu('project')">프로젝트 관리</button>
+      <button class="manage-btn" v-if="member_id == propsdata.admin_id" @click="selectProjectMenu('project')">프로젝트 관리</button>
       <button class="manage-btn" @click="selectProjectMenu('member')">회원 관리</button>
     </div>
 
@@ -34,8 +34,8 @@
     <div v-if="menu === 'memberInvite'" class="mb-3 project-form">
       <h2>초대링크 생성</h2>
       <p>해당 링크를 초대할 사람에게 전송해주세요!</p>
-        <input type="text" v-model="link" class="link">
-        <button type="button" @click="linkCopy">복사</button>
+      <input type="text" v-model="link" class="link">
+      <button type="button" @click="linkCopy">복사</button>
 
     </div>
     <div v-if="menu === 'memberUD'">
@@ -96,33 +96,19 @@ export default {
       },
       member_id: null, // 회원 본인 아이디
       admin_pw: null,
-      admin_id: null,
       manager_ids: [],
       allMembers: [], // 해당 프로젝트에 불러온 전체 회원들 정보(admin, manager 포함)
       managers: [], // 불러온 매니저들 정보
       members: [] // 불러온 일반 회원들 정보
     }
   },
+  props: ['propsdata'],
   async created() {
     this.project.id = sessionStorage.getItem('project_id');
     this.project.name = sessionStorage.getItem('project_name');
     this.project.description = sessionStorage.getItem('project_description');
     this.member_id = sessionStorage.getItem('member_id');
     this.link = `http://localhost:8080/register?id=${this.project.id}`;
-
-    await axios.get('/api/project/authority', {
-      params: {
-        project_id: this.project.id 
-      }
-    })
-      .then((res) => {
-        console.log(res);
-        const authData = res.data;
-        this.admin_id = authData.admin_id;
-        this.manager_ids = authData.manager_ids;
-        console.log("result: " + this.admin_id);
-      })
-      .catch((err) => console.log(err));
   },
   methods: {
     selectProjectMenu(arg) {
@@ -132,7 +118,6 @@ export default {
       if (arg == 'member') {
         this.getMember();
       }
-
     },
     async updateProject() {
       try {
@@ -140,7 +125,7 @@ export default {
           alert('프로젝트 이름을 입력해주세요.');
           return;
         }
-        if(this.project.description == null || this.project.description == '') {
+        if (this.project.description == null || this.project.description == '') {
           alert('프로젝트 설명을 입력해주세요.');
           return;
         }
@@ -150,16 +135,22 @@ export default {
           description: this.project.description,
           image: this.project.image,
           project_id: this.project.id,
+        }, {
+          headers: this.$store.getters.headers
         });
         this.menu = 'default';
         this.select = false;
         alert('변경이 완료되었습니다.');
         sessionStorage.setItem('project_name', this.project.name);
         sessionStorage.setItem('project_description', this.project.description);
-
       } catch (err) {
-        console.error(err);
-        alert('프로젝트 수정 실패');
+        if (err.response.status === 419) {
+          this.$store.dispatch('handleTokenExpired');
+        }
+        else {
+          console.error(err);
+          alert('프로젝트 수정 실패');
+        }
       }
     },
     linkCopy() {
@@ -176,38 +167,45 @@ export default {
           alert("첨부파일 사이즈는 5MB 이내로 등록 가능합니다.");
           return;
         }
-        const filename = selectedFile.name; 
+        const filename = selectedFile.name;
 
-        const res = await axios.get('/api/s3/url', {
+        const { data } = await axios.get('/api/s3/url', {
           params: { filename },
+          headers: this.$store.getters.headers
         });
-        const encodedFileName = res.data.encodedFileName;
-        const presignedUrl = res.data.presignedUrl;
-        
-        await axios.put(presignedUrl, selectedFile)
-        .then((res) => {
-          this.project.image = 'https://notshovel-union-bucket.s3.ap-northeast-2.amazonaws.com/public/'+encodedFileName;
-        })
+
+        const encodedFileName = data.encodedFileName;
+        const presignedUrl = data.presignedUrl;
+
+        await axios.put(presignedUrl, selectedFile);
+
+        this.project.image = `https://notshovel-union-bucket.s3.ap-northeast-2.amazonaws.com/public/${encodedFileName}`;
 
         console.log('이미지 업로드 완료');
       } catch (error) {
         console.error('이미지 업로드 오류:', error);
+        if (error.response && error.response.status === 419) {
+          this.$store.dispatch('handleTokenExpired');
+        }
       }
     },
-
     async chkPw() {
       try {
         await axios.post("/api/member/chkPw", {
-          id: this.admin_id,
+          id: this.propsdata.admin_id,
           password: this.admin_pw
+        }, {
+          headers: this.$store.getters.headers
         })
         console.log('비밀번호 확인 완료');
       } catch {
-        alert('비밀번호가 일치하지 않습니다.');
+        if (error.response && error.response.status === 419) {
+          this.$store.dispatch('handleTokenExpired');
+        }
+        else alert('비밀번호가 일치하지 않습니다.');
         throw err;
       }
     },
-
     async deleteProject() {
       try {
         const chk = confirm('정말 프로젝트를 삭제하시겠습니까?');
@@ -215,6 +213,8 @@ export default {
           await this.chkPw();
           await axios.delete('/api/project', {
             data: { project_id: this.project.id },
+          }, {
+            headers: this.$store.getters.headers
           });
           alert('삭제가 완료되었습니다.');
           sessionStorage.setItem('project_id', null);
@@ -225,8 +225,13 @@ export default {
         }
         else alert('프로젝트 삭제 실패');
       } catch (err) {
-        console.error(err);
-        alert('프로젝트 삭제 실패');
+        if (error.response && error.response.status === 419) {
+          this.$store.dispatch('handleTokenExpired');
+        }
+        else {
+          console.error(err);
+          alert('프로젝트 삭제 실패');
+        }
       }
     },
     async getMember() {
@@ -234,9 +239,14 @@ export default {
         const response = await axios.get('/api/project/members', {
           params: {
             project_id: this.project.id
-          }
-        });
-        // 응답 결과를 배열 안에 객체 형식으로 담기
+          }, headers: this.$store.getters.headers
+        })
+          .catch((err) => {
+            if (error.response && error.response.status === 419) {
+              this.$store.dispatch('handleTokenExpired');
+            }
+          });
+
         this.allMembers = response.data.map(member => {
           return {
             id: member.id,
@@ -247,40 +257,46 @@ export default {
         });
 
         // 일반 회원, 매니저 회원 구분
-        this.managers = this.allMembers.filter(member => this.manager_ids.includes(member.id) && member.id !== this.admin_id);
-        this.members = this.allMembers.filter(member => member.id !== this.admin_id && !this.manager_ids.includes(member.id));
-        // console.log("매니저", this.managers);
-        // console.log("일반", this.members);
+        this.managers = this.allMembers.filter(member => this.manager_ids.includes(member.id) && member.id !== this.propsdata.admin_id);
+        this.members = this.allMembers.filter(member => member.id !== this.propsdata.admin_id && !this.manager_ids.includes(member.id));
       } catch (error) {
         console.error(error);
       }
     },
 
-  async changeGrade(currentGrade, id) {
-    const changeGrade = (currentGrade === 'member') ? document.querySelector("#memberSelect").value : document.querySelector("#managerSelect").value;
-    try {
-      const result = await axios.post('/api/project/grade', {
-        project_id: this.project.id,
-        member_id: id,
-        grade: changeGrade,
-      });
-      alert(result.data.msg);
-      this.menu = 'default';
-      this.select = false;
-      this.$router.go();
-    } catch (err) {
-      console.error(err);
-      alert('등급 변경 실패');
+    async changeGrade(currentGrade, id) {
+      const changeGrade = (currentGrade === 'member') ? document.querySelector("#memberSelect").value : document.querySelector("#managerSelect").value;
+      try {
+        const result = await axios.post('/api/project/grade', {
+          project_id: this.project.id,
+          member_id: id,
+          grade: changeGrade,
+        }, {
+          headers: this.$store.getters.headers
+        });
+        alert(result.data.msg);
+        this.menu = 'default';
+        this.select = false;
+        this.$router.go();
+      } catch (err) {
+        if (error.response && error.response.status === 419) {
+          this.$store.dispatch('handleTokenExpired');
+        }
+        else {
+          console.error(err);
+          alert('등급 변경 실패');
+        }
+      }
     }
-  }
   }
 }
 </script>
 
 <style scoped>
-.link{
+.link {
   width: 300px;
 }
+
 .form {
   height: 90vh;
   display: flex;

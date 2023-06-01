@@ -7,38 +7,30 @@
         <i :class="menuIconToggle" id="btn" @click="btnClick"></i>
       </div>
       <ul class="nav-list">
-      
-      <!-- 관리자 아이디일 때만 드래그 작동(추가, 수정 버튼 제외) -->
-        <draggable v-if="(propsdata.member_id == propsdata.admin_id) && editMode"
-                :sort="true"
-                :list="propsdata.bList"
-        >
-          <li v-for="(board, index) in propsdata.bList"
-            :key="index"
-            @click="clickBoard(board.clickMethod)"
-          >
+
+        <!-- 관리자 아이디일 때만 드래그 작동(추가, 수정 버튼 제외) -->
+        <draggable v-if="(propsdata.member_id == propsdata.admin_id) && editMode" :sort="true" :list="propsdata.bList">
+          <li v-for="(board, index) in propsdata.bList" :key="index" @click="clickBoard(board.clickMethod)">
             <a href="#">
               <i v-bind:class="board.icon"></i>
               <!-- <i class='bx bx-folder' ></i> -->
-              <span class="links_name">{{board.board_name}}</span>
+              <span class="links_name">{{ board.board_name }}</span>
             </a>
-            <span class="tooltip">{{board.board_name}}</span>
+            <span class="tooltip">{{ board.board_name }}</span>
           </li>
         </draggable>
 
         <!-- 관리자 모드가 아닐 때(추가, 수정 버튼 제외) -->
         <li v-if="!((propsdata.member_id == propsdata.admin_id) && editMode)" v-for="(board, index) in propsdata.bList"
-            :key="index"
-            @click="clickBoard(board.clickMethod, board._id, board.board_name, index)"
-        >
+          :key="index" @click="clickBoard(board.clickMethod, board._id, board.board_name, index)">
           <a href="#">
             <i v-bind:class="board.icon"></i>
             <!-- <i class='bx bx-folder' ></i> -->
-            <span class="links_name">{{board.board_name}}</span>
+            <span class="links_name">{{ board.board_name }}</span>
           </a>
-          <span class="tooltip">{{board.board_name}}</span>
+          <span class="tooltip">{{ board.board_name }}</span>
         </li>
-      
+
         <li @click="clickBoard('setting', '', 'setting', -1)">
           <a href="#">
             <i class="bx bx-cog"></i>
@@ -47,12 +39,12 @@
           </a>
           <span class="tooltip">Setting</span>
         </li>
-      
-      <!-- 추가 버튼 -->
+
+        <!-- 추가 버튼 -->
         <div id="edit" v-if="propsdata.member_id == propsdata.admin_id">
           <li @click="addBoard">
             <a href="#">
-              <i class='bx bx-plus' ></i>
+              <i class='bx bx-plus'></i>
               <span class="links_name">게시판 추가</span>
             </a>
             <span class="tooltip">게시판 추가</span>
@@ -71,7 +63,7 @@
           <button class="btn btn-outline-light" @click="saveOrder">제출</button>
           <button class="btn btn-outline-light">취소</button>
         </div>
-      <!-- </div> -->
+        <!-- </div> -->
         <li @click="exitProject()" class="exit-btn">
           <a href="#">
             <i class="bx bx-exit"></i>
@@ -89,7 +81,7 @@ import draggable from 'vuedraggable';
 import axios from "axios";
 
 export default {
-  data(){
+  data() {
     return {
       editMode: false,
       member_id: null,
@@ -98,7 +90,7 @@ export default {
       manager_ids: [],
       isOpen: false,
     }
-  }, 
+  },
   props: ['propsdata'],
   components: {
     draggable,
@@ -112,7 +104,8 @@ export default {
     await axios.get('/api/project/authority', {
       params: {
         project_id: sessionStorage.getItem('project_id')
-      }
+      }, 
+      headers: this.$store.getters.headers
     })
       .then((res) => {
         const authData = res.data;
@@ -120,7 +113,12 @@ export default {
         this.manager_ids = authData.manager_ids;
         console.log("result: " + authData.admin_id);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        if (err.response.status === 419) {
+          this.$store.dispatch('handleTokenExpired');
+        }
+        console.log(err)
+      });
   },
   computed: {
     menuIconToggle() {
@@ -149,7 +147,7 @@ export default {
       // sidebar.classList.toggle("open");
       // this.menuBtnChange();
       this.isOpen = !this.isOpen;
-      if(this.isOpen)
+      if (this.isOpen)
         this.$emit('openBar', true);
       else
         this.$emit('openBar', false);
@@ -172,7 +170,7 @@ export default {
     saveOrder() {
       let newOrder = [];
       console.log('saveOrder 클릭!');
-      for(let i = 0; i < this.propsdata.bList.length; i++) {
+      for (let i = 0; i < this.propsdata.bList.length; i++) {
         newOrder.push(i);
         console.log('newOrder Push: ' + newOrder[i]);
       }
@@ -185,7 +183,7 @@ export default {
         data: {
           member_id: sessionStorage.getItem('member_id'),
           project_id: sessionStorage.getItem('project_id'),
-        }
+        }, headers: this.$store.getters.headers
       })
         .then(() => {
           alert('프로젝트에서 탈퇴 되었습니다.');
@@ -197,8 +195,12 @@ export default {
         .catch((err) => {
           if (err.response.status === 403) {
             alert('관리자는 탈퇴할 수 없습니다.');
-          } else {
-            alert('알 수 없는 에러');
+          }
+          else if (err.response.status === 419) {
+            this.$store.dispatch('handleTokenExpired');
+          }
+          else {
+            alert('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요');
           }
         })
     }
@@ -206,10 +208,9 @@ export default {
 }
 </script>
 
-
-
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+
 * {
   margin: 0;
   padding: 0;
@@ -234,7 +235,7 @@ export default {
 .sidebar.open {
   /* 250px */
   width: 235px;
-  
+
 }
 
 .sidebar .logo-details {

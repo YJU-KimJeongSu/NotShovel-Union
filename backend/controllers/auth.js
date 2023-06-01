@@ -37,9 +37,9 @@ exports.signIn = (req, res, next) => {
     
     // 로그인에 성공한 경우, 토큰 생성 및 발급
     const token = jwt.sign (
-      { memberId: member._id, email: member.email }, // 토큰에 포함될 데이터
-      process.env.JWT_SECRET, // 토큰 서명에 사용할 비밀 키 
-      { expiresIn: '1h' } // 토큰의 만료 시간 (예: 1시간)
+      { memberId: member._id, email: member.email }, 
+      process.env.JWT_SECRET,
+      { expiresIn: '2h' } 
     );
 
     const loginData = {
@@ -48,15 +48,9 @@ exports.signIn = (req, res, next) => {
       image:
         member.image ||
         'https://notshovel-union-bucket.s3.ap-northeast-2.amazonaws.com/defaultImage.png',
-      token: token // 발급된 토큰 추가
+      token: token 
     };
     return res.status(201).send(loginData);
   })(req, res, next);
 };
-
-// exports.logout = (req, res) => {
-//     req.logout(() => {
-//       res.redirect('/');
-//     });
-//   };
 

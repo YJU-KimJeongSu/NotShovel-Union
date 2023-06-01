@@ -6,7 +6,7 @@
         <!-- 해당 아이디가 소속한 프로젝트 도는 반복문 -->
         <div class="card-panel" v-for="(project, index) in projects" :key="index" @click="selectProject(project)"
           :style="`background-image: url(${project.image})`">
-          {{ project.name }}
+          <p class="name">{{ project.name }}</p>
         </div>
       </Flicking>
     </div>
@@ -34,21 +34,22 @@ export default {
     }
   },
   async mounted() {
-  try {
-    const member_id = sessionStorage.getItem('member_id');
-    const res = await axios.get('/api/project', {
-      params: {
-        member_id: member_id
-      },
-      headers: {
-        Authorization: `Bearer ${this.$store.state.token}` // 헤더에 토큰 추가
+    try {
+      const member_id = sessionStorage.getItem('member_id');
+      const res = await axios.get('/api/project', {
+        params: {
+          member_id: member_id
+        },
+        headers: this.$store.getters.headers
+      });
+      this.projects = res.data;
+    } catch (err) {
+      if (err.response.status === 419) {
+        this.$store.dispatch('handleTokenExpired');
       }
-    });
-    this.projects = res.data;
-  } catch (err) {
-    console.error(err);
-  }
-},
+      else console.error(err);
+    }
+  },
   methods: {
     selectProject(index) {
       eventBus.$emit('project', index);
@@ -66,6 +67,7 @@ export default {
 @import url("/node_modules/@egjs/flicking-plugins/dist/arrow.css");
 
 .card-panel {
+  position: relative;
   width: 300px;
   height: 300px;
   background-color: gray;
@@ -74,7 +76,25 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-size: 300px 300px;
+  background-size: cover;
+}
+
+.card-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.name {
+  position: relative;
+  z-index: 1;
+  font-size: 35px;
+  font-weight: 600;
 }
 
 .card-panel:hover {
@@ -88,6 +108,8 @@ export default {
 
 .inner {
   width: 80%;
+  display: flex;
+  align-items: center;
   flex-direction: column;
 }
 

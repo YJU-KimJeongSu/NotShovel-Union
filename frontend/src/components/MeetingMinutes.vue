@@ -100,28 +100,33 @@ export default {
           context: null,
           place: null,
           member_id: sessionStorage.getItem('member_id')
+        }, {
+          headers: this.$store.getters.headers
         })
         .then((res)=> {
           const data = res.data.result.meeting_minutes;
           sessionStorage.setItem('meetingMinuteId', data[data.length-1]._id);
         })   
       } catch (err) {
-        console.error(err);
+        if (err.response.status === 419) {
+            this.$store.dispatch('handleTokenExpired');
+          }
+        else console.error(err);
       }
     },
     async getDetailMeetingMinute(_id) {
       try {
         const boardId = sessionStorage.getItem('board_id');
-        const res = await axios.get(`/api/meeting/${boardId}/${_id}`);
+        const res = await axios.get(`/api/meeting/${boardId}/${_id}`,{
+          headers: this.$store.getters.headers
+        });
         this.$refs.meetingMinuteEditor.loadSavedMeetingMinute(res.data);
-
-
-        
-    
-        // this.$store.commit('setMeetingMinute', res.data);
         this.isWrite = true;
       } catch (err) {
-        console.log(err);
+        if (err.response.status === 419) {
+            this.$store.dispatch('handleTokenExpired');
+          }
+        else console.log(err);
       }
     },
     async handleEventClick(arg) {
@@ -139,7 +144,9 @@ export default {
     // this.$store.commit('setMeetingMinute', null);
     try {
       const boardId = sessionStorage.getItem('board_id');
-      const res = await axios.get("/api/meeting/" + boardId);
+      const res = await axios.get("/api/meeting/" + boardId, {
+        headers: this.$store.getters.headers
+      });
       this.meetingMinuteList = res.data;
 
       this.meetingMinuteList.forEach((m) => {
@@ -151,7 +158,10 @@ export default {
         this.calendarOptions.events.push(event);
       });
     } catch (err) {
-      console.log(err);
+      if (err.response.status === 419) {
+            this.$store.dispatch('handleTokenExpired');
+      }
+      else console.log(err);
     }
   },
 }

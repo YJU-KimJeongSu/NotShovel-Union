@@ -24,12 +24,8 @@ export default {
       board_id: null,
       activity_list: [],
       tasks: {
-        data: [ 
-          // { id: 1, text: '작업 #1', start_date: '2020-01-17', duration: 3, progress: 0.6 },
-        ],
-        links: [
-          // { id: 1, source: 1, target: 2, type: '0' }
-        ]
+        data: [],
+        links: []
       },
     }
   },
@@ -44,14 +40,16 @@ export default {
 
     await this.fetchGanttData();
     this.$nextTick(() => {
-        gantt.clearAll();
-        gantt.parse(this.tasks);
+      gantt.clearAll();
+      gantt.parse(this.tasks);
     });
   },
   methods: {
     async fetchGanttData() {
       try {
-        const res = await axios.get(`/api/gantt/${this.board_id}`);
+        const res = await axios.get(`/api/gantt/${this.board_id}`, {
+          headers: this.$store.getters.headers
+        });
         const ganttData = res.data;
         this.tasks.data = ganttData.gantt_data.data.map(item => ({
           id: item.id,
@@ -63,14 +61,17 @@ export default {
         }));
         this.tasks.links = ganttData.gantt_data.links;
         // console.log(this.tasks);
-      } catch (error) {
-        console.error(error);
+      } catch (err) {
+        if (err.response.status === 419) {
+          this.$store.dispatch('handleTokenExpired');
+        }
+        else console.error(err);
       }
     },
 
     async saveActivity() {
       this.activity_list = [];
-      
+
       const taskDataStore = gantt.getDatastore("task");
       taskDataStore.eachItem((task) => {
         const activity = {
@@ -92,6 +93,8 @@ export default {
           data: this.activity_list,
           links: gantt.getLinks()
         }
+      }, {
+        headers: this.$store.getters.headers
       })
         .then((res) => {
           alert('저장 완료!');
@@ -100,8 +103,13 @@ export default {
           this.$router.go();
         })
         .catch((err) => {
-          alert('서버 문제로 저장에 실패하였습니다. 잠시 후 다시 시도해주세요');
-          console.log(err)
+          if (err.response.status === 419) {
+            this.$store.dispatch('handleTokenExpired');
+          }
+          else {
+            alert('서버 문제로 저장에 실패하였습니다. 잠시 후 다시 시도해주세요');
+            console.log(err);
+          }
         });
     }
   }
@@ -133,10 +141,12 @@ export default {
   display: flex;
   justify-content: space-between;
 }
+
 .container {
   margin-top: 20px;
   height: 80vh;
 }
+
 .section {
   position: relative;
   animation-name: close;

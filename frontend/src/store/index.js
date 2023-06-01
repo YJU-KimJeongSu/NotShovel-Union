@@ -15,7 +15,12 @@ export default new Vuex.Store({
     // },
     getToken(state) {
       return state.token;
-    }
+    },
+    headers(state) {
+      return {
+        Authorization: `Bearer ${state.token}`,
+      };
+    },
   },
   mutations: {
     // setMeetingMinute(state, meetingMinute) {
@@ -25,8 +30,11 @@ export default new Vuex.Store({
       state.token = token;
     },
     clearToken(state) {
+      sessionStorage.removeItem('member_id');
+      sessionStorage.removeItem('member_name');
       state.token = null;
-    }
+    },
+    
   },
   actions: {
     login({ commit }, token) {
@@ -34,7 +42,12 @@ export default new Vuex.Store({
     },
     logout({ commit }) {
       commit('clearToken');
-    }
+    },
+    handleTokenExpired({ commit }) {
+      alert('로그인 세션이 만료되었습니다. 다시 로그인 후 이용해주세요');
+      commit('clearToken');
+      location.href = '/';
+    },
   },
   plugins: [createPersistedState()],
 })

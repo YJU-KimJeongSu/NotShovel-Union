@@ -15,7 +15,7 @@
     <MeetingMinutes v-if="currentView === 'meetingMinutes'" :props="isOpen"></MeetingMinutes>
     <!-- 추후에 각 게시판 종류별로 컴포넌트 추가(ex: 차트, 오픈채팅 등) -->
     <!-- 각 뷰들을 구성하는데 필요한 데이터들은 여기서 각 컴포넌트로 props -->
-    <Setting v-else-if="currentView === 'setting'" :props="isOpen"></Setting>
+    <Setting v-else-if="currentView === 'setting'" :props="isOpen" :propsdata="dbData"></Setting>
     <GanttChart v-else-if="currentView === 'ganttChart'" :props="isOpen"></GanttChart>
     <OpenChat v-else-if="currentView === 'openChat'" :isOpen="isOpen"
             :chatBoardId="boardId" :chatBoardName="boardName"
@@ -47,12 +47,6 @@ export default {
       boardOrder: null,
       showModal: false,
       dbData: {
-        // bList: [
-        // {name: '회의록', type: 'MeetingMinutes', icon: 'bx bx-folder', clickMethod: 'MeetingMinutes'},
-        // {name: 'User', type: '', icon: 'bx bx-user', clickMethod: ''},
-        // {name: 'Messages', type: 'openChat', icon: 'bx bx-chat', clickMethod: ''},
-        // {name: 'Gantt Chart', type: 'ganttChart', icon: 'bx bx-pie-chart-alt-2', clickMethod: 'ganttChart'},
-        // ],
         bList: [],
         admin_id: "",
         manager_ids: [],
@@ -76,7 +70,8 @@ export default {
     await axios.get('/api/project/authority', {
       params: {
         project_id: this.project_id
-      }
+      }, 
+      headers: this.$store.getters.headers
     })
     .then((res) => {
         const authData = res.data;
@@ -84,22 +79,30 @@ export default {
         console.log(`authData 수신: ${authData.admin_id}`);
         // this.dbData.manager_ids = authData.manager_ids;
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      if (err.response.status === 419) {
+          this.$store.dispatch('handleTokenExpired');
+      }
+      else console.log(err)
+    });
 
     // 게시판 리스트 겟요청
     await axios.get('/api/board', {
       params: {
         project_id: this.project_id
-      }
+      }, 
+      headers: this.$store.getters.headers
     })
     .then((res) => {
       const boardData = res.data;
       this.dbData.bList = res.data;
-      // console.log(boardData[0].board_order);
-      // console.log(boardData[1].board_order);
-      // console.log(boardData[2].board_order);
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      if (err.response.status === 419) {
+          this.$store.dispatch('handleTokenExpired');
+      }
+      else console.log(err)
+    });
     },
   components: {
     SideBar: sidebar,
@@ -141,13 +144,17 @@ export default {
       await axios.post('/api/board', boardInfo,{
         params: {
           project_id: this.project_id
-        }
-      })
+        }, 
+        headers: this.$store.getters.headers
+        })
         .then(response => {
           console.log(response.data);
         })
         .catch(error => {
-          console.error(error);
+          if (err.response.status === 419) {
+            this.$store.dispatch('handleTokenExpired');
+          }
+          else console.error(error);
         });
     
       const board = boardInfo;
@@ -158,17 +165,14 @@ export default {
         case 'gantChart': icon = 'bx bx-pie-chart-alt-2'; break;
         default: icon='';
       }
-      if (board.type != '')
+      if (board.type != '') {
         this.dbData.bList.push({name: board.name, icon: icon});
-
+      }
       this.showModal = !this.showModal;
     },
     changeBar(event) {
       this.isOpen = event;
       let boardData = this.dbData.bList;
-      // console.log(boardData[0].board_order);
-      // console.log(boardData[1].board_order);
-      // console.log(boardData[2].board_order);
     },
     async saveOrderItems(newOrder) {
       let bList = this.dbData.bList;
@@ -178,17 +182,19 @@ export default {
       }
       console.log('save Event 수신');
 
-
       await axios.patch('/api/board/order', bList, {
         params: {
           project_id: this.project_id
-        }
+        }, headers: this.$store.getters.headers
       })
         .then(response => {
           console.log(response.data);
         })
         .catch(error => {
-          console.error(error);
+          if (err.response.status === 419) {
+            this.$store.dispatch('handleTokenExpired');
+          }
+          else console.error(error);
         });
     }
   }
