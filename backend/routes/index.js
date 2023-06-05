@@ -16,7 +16,7 @@ module.exports = (app) => {
   //member
   app.patch('/api/member/edit',  verifyToken, memberController.editMember);
   app.delete('/api/member/delete', verifyToken, memberController.deleteMemeber);
-  app.post('/api/member/image', verifyToken, memberController.imageUpload);
+  // app.post('/api/member/image', verifyToken, memberController.imageUpload);
   app.post('/api/member/chkPw', verifyToken, memberController.chkPW);
   app.get('/api/member/emailAuth', memberController.emailAuth);
 

@@ -1,5 +1,5 @@
 const members = require('../models/members');
-const multer = require('multer');
+// const multer = require('multer');
 const path = require('path');
 const { smtpTransport } = require('../config/email');
 const bcrypt = require('bcrypt');
@@ -10,12 +10,13 @@ exports.editMember = async (req, res, next) => {
     name: req.body.name,
     password: await bcrypt.hash(req.body.password, 11),
     phone_number: req.body.phone_number,
-    image: req.body.image
+    // image: req.body.image
   };
   const option = { new: true };
   await members.findOneAndUpdate(filter, update, option)
     .then((data) => {
-      return res.status(201).send({ name: data.name, image: data.image || 'DefaultImage.png' });
+      // return res.status(201).send({ name: data.name, image: data.image || 'DefaultImage.png' });
+      return res.status(201).send({ name: data.name });
     })
     .catch((err) => {
       console.log(err);
@@ -50,25 +51,25 @@ exports.deleteMemeber = async (req, res, next) => {
   }
 }
 
-exports.imageUpload = (req, res, next) => {
-  const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, 'public/profile');
-    },
-    filename: function (req, file, cb) {
-      cb(null, Date.now() + path.extname(file.originalname));
-    }
-  });
-  const upload = multer({ storage: storage });
+// exports.imageUpload = (req, res, next) => {
+//   const storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//       cb(null, 'public/profile');
+//     },
+//     filename: function (req, file, cb) {
+//       cb(null, Date.now() + path.extname(file.originalname));
+//     }
+//   });
+//   const upload = multer({ storage: storage });
 
-  upload.single('image')(req, res, function (err) {
-    if (err) {
-      return res.status(400).json({ message: 'Failed to upload image' });
-    }
-    const { filename } = req.file;
-    return res.json({ filename: filename });
-  });
-}
+//   upload.single('image')(req, res, function (err) {
+//     if (err) {
+//       return res.status(400).json({ message: 'Failed to upload image' });
+//     }
+//     const { filename } = req.file;
+//     return res.json({ filename: filename });
+//   });
+// }
 
 // 프로젝트 제거 시
 exports.chkPW = async (req, res) => {

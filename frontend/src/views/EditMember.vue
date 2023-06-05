@@ -6,7 +6,7 @@
       <span><label for="passwordCheck" class="label">PasswordCheck</label><input type="password" class="input" id="passwordCheck" name="passwordCheck" @keyup="checkInput()" v-model="passwordCheck"></span>
       <span><label for="name" class="label">Name</label><input type="text" class="input" id="name" name="name" @keyup="checkInput()" v-model="name"></span>
       <span><label for="phone" class="label">Phone</label><input type="text" class="input" id="phone" name="phone" @keyup="checkInput()" v-model="phone_number"></span>
-      <span><label for="profile" class="label">Profile</label><input class="form-control image-form" ref="image" accept="image/*" type="file" id="profile"></span>
+      <!-- <span><label for="profile" class="label">Profile</label><input class="form-control image-form" ref="image" accept="image/*" type="file" id="profile"></span> -->
       <p>{{ checkingText }}</p>
       <button class="btn" @click="editUserInfo()">수정</button>
       <button class="delete-btn" @click="deleteUser()">회원 탈퇴</button>
@@ -30,7 +30,7 @@ export default {
   },
   methods: {
     async editUserInfo() {
-      const filename = await this.saveImage();
+      // const filename = await this.saveImage();
       if (this.checkingText === '비어있는 칸이 있습니다') {
         alert('비어있는 칸이 있습니다');
       } else if (this.checkingText === '비밀번호를 확인해주세요') {
@@ -41,14 +41,14 @@ export default {
           name: this.name,
           password: this.password,
           phone_number: this.phone_number,
-          image: filename,
+          // image: filename,
         },{
           headers: this.$store.getters.headers
         })
           .then((res) => {
             alert('정상적으로 수정되었습니다.');
             sessionStorage.setItem('member_name', res.data.name);
-            sessionStorage.setItem('member_image', res.data.image);
+            // sessionStorage.setItem('member_image', res.data.image);
             location.href = '/';
           })
           .catch((err) => {
@@ -113,16 +113,16 @@ export default {
           })
       }
     },
-    async saveImage() {
-      const image = this.$refs['image'].files[0];
-      if (image) {
-        const formData = new FormData();
-        formData.append('image', image);
-        const header = { headers: { 'Content-Type': 'multipart/form-data' } };
-        const { data: { filename } } = await axios.post('/api/member/image', formData, header);
-        return filename;
-      }
-    }
+    // async saveImage() {
+    //   const image = this.$refs['image'].files[0];
+    //   if (image) {
+    //     const formData = new FormData();
+    //     formData.append('image', image);
+    //     const header = { headers: { 'Content-Type': 'multipart/form-data' } };
+    //     const { data: { filename } } = await axios.post('/api/member/image', formData, header);
+    //     return filename;
+    //   }
+    // }
   },
 }
 </script>

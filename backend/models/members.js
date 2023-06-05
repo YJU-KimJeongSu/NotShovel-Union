@@ -6,7 +6,7 @@ const members = new Schema({
   password: { type: String, required: true },
   name: { type: String, required: true },
   phone_number: { type: String, unique: true },
-  image: String,
+  // image: String,
   signup_date: { type: Date, default: Date.now },
   project_ids: [{ type: Schema.Types.ObjectId, ref: "projects" }],
   state: { type: String, default: "1", enum: ["0", "1"] },
