@@ -15,6 +15,8 @@
               <i v-bind:class="board.icon"></i>
               <!-- <i class='bx bx-folder' ></i> -->
               <span class="links_name" @click="clickBoard(board.clickMethod)">{{ board.board_name }}</span>
+              <button class="btn btn-outline-light deleteBtn" @click="deleteBoard(board._id, board.type)">X</button>
+              <button class="btn btn-outline-light deleteBtn" @click="showEditBoardForm(board)">edit</button>
             </a>
             <span class="tooltip">{{ board.board_name }}</span>
           </li>
@@ -73,14 +75,19 @@
 
       </ul>
     </div>
+    
   </div>
 </template>
 
 <script>
 import draggable from 'vuedraggable';
 import axios from "axios";
+import editModal from './EditBoardModal.vue'
 
 export default {
+  components: {
+    EditModal: editModal
+  },
   data() {
     return {
       editMode: false,
@@ -89,6 +96,7 @@ export default {
       admin_id: null,
       manager_ids: [],
       isOpen: false,
+      isEditBoard: false
     }
   },
   props: ['propsdata'],
@@ -203,6 +211,25 @@ export default {
             alert('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요');
           }
         })
+    },
+    async deleteBoard(bid, btype) {
+      const con =  confirm('정말로 삭제하시겠습니까?');
+
+      if(con) {
+        await axios.delete(`/api/board/${bid}/${btype}`)
+          .then((res) => {
+            // console.log(res);
+            // this.$router.push('/dashboard');
+            // location.href = '/';
+          })
+          .catch((err) => console.log(err));
+      }
+    },
+    showEditBoardForm(board) {
+      this.isEditBoard = !this.isEditBoard;
+      localStorage.setItem('boardName', board.board_name);
+      this.$emit('showBoardEditForm', board);
+
     }
   },
 }
@@ -495,10 +522,6 @@ export default {
   margin: 18px
 }
 
-/* #edit {
-  
-  top: 20vmin;
-} */
 
 .nav-container {
   position: relative;

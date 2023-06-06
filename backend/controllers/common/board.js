@@ -203,3 +203,91 @@ exports.createBoard = async (req, res) => {
     }
   
 };
+
+exports.deleteBoard = async (req, res) => {
+  // 게시판 타입이랑 아이디만 받아서 삭제
+  const bid = req.params.bid;
+  const type = req.params.btype;
+
+  console.log(type);
+  console.log(bid);
+  switch(type) {
+    case 'meetingMinutes':
+      try {
+        await meeting_minutes.findByIdAndDelete(bid);
+        console.log('삭제성공');
+      } catch(err) {
+        console.log(err);
+      }
+      break;
+    case 'ganttChart':
+      try {
+        await gantt_charts.findByIdAndDelete(bid);
+        console.log('삭제성공');
+      } catch(err) {
+        console.log(err);
+      }
+      break;
+    case 'openChat':
+      try {
+        await chattings.findByIdAndDelete(bid);
+        console.log('삭제성공');
+      } catch(err) {
+        console.log(err);
+      }
+      break;
+  }
+
+  console.log(bid);
+};
+
+
+
+exports.updateBoard = async (req, res) => {
+
+  console.log('업데이트 요청');
+  const board = req.body;
+  console.log(board);
+
+  // 게시판 타입이랑 아이디만 받아서 삭제
+  const bid = board._id;
+  const type = board.type;
+
+  console.log(type);
+  console.log(bid);
+  switch(type) {
+    case 'meetingMinutes':
+      try {
+        await meeting_minutes.findOneAndUpdate(
+          { _id: bid },
+          { $set: { board_name: board.board_name } },
+        )
+      } catch(err) {
+        console.log(err);
+      }
+      break;
+    case 'ganttChart':
+      try {
+        await gantt_charts.findOneAndUpdate(
+          { _id: bid },
+          { $set: { board_name: board.board_name } },
+        )
+        console.log('업데이트 성공');
+      } catch(err) {
+        console.log(err);
+      }
+      break;
+    case 'openChat':
+      try {
+        await chattings.findOneAndUpdate(
+          { _id: bid },
+          { $set: { board_name: board.board_name } },
+        )
+      } catch(err) {
+        console.log(err);
+      }
+      break;
+  }
+
+  console.log(bid);
+};
