@@ -10,11 +10,11 @@
 
         <!-- 관리자 아이디일 때만 드래그 작동(추가, 수정 버튼 제외) -->
         <draggable v-if="(propsdata.member_id == propsdata.admin_id) && editMode" :sort="true" :list="propsdata.bList">
-          <li v-for="(board, index) in propsdata.bList" :key="index" @click="clickBoard(board.clickMethod)">
+          <li v-for="(board, index) in propsdata.bList" :key="index">
             <a href="#">
               <i v-bind:class="board.icon"></i>
               <!-- <i class='bx bx-folder' ></i> -->
-              <span class="links_name">{{ board.board_name }}</span>
+              <span class="links_name" @click="clickBoard(board.clickMethod)">{{ board.board_name }}</span>
             </a>
             <span class="tooltip">{{ board.board_name }}</span>
           </li>
@@ -61,7 +61,7 @@
 
         <div class="edit_mode" v-if="editMode">
           <button class="btn btn-outline-light" @click="saveOrder">제출</button>
-          <button class="btn btn-outline-light">취소</button>
+          <button class="btn btn-outline-light" @click="clickEdit">취소</button>
         </div>
         <!-- </div> -->
         <li @click="exitProject()" class="exit-btn">
@@ -165,7 +165,7 @@ export default {
       this.$emit('addBoard');
     },
     clickEdit() {
-      this.editMode = true;
+      this.editMode = !this.editMode;
     },
     saveOrder() {
       let newOrder = [];
