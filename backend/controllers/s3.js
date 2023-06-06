@@ -16,11 +16,14 @@ const s3 = new S3Client({
 exports.getPresignedURL = async (req, res) => {
   try {
     const { filename } = req.query;
+    // const { filetype } = req.query;
     const encodedFileName = `${filename}-${uuidv4()}`;
+    console.log(`${filetype}`);
 
     const command = new PutObjectCommand({
       Bucket: process.env.S3_BUCKET_NAME,
       Key: 'public/'+encodedFileName,
+      // ContentType: `image/${filetype}`
     });
 
     const presignedUrl = await getSignedUrl(s3,command, {expiresIn: 3600});

@@ -54,7 +54,9 @@
         -->
       </div>
       <div class="footer-chat">
-        <i class="icon fa fa-smile-o clickable" style="font-size:25pt;" aria-hidden="true"></i>
+        <i class="icon fa fa-smile-o clickable" style="font-size:25pt;" aria-hidden="true" @click="showUploadForm()">
+          <input type="file" style="display:none" ref="file" accept="image/*" @change="saveImage()">
+        </i>
         <input type="text" class="write-message" placeholder="Type your message here" v-model="context"
           @keyup.enter="send($event)" />
         <i class="icon send fa fa-paper-plane-o clickable" aria-hidden="true" @click="send($event)"></i>
@@ -92,7 +94,8 @@ export default {
       logs: [],
       member_id: "",
       member_name: "",
-      boardName: ""
+      boardName: "",
+      image: ""
     }
   },
   created() {
@@ -177,8 +180,45 @@ export default {
       }
 
     },
-    scrollToBottom() {
+    showUploadForm() {
+      this.$refs.file.click();
+    },
+    async saveImage() {
+      try {
+        const selectedFile = this.$refs.file.files[0];
+        const maxSize = 5 * 1024 * 1024;
+        const fileSize = selectedFile.size;
+        if (fileSize > maxSize) {
+          alert("첨부파일 사이즈는 5MB 이내로 등록 가능합니다.");
+          return;
+        }
+        const filename = selectedFile.name;
+        const filetype = selectedFile.type;
+        console.log(filetype);
+        const res = await axios.get('/api/s3/url', {
+          params: { filename, filetype },
+          headers: this.$store.getters.headers
+        });
+        const encodedFileName = res.data.encodedFileName;
+        const presignedUrl = res.data.presignedUrl;
 
+        console.log('presign');
+        console.log(presignedUrl);
+
+        await axios.put(presignedUrl, selectedFile)
+          .then((res) => {
+            this.image = `https://ns-union.s3.ap-northeast-2.amazonaws.com/contact/` + encodedFileName;
+            console.log(res);
+            console.log('이미지 업로드 완료');
+          })
+
+      } catch (error) {
+        if (err.response.status === 419) {
+          this.$store.dispatch('handleTokenExpired');
+        } 
+        else console.error('이미지 업로드 오류:', error);
+      }
+      
     }
 
   },
