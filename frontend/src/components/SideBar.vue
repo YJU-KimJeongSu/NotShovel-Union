@@ -33,17 +33,10 @@
           <span class="tooltip">{{ board.board_name }}</span>
         </li>
 
-        <li @click="clickBoard('setting', '', 'setting', -1)">
-          <a href="#">
-            <i class="bx bx-cog"></i>
-            <!-- <i class='bx bx-folder' ></i> -->
-            <span class="links_name">Setting</span>
-          </a>
-          <span class="tooltip">Setting</span>
-        </li>
+        
 
         <!-- 추가 버튼 -->
-        <div id="edit" v-if="propsdata.member_id == propsdata.admin_id">
+        <div id="edit" v-if="propsdata.member_id === propsdata.admin_id || propsdata.manager_ids.includes(propsdata.member_id)">
           <li @click="addBoard">
             <a href="#">
               <i class='bx bx-plus'></i>
@@ -59,6 +52,15 @@
             </a>
             <span class="tooltip">게시판 편집</span>
           </li>
+
+          <li @click="clickBoard('setting', '', 'setting', -1)">
+          <a href="#">
+            <i class="bx bx-cog"></i>
+            <!-- <i class='bx bx-folder' ></i> -->
+            <span class="links_name">Setting</span>
+          </a>
+          <span class="tooltip">Setting</span>
+        </li>
         </div>
 
         <div class="edit_mode" v-if="editMode">

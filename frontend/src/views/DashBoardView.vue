@@ -80,8 +80,7 @@ export default {
     .then((res) => {
         const authData = res.data;
         this.dbData.admin_id = authData.admin_id;
-        console.log(`authData 수신: ${authData.admin_id}`);
-        // this.dbData.manager_ids = authData.manager_ids;
+        this.dbData.manager_ids = authData.manager_ids;
     })
     .catch((err) => {
       if (err.response.status === 419) {
