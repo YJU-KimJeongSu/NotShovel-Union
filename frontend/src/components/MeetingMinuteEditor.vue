@@ -166,12 +166,12 @@ export default {
         const imageUrl = `https://notshovel-union-bucket.s3.ap-northeast-2.amazonaws.com/public/${encodedFileName}`;
         console.log('이미지 업로드 완료');
         return imageUrl;
-      } catch (error) {
+      } catch (err) {
         if (err.response.status === 419) {
             this.$store.dispatch('handleTokenExpired');
           }
-        else console.error('이미지 업로드 오류:', error);
-        throw error;
+        else console.error('이미지 업로드 오류:', err);
+        throw err;
       }
     },
 

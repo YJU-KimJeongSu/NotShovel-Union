@@ -32,6 +32,11 @@
         </div>
 
 
+          <div class="message text-only">
+              <div class="response">
+                <img :src="image" alt="">
+              </div>
+            </div>
         <!-- <p class="time"> 14h58</p>
         <div class="message text-only">
           <div class="response">
@@ -51,6 +56,8 @@
           <p class="text"> 9 pm at the bar if possible 😳</p>
         </div>
         <p class="time"> 15h09</p>
+
+        
         -->
       </div>
       <div class="footer-chat">
@@ -199,7 +206,7 @@ export default {
           params: { filename, filetype },
           headers: this.$store.getters.headers
         });
-        const encodedFileName = res.data.encodedFileName;
+        const encodedFileName = res.data.encodedFileName
         const presignedUrl = res.data.presignedUrl;
 
         console.log('presign');
@@ -207,16 +214,16 @@ export default {
 
         await axios.put(presignedUrl, selectedFile)
           .then((res) => {
-            this.image = `https://ns-union.s3.ap-northeast-2.amazonaws.com/contact/` + encodedFileName;
+            this.image = `https://ns-union.s3.ap-northeast-2.amazonaws.com/public/` + encodedFileName;
             console.log(res);
             console.log('이미지 업로드 완료');
           })
 
-      } catch (error) {
+      } catch (err) {
         if (err.response.status === 419) {
           this.$store.dispatch('handleTokenExpired');
         } 
-        else console.error('이미지 업로드 오류:', error);
+        else console.error('이미지 업로드 오류:', err);
       }
       
     }
