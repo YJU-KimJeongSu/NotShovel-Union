@@ -6,6 +6,8 @@ import SignInUpView from '../views/SignInUpView.vue'
 import CreateProjectView from '../views/CreateProjectView.vue'
 import EditMember from '../views/EditMember.vue'
 import RegisterToProject from '../views/RegisterToProject.vue'
+import FindPasswordView from '../views/FindPasswordView.vue'
+import PreFindPasswordView from '../views/PreFindPasswordView.vue'
 
 Vue.use(VueRouter)
 
@@ -39,6 +41,16 @@ const routes = [
     path: '/register',
     name: 'register',
     component: RegisterToProject
+  },
+  {
+    path: '/findpassword',
+    name: 'findpassword',
+    component: FindPasswordView
+  },
+  {
+    path: '/prefindpassword',
+    name: 'prefindpassword',
+    component: PreFindPasswordView
   },
 ]
 

@@ -7,12 +7,12 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     token: null,
-    // meetingMinute: {},
+    userEmail: null,
   },
   getters: {
-    // getMeetingMinute(state) {
-    //   return state.meetingMinute;
-    // },
+    getUserEmail(state) {
+      return state.userEmail;
+    },
     getToken(state) {
       return state.token;
     },
@@ -23,9 +23,9 @@ export default new Vuex.Store({
     },
   },
   mutations: {
-    // setMeetingMinute(state, meetingMinute) {
-    //   state.meetingMinute = meetingMinute;
-    // },
+    setUserEmail(state, userEmail) {
+      state.userEmail = userEmail;
+    },
     setToken(state, token) {
       state.token = token;
     },

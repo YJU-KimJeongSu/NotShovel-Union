@@ -28,7 +28,7 @@
           <input type="email" placeholder="Email" class="input" v-model="signin.email" />
           <input type="password" placeholder="Password" class="input" v-model="signin.password" />
         </div>
-        <a href="#" class="link">Forgot your password?</a>
+        <a href="/prefindpassword" class="link">Forgot your password?</a>
         <button class="btn" @click="signIn()">Sign In</button>
       </form>
     </div>

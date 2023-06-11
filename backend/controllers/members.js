@@ -109,4 +109,46 @@ exports.emailAuth = async (req, res) => {
   });
   
   smtpTransport.close();
+};
+
+// 비밀번호 찾기 전 인증
+exports.chkEmail = async (req, res) => {
+  const userEmail = req.query.email;
+
+  try {
+    const member = await members.findOne({email: userEmail});
+    if (!member) {
+      return res.status(400).send();
+    }
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+
+  const num = Math.floor(Math.random() * (999999 - 111111 + 1)) + 111111; // 111111 ~ 999999
+
+  console.log(num);
+  const mailOptions = {
+    from: "Union@gmail.com",
+    to: userEmail,
+    subject: "[Union] 비밀번호 재설정 인증 메일입니다.",
+    text: "다음 숫자를 입력해주세요 : " + num
+  };
+
+  await smtpTransport.sendMail(mailOptions, (err, result) => {
+    if (err) return res.status(400).send(err);
+    else return res.status(200).json({num: num});
+  });
+  
+  smtpTransport.close();
+};
+
+exports.passwordReset = async (req, res) => {
+  const { email, password } = req.body;
+  const encryptPassword = await bcrypt.hash(password, 11)
+  try {
+    await members.findOneAndUpdate({ email }, { password: encryptPassword });
+    return res.status(200).send();
+  } catch (error) {
+    return res.status(500).send();
+  }
 }
