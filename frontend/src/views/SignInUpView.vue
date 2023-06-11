@@ -28,7 +28,7 @@
           <input type="email" placeholder="Email" class="input" v-model="signin.email" />
           <input type="password" placeholder="Password" class="input" v-model="signin.password" />
         </div>
-        <a href="#" class="link">Forgot your password?</a>
+        <a href="/prefindpassword" class="link">Forgot your password?</a>
         <button class="btn" @click="signIn()">Sign In</button>
       </form>
     </div>
@@ -213,7 +213,7 @@ export default {
 }
 
 .container {
-  background-color: #c0c0c0;
+  background-color: #d9d9d9;
   border-radius: 0.7rem;
   box-shadow: 0 0.9rem 1.7rem rgba(0, 0, 0, 0.25),
     0 0.7rem 0.7rem rgba(0, 0, 0, 0.22);
@@ -356,7 +356,7 @@ export default {
 }
 
 .form {
-  background-color: #c0c0c0;
+  background-color: #d9d9d9;
   display: flex;
   align-items: center;
   justify-content: center;

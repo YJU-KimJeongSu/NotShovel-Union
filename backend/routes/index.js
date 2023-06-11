@@ -16,9 +16,11 @@ module.exports = (app) => {
   //member
   app.patch('/api/member/edit',  verifyToken, memberController.editMember);
   app.delete('/api/member/delete', verifyToken, memberController.deleteMemeber);
-  app.post('/api/member/image', verifyToken, memberController.imageUpload);
+  // app.post('/api/member/image', verifyToken, memberController.imageUpload);
   app.post('/api/member/chkPw', verifyToken, memberController.chkPW);
   app.get('/api/member/emailAuth', memberController.emailAuth);
+  app.get('/api/member/chkEmail', isNotLoggedIn, memberController.chkEmail);
+  app.patch('/api/member/passwordReset', isNotLoggedIn, memberController.passwordReset);
 
   // project
   app.post('/api/project', verifyToken, projectController.save);
