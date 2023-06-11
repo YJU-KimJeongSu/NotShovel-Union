@@ -1,6 +1,6 @@
 <template>
   <div class="container right-panel-active">
-    <h2>회원정보 수정</h2>
+    <h4>회원정보 수정</h4>
     <div class="form">
       <span><label for="password" class="label">Password</label><input type="password" class="input" id="password" name="password" @keyup="checkInput()" v-model="password"></span>
       <span><label for="passwordCheck" class="label">PasswordCheck</label><input type="password" class="input" id="passwordCheck" name="passwordCheck" @keyup="checkInput()" v-model="passwordCheck"></span>
@@ -129,7 +129,7 @@ export default {
 
 <style scoped>
 .container {
-  background-color: #c0c0c0;
+  background-color: #d9d9d9;
   border-radius: 0.7rem;
   box-shadow: 0 0.9rem 1.7rem rgba(0, 0, 0, 0.25),
     0 0.7rem 0.7rem rgba(0, 0, 0, 0.22);
@@ -137,7 +137,7 @@ export default {
   max-width: 780px;
   overflow: hidden;
   width: 100%;
-  transform: translate(0%, max(calc((100vh - 780px) / 2), 59px));
+  transform: translate(0%, max(calc((100vh - 600px) / 2), 59px));
   padding: 30px 0 30px 0;
   display: flex;
   flex-direction: column;
@@ -146,8 +146,8 @@ export default {
   margin-left: 25%;
 }
 
-.container > h2 {
-  margin: 0.7rem 0 2rem 0;
+.container > h4 {
+  margin: 0.6rem 0 1.7rem 0;
 }
 
 .form {
@@ -158,17 +158,17 @@ export default {
 }
 
 .form > span {
-  margin: 20px 0 20px 0;
+  margin: 17px 0 17px 0;
 }
 
 .label {
   width: 100px;
-  font-size: 20px;
+  font-size: 17px;
 }
 
 .input {
   background-color: #fff;
-  font-size: 20px;
+  font-size: 17px;
   border: none;
   border-bottom: 1px solid #fff;
   outline: none;
@@ -193,8 +193,8 @@ input:focus::placeholder {
   align-self: center;
   color: red;
   font-weight: 600;
-  font-size: 16px;
-  margin-top: 2rem;
+  font-size: 14px;
+  margin-top: 1.4rem;
 }
 
 .btn {
@@ -207,7 +207,7 @@ input:focus::placeholder {
   font-size: 18px;
   font-weight: bold;
   letter-spacing: 0.1rem;
-  padding: 0.8rem 3rem;
+  padding: 0.6rem 2rem;
   text-transform: uppercase;
   /* transition: transform 80ms ease-in; */
   transition: .75s;
@@ -237,7 +237,7 @@ input:focus::placeholder {
   font-size: 16px;
   font-weight: bold;
   letter-spacing: 0.1rem;
-  padding: 0.3rem 1rem;
+  padding: 0.2rem 0.7rem;
   margin-top: 1rem;
   text-transform: uppercase;
   /* transition: transform 80ms ease-in; */

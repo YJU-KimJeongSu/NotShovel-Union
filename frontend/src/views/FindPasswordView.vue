@@ -1,6 +1,6 @@
 <template>
   <div class="container right-panel-active">
-    <h2>비밀번호 재설정</h2>
+    <h4>비밀번호 재설정</h4>
     <div class="form">
       <span><input type="password" class="input" id="password" name="password" placeholder="새 비밀번호" @keyup="" v-model="password"></span>
       <span><input type="password" class="input" id="passwordCheck" name="passwordCheck" placeholder="새 비밀번호 확인" @keyup="" v-model="passwordCheck"></span>
@@ -53,7 +53,7 @@ export default {
 
 <style scoped>
 .container {
-  background-color: #c0c0c0;
+  background-color: #d9d9d9;
   border-radius: 0.7rem;
   box-shadow: 0 0.9rem 1.7rem rgba(0, 0, 0, 0.25),
     0 0.7rem 0.7rem rgba(0, 0, 0, 0.22);
@@ -70,7 +70,7 @@ export default {
   margin-left: 25%;
 }
 
-.container > h2 {
+.container > h4 {
   margin: 0.7rem 0 2rem 0;
 }
 
@@ -92,7 +92,7 @@ export default {
 
 .input {
   background-color: #fff;
-  font-size: 20px;
+  font-size: 17px;
   border: none;
   border-bottom: 1px solid #fff;
   outline: none;
@@ -124,11 +124,12 @@ input:focus::placeholder {
   font-size: 18px;
   font-weight: bold;
   letter-spacing: 0.1rem;
-  padding: 0.8rem 3rem;
+  padding: 0.6rem 2rem;
   text-transform: uppercase;
   /* transition: transform 80ms ease-in; */
   transition: .75s;
   align-self: center;
+  margin-top: 20px;
 }
 
 .btn:hover {
