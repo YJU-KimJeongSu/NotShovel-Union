@@ -23,7 +23,7 @@
         </draggable>
 
         <!-- 관리자 모드가 아닐 때(추가, 수정 버튼 제외) -->
-        <li v-if="!((propsdata.member_id == propsdata.admin_id) && editMode)" v-for="(board, index) in propsdata.bList"
+        <li v-if="!(propsdata.member_id == propsdata.admin_id || manager_ids.includes(propsdata.member_id))  && editMode" v-for="(board, index) in propsdata.bList"
           :key="index" @click="clickBoard(board.clickMethod, board._id, board.board_name, index)">
           <a href="#">
             <i v-bind:class="board.icon"></i>
@@ -121,6 +121,8 @@ export default {
         const authData = res.data;
         this.admin_id = authData.admin_id;
         this.manager_ids = authData.manager_ids;
+        console.log('authData 확인');
+        console.log(authData);
         console.log("result: " + authData.admin_id);
       })
       .catch((err) => {

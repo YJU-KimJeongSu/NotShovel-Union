@@ -22,21 +22,27 @@
             <div v-if="log.member_id === member_id" class="message text-only">
               <div class="response">
                 <p class="text"> {{ log.context }}</p>
+                  <div class="img-wrap" v-show="log.attached_file.file_name !== ''">
+                    <img :src="getImgUrl(log.attached_file.file_name)" alt="" class="rounded float-end">
+                  </div>
               </div>
             </div>
 
             <div v-else class="message text-only">
               <p class="text">{{ log.context }}</p>
+              <div class="img-wrap" v-show="log.attached_file.file_name !== ''">
+                <img :src="getImgUrl(log.attached_file.file_name)" alt="" class="rounded float-start">
+              </div>
             </div>
           </div>
         </div>
 
 
-          <div class="message text-only">
+          <!-- <div class="message text-only">
               <div class="response">
-                <img :src="image" alt="">
+                <img :src="getImgUrl(log.attached_file.file_name)" alt="">
               </div>
-            </div>
+            </div> -->
         <!-- <p class="time"> 14h58</p>
         <div class="message text-only">
           <div class="response">
@@ -102,7 +108,8 @@ export default {
       member_id: "",
       member_name: "",
       boardName: "",
-      image: ""
+      image: "",
+      uploadFileName: ""
     }
   },
   created() {
@@ -121,7 +128,6 @@ export default {
       }, headers: this.$store.getters.headers
     })
       .then((res) => {
-        console.log(res);
         this.logs = res.data.chattings;
         this.$nextTick(() => {
           this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
@@ -157,11 +163,15 @@ export default {
       event.stopPropagation(); // 이벤트 전파를 멈춥니다.
       if (this.context !== "") {
         const chat = {
+          boardId: this.$props.chatBoardId,
           roomName: this.roomName,
           context: this.context,
           member_id: this.member_id,
           member_name: this.member_name,
-          type: 'normal'
+          type: 'normal',
+          attached_file: {
+            file_name: this.uploadFileName
+          },
         };
         this.socket.emit("new_message", chat, () => {
           this.logs.push(chat);
@@ -170,9 +180,7 @@ export default {
             // this.scrollToBottom();
             this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
             axios.post('/api/chat', chat, {
-              params: {
-                boardId: this.$props.chatBoardId
-              }
+              headers: this.$store.getters.headers
             })
               .then((res) => console.log(res))
               .catch((err) => {
@@ -201,20 +209,18 @@ export default {
         }
         const filename = selectedFile.name;
         const filetype = selectedFile.type;
-        console.log(filetype);
+        this.context = filename;
         const res = await axios.get('/api/s3/url', {
           params: { filename, filetype },
           headers: this.$store.getters.headers
         });
         const encodedFileName = res.data.encodedFileName
         const presignedUrl = res.data.presignedUrl;
-
-        console.log('presign');
-        console.log(presignedUrl);
+        this.uploadFileName = encodedFileName;
 
         await axios.put(presignedUrl, selectedFile)
           .then((res) => {
-            this.image = `https://ns-union.s3.ap-northeast-2.amazonaws.com/public/` + encodedFileName;
+            this.image = `https://notshovel-union-bucket.s3.ap-northeast-2.amazonaws.com/public/` + encodedFileName;
             console.log(res);
             console.log('이미지 업로드 완료');
           })
@@ -226,8 +232,11 @@ export default {
         else console.error('이미지 업로드 오류:', err);
       }
       
-    }
-
+    },
+    getImgUrl(file_name) {
+      const url = `https://notshovel-union-bucket.s3.ap-northeast-2.amazonaws.com/public/` + file_name;
+      return url;
+    }     
   },
   watch: {
     // logs(newVal, oldVal) {
@@ -282,4 +291,11 @@ export default {
   to {
     left: 3%;
   }
-}</style>
+}
+.img-wrap img {
+  width: 80px;
+  height: 80px;
+  position: relative;
+  right: 30px;
+}
+</style>
