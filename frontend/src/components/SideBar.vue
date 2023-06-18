@@ -10,18 +10,20 @@
 
         <!-- 관리자 아이디일 때만 드래그 작동(추가, 수정 버튼 제외) -->
         <draggable v-if="(propsdata.member_id == propsdata.admin_id) && editMode" :sort="true" :list="propsdata.bList">
-          <li v-for="(board, index) in propsdata.bList" :key="index" @click="clickBoard(board.clickMethod)">
+          <li v-for="(board, index) in propsdata.bList" :key="index">
             <a href="#">
               <i v-bind:class="board.icon"></i>
               <!-- <i class='bx bx-folder' ></i> -->
-              <span class="links_name">{{ board.board_name }}</span>
+              <span class="links_name" @click="clickBoard(board.clickMethod)">{{ board.board_name }}</span>
+              <button class="btn btn-outline-light deleteBtn" @click="deleteBoard(board._id, board.type)">X</button>
+              <button class="btn btn-outline-light deleteBtn" @click="showEditBoardForm(board)">edit</button>
             </a>
             <span class="tooltip">{{ board.board_name }}</span>
           </li>
         </draggable>
 
         <!-- 관리자 모드가 아닐 때(추가, 수정 버튼 제외) -->
-        <li v-if="!((propsdata.member_id == propsdata.admin_id) && editMode)" v-for="(board, index) in propsdata.bList"
+        <li v-if="!(propsdata.member_id == propsdata.admin_id || manager_ids.includes(propsdata.member_id))  && editMode" v-for="(board, index) in propsdata.bList"
           :key="index" @click="clickBoard(board.clickMethod, board._id, board.board_name, index)">
           <a href="#">
             <i v-bind:class="board.icon"></i>
@@ -31,17 +33,10 @@
           <span class="tooltip">{{ board.board_name }}</span>
         </li>
 
-        <li @click="clickBoard('setting', '', 'setting', -1)">
-          <a href="#">
-            <i class="bx bx-cog"></i>
-            <!-- <i class='bx bx-folder' ></i> -->
-            <span class="links_name">Setting</span>
-          </a>
-          <span class="tooltip">Setting</span>
-        </li>
+        
 
         <!-- 추가 버튼 -->
-        <div id="edit" v-if="propsdata.member_id == propsdata.admin_id">
+        <div id="edit" v-if="propsdata.member_id === propsdata.admin_id || propsdata.manager_ids.includes(propsdata.member_id)">
           <li @click="addBoard">
             <a href="#">
               <i class='bx bx-plus'></i>
@@ -57,11 +52,20 @@
             </a>
             <span class="tooltip">게시판 편집</span>
           </li>
+
+          <li @click="clickBoard('setting', '', 'setting', -1)">
+          <a href="#">
+            <i class="bx bx-cog"></i>
+            <!-- <i class='bx bx-folder' ></i> -->
+            <span class="links_name">Setting</span>
+          </a>
+          <span class="tooltip">Setting</span>
+        </li>
         </div>
 
         <div class="edit_mode" v-if="editMode">
           <button class="btn btn-outline-light" @click="saveOrder">제출</button>
-          <button class="btn btn-outline-light">취소</button>
+          <button class="btn btn-outline-light" @click="clickEdit">취소</button>
         </div>
         <!-- </div> -->
         <li @click="exitProject()" class="exit-btn">
@@ -73,14 +77,19 @@
 
       </ul>
     </div>
+    
   </div>
 </template>
 
 <script>
 import draggable from 'vuedraggable';
 import axios from "axios";
+import editModal from './EditBoardModal.vue'
 
 export default {
+  components: {
+    EditModal: editModal
+  },
   data() {
     return {
       editMode: false,
@@ -89,6 +98,7 @@ export default {
       admin_id: null,
       manager_ids: [],
       isOpen: false,
+      isEditBoard: false
     }
   },
   props: ['propsdata'],
@@ -111,6 +121,8 @@ export default {
         const authData = res.data;
         this.admin_id = authData.admin_id;
         this.manager_ids = authData.manager_ids;
+        console.log('authData 확인');
+        console.log(authData);
         console.log("result: " + authData.admin_id);
       })
       .catch((err) => {
@@ -165,7 +177,7 @@ export default {
       this.$emit('addBoard');
     },
     clickEdit() {
-      this.editMode = true;
+      this.editMode = !this.editMode;
     },
     saveOrder() {
       let newOrder = [];
@@ -203,6 +215,25 @@ export default {
             alert('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요');
           }
         })
+    },
+    async deleteBoard(bid, btype) {
+      const con =  confirm('정말로 삭제하시겠습니까?');
+
+      if(con) {
+        await axios.delete(`/api/board/${bid}/${btype}`)
+          .then((res) => {
+            // console.log(res);
+            // this.$router.push('/dashboard');
+            // location.href = '/';
+          })
+          .catch((err) => console.log(err));
+      }
+    },
+    showEditBoardForm(board) {
+      this.isEditBoard = !this.isEditBoard;
+      localStorage.setItem('boardName', board.board_name);
+      this.$emit('showBoardEditForm', board);
+
     }
   },
 }
@@ -495,10 +526,6 @@ export default {
   margin: 18px
 }
 
-/* #edit {
-  
-  top: 20vmin;
-} */
 
 .nav-container {
   position: relative;

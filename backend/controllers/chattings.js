@@ -3,14 +3,17 @@ const chat = require("../models/chattings");
 
 exports.insertChat = async(req, res) => {
   const receiveChat = req.body;
-  const boardId = req.query.boardId;
+  // const boardId = req.query.boardId;
+  console.log("-------------------------------");
+  console.log('attachedfile', receiveChat.attached_file);
 
   try {
     await chat.findOneAndUpdate(
-      { _id: boardId },
+      { _id: receiveChat.boardId },
       { $push: {
         chattings: {
-          context: receiveChat.context, member_id: receiveChat.member_id
+          context: receiveChat.context, member_id: receiveChat.member_id,
+          attached_file: receiveChat.attached_file
         }
       } 
     });
@@ -23,6 +26,7 @@ exports.insertChat = async(req, res) => {
 
 exports.getChatList = async(req, res) => {
   const boardId = req.query.boardId;
+  console.log('boardId for get Chat: ', boardId);
 
   try {
     const chatLogs = await chat.findOne({ _id: boardId });

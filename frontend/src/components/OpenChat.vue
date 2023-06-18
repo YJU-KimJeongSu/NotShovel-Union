@@ -22,16 +22,27 @@
             <div v-if="log.member_id === member_id" class="message text-only">
               <div class="response">
                 <p class="text"> {{ log.context }}</p>
+                  <div class="img-wrap" v-show="log.attached_file.file_name !== ''">
+                    <img :src="getImgUrl(log.attached_file.file_name)" alt="" class="rounded float-end">
+                  </div>
               </div>
             </div>
 
             <div v-else class="message text-only">
               <p class="text">{{ log.context }}</p>
+              <div class="img-wrap" v-show="log.attached_file.file_name !== ''">
+                <img :src="getImgUrl(log.attached_file.file_name)" alt="" class="rounded float-start">
+              </div>
             </div>
           </div>
         </div>
 
 
+          <!-- <div class="message text-only">
+              <div class="response">
+                <img :src="getImgUrl(log.attached_file.file_name)" alt="">
+              </div>
+            </div> -->
         <!-- <p class="time"> 14h58</p>
         <div class="message text-only">
           <div class="response">
@@ -51,10 +62,14 @@
           <p class="text"> 9 pm at the bar if possible 😳</p>
         </div>
         <p class="time"> 15h09</p>
+
+        
         -->
       </div>
       <div class="footer-chat">
-        <i class="icon fa fa-smile-o clickable" style="font-size:25pt;" aria-hidden="true"></i>
+        <i class="icon fa fa-smile-o clickable" style="font-size:25pt;" aria-hidden="true" @click="showUploadForm()">
+          <input type="file" style="display:none" ref="file" accept="image/*" @change="saveImage()">
+        </i>
         <input type="text" class="write-message" placeholder="Type your message here" v-model="context"
           @keyup.enter="send($event)" />
         <i class="icon send fa fa-paper-plane-o clickable" aria-hidden="true" @click="send($event)"></i>
@@ -92,7 +107,9 @@ export default {
       logs: [],
       member_id: "",
       member_name: "",
-      boardName: ""
+      boardName: "",
+      image: "",
+      uploadFileName: ""
     }
   },
   created() {
@@ -111,7 +128,6 @@ export default {
       }, headers: this.$store.getters.headers
     })
       .then((res) => {
-        console.log(res);
         this.logs = res.data.chattings;
         this.$nextTick(() => {
           this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
@@ -147,11 +163,15 @@ export default {
       event.stopPropagation(); // 이벤트 전파를 멈춥니다.
       if (this.context !== "") {
         const chat = {
+          boardId: this.$props.chatBoardId,
           roomName: this.roomName,
           context: this.context,
           member_id: this.member_id,
           member_name: this.member_name,
-          type: 'normal'
+          type: 'normal',
+          attached_file: {
+            file_name: this.uploadFileName
+          },
         };
         this.socket.emit("new_message", chat, () => {
           this.logs.push(chat);
@@ -160,9 +180,7 @@ export default {
             // this.scrollToBottom();
             this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
             axios.post('/api/chat', chat, {
-              params: {
-                boardId: this.$props.chatBoardId
-              }
+              headers: this.$store.getters.headers
             })
               .then((res) => console.log(res))
               .catch((err) => {
@@ -177,10 +195,48 @@ export default {
       }
 
     },
-    scrollToBottom() {
+    showUploadForm() {
+      this.$refs.file.click();
+    },
+    async saveImage() {
+      try {
+        const selectedFile = this.$refs.file.files[0];
+        const maxSize = 5 * 1024 * 1024;
+        const fileSize = selectedFile.size;
+        if (fileSize > maxSize) {
+          alert("첨부파일 사이즈는 5MB 이내로 등록 가능합니다.");
+          return;
+        }
+        const filename = selectedFile.name;
+        const filetype = selectedFile.type;
+        this.context = filename;
+        const res = await axios.get('/api/s3/url', {
+          params: { filename, filetype },
+          headers: this.$store.getters.headers
+        });
+        const encodedFileName = res.data.encodedFileName
+        const presignedUrl = res.data.presignedUrl;
+        this.uploadFileName = encodedFileName;
 
-    }
+        await axios.put(presignedUrl, selectedFile)
+          .then((res) => {
+            this.image = `https://notshovel-union-bucket.s3.ap-northeast-2.amazonaws.com/public/` + encodedFileName;
+            console.log(res);
+            console.log('이미지 업로드 완료');
+          })
 
+      } catch (err) {
+        if (err.response.status === 419) {
+          this.$store.dispatch('handleTokenExpired');
+        } 
+        else console.error('이미지 업로드 오류:', err);
+      }
+      
+    },
+    getImgUrl(file_name) {
+      const url = `https://notshovel-union-bucket.s3.ap-northeast-2.amazonaws.com/public/` + file_name;
+      return url;
+    }     
   },
   watch: {
     // logs(newVal, oldVal) {
@@ -235,4 +291,11 @@ export default {
   to {
     left: 3%;
   }
-}</style>
+}
+.img-wrap img {
+  width: 80px;
+  height: 80px;
+  position: relative;
+  right: 30px;
+}
+</style>

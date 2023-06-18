@@ -11,6 +11,7 @@
               @addBoard="addOneBoard"
               @openBar="changeBar"
               @saveOrder="saveOrderItems"
+              @showBoardEditForm="showBoardEditForm"
     ></SideBar>
     <MeetingMinutes v-if="currentView === 'meetingMinutes'" :props="isOpen"></MeetingMinutes>
     <!-- 추후에 각 게시판 종류별로 컴포넌트 추가(ex: 차트, 오픈채팅 등) -->
@@ -21,6 +22,7 @@
             :chatBoardId="boardId" :chatBoardName="boardName"
             :key="boardId"></OpenChat>
     <Modal v-if="showModal" @close="closeModal" @createBoard="createBoardItem"></Modal>
+    <BoardEditModal v-if="isShowBoardEdit" :propsdata="editInfo" @editClose="showBoardEditForm"></BoardEditModal>
   </div>
   
 </template>
@@ -32,6 +34,7 @@ import ganttChart from '../components/GanttChart.vue'
 import openChat from '../components/OpenChat.vue'
 import modal from '../components/AddBoardModal.vue'
 import setting from '../components/Setting.vue'
+import boardEditModal from '../components/EditBoardModal.vue'
 import { eventBus } from '../main.js';
 import axios from "axios";
 
@@ -53,7 +56,8 @@ export default {
         member_id: "",
         project_name: "이름 없음",
       },
-      
+      isShowBoardEdit: false,
+      editInfo: null
     }
   },
   created() {
@@ -76,8 +80,7 @@ export default {
     .then((res) => {
         const authData = res.data;
         this.dbData.admin_id = authData.admin_id;
-        console.log(`authData 수신: ${authData.admin_id}`);
-        // this.dbData.manager_ids = authData.manager_ids;
+        this.dbData.manager_ids = authData.manager_ids;
     })
     .catch((err) => {
       if (err.response.status === 419) {
@@ -110,7 +113,8 @@ export default {
     Modal: modal,
     Setting: setting,
     GanttChart: ganttChart,
-    OpenChat: openChat
+    OpenChat: openChat,
+    BoardEditModal: boardEditModal
   },
   methods: {
     async changeView(view, boardId, boardName, index) {
@@ -196,6 +200,11 @@ export default {
           }
           else console.error(error);
         });
+    },
+    showBoardEditForm(board) {
+      console.log(board);
+      this.editInfo = board;
+      this.isShowBoardEdit = !this.isShowBoardEdit
     }
   }
 }

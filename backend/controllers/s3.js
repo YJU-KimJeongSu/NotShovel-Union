@@ -16,7 +16,9 @@ const s3 = new S3Client({
 exports.getPresignedURL = async (req, res) => {
   try {
     const { filename } = req.query;
-    const encodedFileName = `${filename}-${uuidv4()}`;
+    // const { filetype } = req.query;
+    const encodedFileName = `${uuidv4()}-${filename}`;
+    // console.log(`${filetype}`);
 
     const command = new PutObjectCommand({
       Bucket: process.env.S3_BUCKET_NAME,
