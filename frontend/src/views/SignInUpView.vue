@@ -217,8 +217,8 @@ export default {
   border-radius: 0.7rem;
   box-shadow: 0 0.9rem 1.7rem rgba(0, 0, 0, 0.25),
     0 0.7rem 0.7rem rgba(0, 0, 0, 0.22);
-  /* height: 520px; */
-  height: 620px;
+  height: 520px;
+  /* height: 620px; */
   max-width: 758px;
   overflow: hidden;
   position: relative;

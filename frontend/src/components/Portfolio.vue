@@ -2,46 +2,37 @@
   <div class="inner-form">
     <div class="portfolio-form">
       <div class="form-top">
-        <img src="@/assets/profile.jpg" class="profile-img" width="150" height="150">
-        <p class="name">이름</p>
-        <p class="content">a@a.com</p>
+        <img src="https://avatars.githubusercontent.com/u/86811808?v=4" class="profile-img" width="150" height="150">
+        <p class="name">김정원😊</p>
+        <p class="content">kimwonny8@gmail.com</p>
         <p class="region">SOUTH KOREA, DAEGU</p>
       </div>
       <div class="form-bottom">
-        <p class="content">Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita at modi laborum. Eius,
-          nesciunt
-          sapiente reiciendis ex tenetur voluptates molestiae animi asperiores minus ab ea obcaecati. Doloribus
-          dicta quaerat molestiae!</p>
+        <p class="content">긍정적인 마음으로 도전하며 꾸준히 성장하는 개발자가 되겠습니다.</p>
         <a href="#" class="link">Github</a>
       </div>
     </div>
     <div class="portfolio-form">
       <div class="form-top">
-        <img src="@/assets/profile.jpg" class="profile-img" width="150" height="150">
-        <p class="name">이름</p>
-        <p class="content">a@a.com</p>
-        <p class="region">SOUTH KOREA, DAEGU</p>
+        <img src="@/assets/ys.jpg" class="profile-img" width="150" height="150">
+        <p class="name">반영서🤔</p>
+        <p class="content">jamesban01@gmail.com</p>
+        <p class="region">SOUTH KOREA, GYEUNGGI</p>
       </div>
       <div class="form-bottom">
-        <p class="content">Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita at modi laborum. Eius,
-          nesciunt
-          sapiente reiciendis ex tenetur voluptates molestiae animi asperiores minus ab ea obcaecati. Doloribus
-          dicta quaerat molestiae!</p>
+        <p class="content">어제의 자신을 넘어, 더욱 높을 곳을 추구하는 개발자 반영서입니다.</p>
         <a href="#" class="link">Github</a>
       </div>
     </div>
     <div class="portfolio-form">
       <div class="form-top">
-        <img src="@/assets/profile.jpg" class="profile-img" width="150" height="150">
-        <p class="name">이름</p>
-        <p class="content">a@a.com</p>
+        <img src="@/assets/js.jpg" class="profile-img" width="150" height="150">
+        <p class="name">김정수🧐</p>
+        <p class="content">ique45@naver.com</p>
         <p class="region">SOUTH KOREA, DAEGU</p>
       </div>
       <div class="form-bottom">
-        <p class="content">Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita at modi laborum. Eius,
-          nesciunt
-          sapiente reiciendis ex tenetur voluptates molestiae animi asperiores minus ab ea obcaecati. Doloribus
-          dicta quaerat molestiae!</p>
+        <p class="content">기초를 탄탄히 하며, 보이지 않는 것에도 신경 쓰는 꼼꼼한 개발자가 되겠습니다.</p>
         <a href="#" class="link">Github</a>
       </div>
     </div>
