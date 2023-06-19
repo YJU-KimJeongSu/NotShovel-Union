@@ -9,7 +9,7 @@
       </div>
       <div class="form-bottom">
         <p class="content">긍정적인 마음으로 도전하며 꾸준히 성장하는 개발자가 되겠습니다.</p>
-        <a href="#" class="link">Github</a>
+        <a href="https://github.com/kimwonny8" class="link">Github</a>
       </div>
     </div>
     <div class="portfolio-form">
@@ -21,7 +21,7 @@
       </div>
       <div class="form-bottom">
         <p class="content">어제의 자신을 넘어, 더욱 높을 곳을 추구하는 개발자 반영서입니다.</p>
-        <a href="#" class="link">Github</a>
+        <a href="https://github.com/bys096" class="link">Github</a>
       </div>
     </div>
     <div class="portfolio-form">
@@ -33,7 +33,7 @@
       </div>
       <div class="form-bottom">
         <p class="content">기초를 탄탄히 하며, 보이지 않는 것에도 신경 쓰는 꼼꼼한 개발자가 되겠습니다.</p>
-        <a href="#" class="link">Github</a>
+        <a href="https://github.com/YJU-KimJeongSu" class="link">Github</a>
       </div>
     </div>
   </div>
@@ -68,7 +68,7 @@
 }
 
 .form-top {
-  height: 55%;
+  height: 65%;
   width: 90%;
   display: flex;
   flex-direction: column;
@@ -77,7 +77,7 @@
 }
 
 .form-bottom {
-  height: 45%;
+  height: 35%;
   width: 80%;
   border-top: 1px solid #ccc;
   display: flex;
@@ -112,4 +112,5 @@
   box-shadow: 0 2px 5px 1px rgba(64, 60, 67, .16);
   border-radius: 50%;
   margin: 10px 0;
-}</style>
+}
+</style>
