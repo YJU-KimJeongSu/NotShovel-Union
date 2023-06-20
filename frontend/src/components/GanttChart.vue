@@ -137,13 +137,14 @@ export default {
 .menu {
   margin-top: 10px;
   height: 5vh;
-  width: 80%;
+  width: 65%;
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .container {
-  margin-top: 20px;
+  margin-top: 30px;
   height: 80vh;
 }
 

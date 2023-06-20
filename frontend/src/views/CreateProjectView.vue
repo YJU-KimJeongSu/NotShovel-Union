@@ -1,6 +1,6 @@
 <template>
   <div class="form">
-    <!-- create -->
+    <!-- 프로젝트 생성 -->
     <div class="mb-3 project-form" v-if="createState == false">
       <h2>프로젝트 생성</h2>
       <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="프로젝트 이름" v-model="name">
@@ -15,11 +15,13 @@
     <!-- 초대링크 -->
     <div class="mb-3 project-form" v-else>
       <h2>생성 완료</h2>
-      <img :src="image" class="project-photo">
-      <p>{{ this.name }} 프로젝트가 생성 완료되었습니다!</p>
+      <div :style="`background-image: url(${image})`" class="project-photo">
+        <p class="name">{{ name.length > 5 ? name.slice(0, 5) + '...' : name }}</p>
+      </div>
+      <p style="text-align: center;">{{ name.length > 30 ? name.slice(0, 30) + '...' : name }} <br>프로젝트가 생성 완료되었습니다!</p>
       <p>초대링크
-        <input type="text" v-model="link">
-        <button type="button" @click="linkCopy">복사</button>
+        <input type="text" v-model="link"  class="link">
+        <button type="button" @click="linkCopy" class="manage-btn">복사</button>
       </p>
       <router-link to="/">홈으로</router-link>
     </div>
@@ -134,7 +136,6 @@ export default {
   border: 1px solid rgb(205, 205, 205);
   border-radius: 10px;
   padding: 30px;
-
   position: absolute;
   left: 50%;
   top: 50%;
@@ -142,14 +143,59 @@ export default {
 }
 
 .project-photo {
+  padding: 20px;
   width: 170px;
   height: 170px;
   border-radius: 50%;
-  /* background-color: gray; */
+  background-color: gray;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.project-photo::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+
+.name {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 80%;
+  z-index: 1;
+  font-size: 32px;
+  font-weight: 600;
 }
 
 .select-file,
 .btn {
   width: 100%;
+}
+
+.link {
+  width: 300px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  padding: 5px 10px;
+}
+
+.manage-btn {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  margin-left: 10px;
+}
+
+.manage-btn:hover {
+  background-color: white;
 }
 </style>
