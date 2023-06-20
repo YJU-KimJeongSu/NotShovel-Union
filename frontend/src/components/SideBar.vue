@@ -23,7 +23,7 @@
         </draggable>
 
         <!-- 관리자 모드가 아닐 때(추가, 수정 버튼 제외) -->
-        <li v-if="!(propsdata.member_id == propsdata.admin_id || manager_ids.includes(propsdata.member_id))  && editMode" v-for="(board, index) in propsdata.bList"
+        <li v-else v-for="(board, index) in propsdata.bList"
           :key="index" @click="clickBoard(board.clickMethod, board._id, board.board_name, index)">
           <a href="#">
             <i v-bind:class="board.icon"></i>
@@ -31,9 +31,7 @@
             <span class="links_name">{{ board.board_name }}</span>
           </a>
           <span class="tooltip">{{ board.board_name }}</span>
-        </li>
-
-        
+        </li>        
 
         <!-- 추가 버튼 -->
         <div id="edit" v-if="propsdata.member_id === propsdata.admin_id || propsdata.manager_ids.includes(propsdata.member_id)">
