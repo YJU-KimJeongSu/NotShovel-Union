@@ -160,7 +160,7 @@ export default {
           return;
         }
 
-        await axios.patch('http://process.env.SERVER_URL/api/project', {
+        await axios.patch(`http://${process.env.VUE_APP_SERVER_URL}/api/project`, {
           name: this.project.name,
           description: this.project.description,
           image: this.project.image,
@@ -199,7 +199,7 @@ export default {
         }
         const filename = selectedFile.name;
 
-        const { data } = await axios.get('http://process.env.SERVER_URL/api/s3/url', {
+        const { data } = await axios.get(`http://${process.env.VUE_APP_SERVER_URL}/api/s3/url`, {
           params: { filename },
           headers: this.$store.getters.headers
         });
@@ -221,7 +221,7 @@ export default {
     },
     async chkPw() {
       try {
-        await axios.post("http://process.env.SERVER_URL/api/member/chkPw", {
+        await axios.post(`http://${process.env.VUE_APP_SERVER_URL}/api/member/chkPw`, {
           id: this.propsdata.admin_id,
           password: this.admin_pw
         }, {
@@ -245,7 +245,7 @@ export default {
         const chk = confirm('정말 프로젝트를 삭제하시겠습니까?');
         if (chk) {
           await this.chkPw();
-          await axios.delete('http://process.env.SERVER_URL/api/project', {
+          await axios.delete(`http://${process.env.VUE_APP_SERVER_URL}/api/project`, {
             data: { project_id: this.project.id },
           }, {
             headers: this.$store.getters.headers
@@ -270,7 +270,7 @@ export default {
     },
     async getMember() {
       try {
-        const response = await axios.get('http://process.env.SERVER_URL/api/project/members', {
+        const response = await axios.get(`http://${process.env.VUE_APP_SERVER_URL}/api/project/members`, {
           params: {
             project_id: this.project.id
           },
@@ -299,7 +299,7 @@ export default {
     async changeGrade(currentGrade, id) {
       const changeGrade = (currentGrade === 'member') ? document.querySelector("#memberSelect").value : document.querySelector("#managerSelect").value;
       try {
-        const result = await axios.post('http://process.env.SERVER_URL/api/project/grade', {
+        const result = await axios.post(`http://${process.env.VUE_APP_SERVER_URL}/api/project/grade`, {
           project_id: this.project.id,
           member_id: id,
           grade: changeGrade,

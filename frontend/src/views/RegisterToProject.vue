@@ -12,7 +12,7 @@ export default {
       alert('로그인을 먼저 진행해주세요.');
       this.$router.push('/');
     } else {
-      await axios.patch('http://process.env.SERVER_URL/api/project/register', {
+      await axios.patch(`http://${process.env.VUE_APP_SERVER_URL}/api/project/register`, {
         member_id: sessionStorage.getItem('member_id'),
         project_id: id,
       },{

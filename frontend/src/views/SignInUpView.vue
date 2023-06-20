@@ -100,7 +100,7 @@ export default {
       } else if (this.authState != 2) {
         alert('이메일 인증을 진행해주세요');
       } else {
-        await axios.post("http://process.env.SERVER_URL/api/auth/signup", {
+        await axios.post(`http://${process.env.VUE_APP_SERVER_URL}/api/auth/signup`, {
           name: this.signup.name,
           email: this.signup.email,
           password: this.signup.password,
@@ -133,7 +133,7 @@ export default {
       ) {
         alert('비어있는 칸이 있습니다');
       } else {
-        await axios.post("http://process.env.SERVER_URL/api/auth/signin", {
+        await axios.post(`http://${process.env.VUE_APP_SERVER_URL}/api/auth/signin`, {
           email: this.signin.email,
           password: this.signin.password,
         })
@@ -158,7 +158,7 @@ export default {
     },
     async emailAuth() {
       this.authState = 3; // 0 = 전송 전, 1 = 전송 후, 2 = 인증 성공, 3 = 로딩
-      await axios.get('http://process.env.SERVER_URL/api/member/emailAuth?email=' + this.signup.email) // 이메일 전송하기
+      await axios.get(`http://${process.env.VUE_APP_SERVER_URL}/api/member/emailAuth?email=` + this.signup.email) // 이메일 전송하기
         .then((res) => {
           this._emailAuthCode = res.data.num;
           this.authState = 1; // 0 = 전송 전, 1 = 전송 후, 2 = 인증 성공, 3 = 로딩

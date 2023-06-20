@@ -47,7 +47,7 @@ export default {
   methods: {
     async fetchGanttData() {
       try {
-        const res = await axios.get(`http://process.env.SERVER_URL/api/gantt/${this.board_id}`, {
+        const res = await axios.get(`http://${process.env.VUE_APP_SERVER_URL}/api/gantt/${this.board_id}`, {
           headers: this.$store.getters.headers
         });
         const ganttData = res.data;
@@ -87,7 +87,7 @@ export default {
       });
       console.log(this.activity_list);
 
-      await axios.post('http://process.env.SERVER_URL/api/gantt', {
+      await axios.post(`http://${process.env.VUE_APP_SERVER_URL}/api/gantt`, {
         board_id: this.board_id,
         gantt_data: {
           data: this.activity_list,

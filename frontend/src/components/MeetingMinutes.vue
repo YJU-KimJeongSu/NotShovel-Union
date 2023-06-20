@@ -93,7 +93,7 @@ export default {
         this.isWrite = true;
         // this.$store.commit('setMeetingMinute', null);
 
-        await axios.post('http://process.env.SERVER_URL/api/meeting', {
+        await axios.post(`http://${process.env.VUE_APP_SERVER_URL}/api/meeting`, {
           board_id: sessionStorage.getItem('board_id'),
           title: null,
           date: null,
@@ -117,7 +117,7 @@ export default {
     async getDetailMeetingMinute(_id) {
       try {
         const boardId = sessionStorage.getItem('board_id');
-        const res = await axios.get(`http://process.env.SERVER_URL/api/meeting/${boardId}/${_id}`,{
+        const res = await axios.get(`http://${process.env.VUE_APP_SERVER_URL}/api/meeting/${boardId}/${_id}`,{
           headers: this.$store.getters.headers
         });
         this.$refs.meetingMinuteEditor.loadSavedMeetingMinute(res.data);
@@ -157,7 +157,7 @@ export default {
     // this.$store.commit('setMeetingMinute', null);
     try {
       const boardId = sessionStorage.getItem('board_id');
-      const res = await axios.get("http://process.env.SERVER_URL/api/meeting/" + boardId, {
+      const res = await axios.get(`http://${process.env.VUE_APP_SERVER_URL}/api/meeting/` + boardId, {
         headers: this.$store.getters.headers
       });
       this.meetingMinuteList = res.data;

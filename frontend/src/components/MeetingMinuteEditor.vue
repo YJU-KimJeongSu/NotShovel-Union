@@ -86,7 +86,7 @@ export default {
     if ((this.title == null || this.title == "")
       && (this.date == null || this.date == "")
       && (this.place == null || this.place == "")) {
-      await axios.delete(`http://process.env.SERVER_URL/api/meeting?board_id=${this.board_id}&meetingMinuteId=${meetingMinuteId}`, {
+      await axios.delete(`http://${process.env.VUE_APP_SERVER_URL}/api/meeting?board_id=${this.board_id}&meetingMinuteId=${meetingMinuteId}`, {
         headers: this.$store.getters.headers
       })
       .catch((err)=>{
@@ -155,7 +155,7 @@ export default {
     },
     async saveImage(formData) {
       try {
-        const res = await axios.get('http://process.env.SERVER_URL/api/s3/url', {
+        const res = await axios.get(`http://${process.env.VUE_APP_SERVER_URL}/api/s3/url`, {
           params: { filename: formData.get('file').name },
           headers: this.$store.getters.headers
         });
@@ -187,7 +187,7 @@ export default {
         const member_id = this.member_id;
         const meetingMinuteId = sessionStorage.getItem('meetingMinuteId');
 
-        await axios.patch('http://process.env.SERVER_URL/api/meeting', {
+        await axios.patch(`http://${process.env.VUE_APP_SERVER_URL}/api/meeting`, {
           board_id,
           title: this.title,
           date: this.date,
@@ -217,7 +217,7 @@ export default {
         const meetingMinuteId = sessionStorage.getItem('meetingMinuteId');
         const chk = confirm('삭제하면 되돌릴 수 없습니다. 정말 삭제하시겠습니까?');
         if (chk) {
-          await axios.delete(`http://process.env.SERVER_URL/api/meeting?board_id=${this.board_id}&meetingMinuteId=${meetingMinuteId}`, {
+          await axios.delete(`http://${process.env.VUE_APP_SERVER_URL}/api/meeting?board_id=${this.board_id}&meetingMinuteId=${meetingMinuteId}`, {
             headers: this.$store.getters.headers
           });
           this.main = true;
@@ -249,7 +249,7 @@ export default {
       console.log('대화요청');
       // console.log(this.minute_id);
       console.log('session MinuteId: ' + sessionStorage.getItem('meetingMinuteId'));
-      axios.get('http://process.env.SERVER_URL/api/meeting/chat', {
+      axios.get(`http://${process.env.VUE_APP_SERVER_URL}/api/meeting/chat`, {
         params: {
           board_id: sessionStorage.getItem('board_id'),
           minute_id: sessionStorage.getItem('meetingMinuteId')
@@ -316,7 +316,7 @@ export default {
             // this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
             chat.board_id = this.board_id;
             chat.minute_id = sessionStorage.getItem('meetingMinuteId');
-            axios.post('http://process.env.SERVER_URL/api/meeting/chat', chat, {
+            axios.post(`http://${process.env.VUE_APP_SERVER_URL}/api/meeting/chat`, chat, {
               headers: this.$store.getters.headers
             })
               .then((res) => console.log(res))
