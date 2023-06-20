@@ -109,7 +109,7 @@ export default {
   },
   async mounted() {
     console.log('axios 요청 시도 from sidebar');
-    await axios.get('/api/project/authority', {
+    await axios.get('http://process.env.SERVER_URL/api/project/authority', {
       params: {
         project_id: sessionStorage.getItem('project_id')
       }, 
@@ -189,7 +189,7 @@ export default {
     },
 
     async exitProject() {
-      await axios.delete('/api/project/exit', {
+      await axios.delete('http://process.env.SERVER_URL/api/project/exit', {
         data: {
           member_id: sessionStorage.getItem('member_id'),
           project_id: sessionStorage.getItem('project_id'),
@@ -218,7 +218,7 @@ export default {
       const con =  confirm('정말로 삭제하시겠습니까?');
 
       if(con) {
-        await axios.delete(`/api/board/${bid}/${btype}`)
+        await axios.delete(`http://process.env.SERVER_URL/api/board/${bid}/${btype}`)
           .then((res) => {
             // console.log(res);
             // this.$router.push('/dashboard');

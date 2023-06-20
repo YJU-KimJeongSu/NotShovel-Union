@@ -122,7 +122,7 @@ export default {
   },
 
   mounted() {
-    const list = axios.get('/api/chat/list', {
+    const list = axios.get('http://process.env.SERVER_URL/api/chat/list', {
       params: {
         boardId: this.$props.chatBoardId
       }, headers: this.$store.getters.headers
@@ -179,7 +179,7 @@ export default {
             // 모든 DOM 업데이트가 완료된 후에 실행
             // this.scrollToBottom();
             this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
-            axios.post('/api/chat', chat, {
+            axios.post('http://process.env.SERVER_URL/api/chat', chat, {
               headers: this.$store.getters.headers
             })
               .then((res) => console.log(res))
@@ -210,7 +210,7 @@ export default {
         const filename = selectedFile.name;
         const filetype = selectedFile.type;
         this.context = filename;
-        const res = await axios.get('/api/s3/url', {
+        const res = await axios.get('http://process.env.SERVER_URL/api/s3/url', {
           params: { filename, filetype },
           headers: this.$store.getters.headers
         });

@@ -50,7 +50,7 @@ export default {
     async updateBoard() {
       // this.$emit('createBoard', this.boardInfo);
       this.board.board_name = this.changeBoardName;
-      axios.patch('/api/board', this.board);
+      axios.patch('http://process.env.SERVER_URL/api/board', this.board);
 
       this.$router.go();
     }
