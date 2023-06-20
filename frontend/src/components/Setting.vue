@@ -41,12 +41,15 @@
     <div v-if="menu === 'memberUD'">
       <h2>회원 관리</h2>
       <table>
+        <thead>
         <tr>
           <th>이메일</th>
           <th>이름</th>
           <th>휴대폰번호</th>
           <th>등급</th>
         </tr>
+      </thead>
+      <tbody>
         <tr v-for="manager in managers" :key="manager.id">
           <td>{{ manager.email }}</td>
           <td>{{ manager.name }}</td>
@@ -73,6 +76,7 @@
             <button @click="changeGrade('member', member.id)" class="btn">변경</button>
           </td>
         </tr>
+      </tbody>
       </table>
 
     </div>
@@ -109,6 +113,26 @@ export default {
     this.project.description = sessionStorage.getItem('project_description');
     this.member_id = sessionStorage.getItem('member_id');
     this.link = `http://localhost:8080/register?id=${this.project.id}`;
+
+    await axios.get('/api/project/authority', {
+      params: {
+        project_id: this.project.id 
+      },
+      headers: this.$store.getters.headers
+    })
+      .then((res) => {
+        console.log(res);
+        const authData = res.data;
+        this.admin_id = authData.admin_id;
+        this.manager_ids = authData.manager_ids;
+        console.log("result: " + this.admin_id);
+      })
+      .catch((err) => {
+        if (err.response.status === 419) {
+          this.$store.dispatch('handleTokenExpired');
+        }
+        console.log(err)
+      });
   },
   methods: {
     selectProjectMenu(arg) {
@@ -224,7 +248,7 @@ export default {
           this.$router.push('/');
         }
         else alert('프로젝트 삭제 실패');
-      } catch (err) {
+      } catch (error) {
         if (error.response && error.response.status === 419) {
           this.$store.dispatch('handleTokenExpired');
         }
@@ -239,13 +263,9 @@ export default {
         const response = await axios.get('/api/project/members', {
           params: {
             project_id: this.project.id
-          }, headers: this.$store.getters.headers
-        })
-          .catch((err) => {
-            if (error.response && error.response.status === 419) {
-              this.$store.dispatch('handleTokenExpired');
-            }
-          });
+          },
+          headers: this.$store.getters.headers
+        });
 
         this.allMembers = response.data.map(member => {
           return {
@@ -257,8 +277,10 @@ export default {
         });
 
         // 일반 회원, 매니저 회원 구분
-        this.managers = this.allMembers.filter(member => this.manager_ids.includes(member.id) && member.id !== this.propsdata.admin_id);
-        this.members = this.allMembers.filter(member => member.id !== this.propsdata.admin_id && !this.manager_ids.includes(member.id));
+        this.managers = this.allMembers.filter(member => this.manager_ids.includes(member.id) && member.id !== this.$props.propsdata.admin_id);
+        console.log(this.allMembers);
+        this.members = this.allMembers.filter(member => member.id !== this.$props.propsdata.admin_id && !this.manager_ids.includes(member.id));
+        console.log(this.members);
       } catch (error) {
         console.error(error);
       }
@@ -278,12 +300,12 @@ export default {
         this.menu = 'default';
         this.select = false;
         this.$router.go();
-      } catch (err) {
+      } catch (error) {
         if (error.response && error.response.status === 419) {
           this.$store.dispatch('handleTokenExpired');
         }
         else {
-          console.error(err);
+          console.error(error);
           alert('등급 변경 실패');
         }
       }
@@ -323,7 +345,20 @@ export default {
 
 table {
   width: 800px;
+  /* height: 70vh; */
+  border: 1px solid #ccc;
+  text-align: center;
 }
+th {
+  border: 1px solid #ccc;
+  background-color: #2f2f2f;
+  color: white;
+}
+
+tbody > tr > td {
+  border: 1px solid #ccc;
+}
+
 
 .manage-form {
   display: flex;
@@ -369,4 +404,5 @@ table {
   background-color: white;
   border: none;
 }
+  
 </style>
