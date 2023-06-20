@@ -339,14 +339,14 @@ export default {
 .editor-all {
   display: flex;
   width: 80%;
-  /* height: 90vh; */
+  height: 85vh;
   align-items: center;
   justify-content: center;
 }
 
 .editor-form {
   width: 100%;
-  height: 90vh;
+  /* height: 90vh; */
   display: flex;
   flex-direction: column;
   align-items: center;

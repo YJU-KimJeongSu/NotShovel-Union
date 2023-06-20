@@ -6,7 +6,7 @@
         <!-- 해당 아이디가 소속한 프로젝트 도는 반복문 -->
         <div class="card-panel" v-for="(project, index) in projects" :key="index" @click="selectProject(project)"
           :style="`background-image: url(${project.image})`">
-          <p class="name">{{ project.name }}</p>
+          <p class="name">{{ project.name.length > 30 ? project.name.slice(0, 30) + '...' : project.name }}</p>
         </div>
       </Flicking>
     </div>
@@ -30,7 +30,7 @@ export default {
   data() {
     return {
       plugins: [new Perspective({ rotate: 0.5 })],
-      projects: [],
+      projects: [ ],
     }
   },
   async mounted() {
@@ -77,6 +77,7 @@ export default {
   align-items: center;
   justify-content: center;
   background-size: cover;
+  padding: 30px;
 }
 
 .card-panel::before {
@@ -91,9 +92,13 @@ export default {
 }
 
 .name {
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 80%;
   z-index: 1;
-  font-size: 35px;
+  font-size: 32px;
   font-weight: 600;
 }
 
@@ -127,5 +132,16 @@ export default {
 .flicking-arrow-disabled::after,
 .flicking-arrow-disabled::before {
   background-color: rgb(220, 220, 220);
+}
+
+a {
+  color: black;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: none;
+  color: gray;
 }
 </style>

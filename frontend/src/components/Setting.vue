@@ -1,84 +1,85 @@
 <template>
   <div class="form">
-    <div class="manage-form" v-if="!select">
-      <button class="manage-btn" v-if="member_id == propsdata.admin_id" @click="selectProjectMenu('project')">프로젝트 관리</button>
-      <button class="manage-btn" @click="selectProjectMenu('member')">회원 관리</button>
+    <div v-if="isLoading" id="load">
+      <div class="spinner"></div>
     </div>
-
-    <div v-if="menu === 'project'">
-      <button class="manage-btn" @click="selectProjectMenu('projectDelete')">프로젝트 삭제</button>
-      <button class="manage-btn" @click="selectProjectMenu('projectUpdate')">프로젝트 수정</button>
+    <div class="menu-form">
+      <div class="menu-left">
+        <input type="text" v-model="link" class="link">
+        <button type="button" @click="linkCopy" class="manage-btn">복사</button>
+      </div>
+      <div class="menu-right" v-if="member_id == propsdata.admin_id">
+        <button class="manage-btn" @click="selectProjectMenu('memberUD')">회원 관리</button>
+        <button class="manage-btn" @click="selectProjectMenu('projectDelete')">프로젝트 삭제</button>
+        <button class="manage-btn" @click="selectProjectMenu('projectUpdate')">프로젝트 수정</button>
+      </div>
     </div>
-    <div v-if="menu === 'projectUpdate'" class="mb-3 project-form">
-      <h2>프로젝트 수정</h2>
-      <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="프로젝트 이름" v-model="project.name">
-      <textarea class="form-control" id="exampleFormControlTextarea1" placeholder="프로젝트 설명" rows="3"
-        v-model="project.description"></textarea>
-      <p class="select-file">프로젝트 대표 이미지
-        <input class="form-control" ref="image" accept="image/*" type="file" id="formFile" @change="saveImage()">
-      </p>
-      <button type="button" class="btn btn-secondary" @click="updateProject()">수정</button>
-    </div>
-
-    <div v-if="menu === 'projectDelete'" class="mb-3 project-form">
-      <h2>프로젝트 삭제</h2>
-      <p>본인 확인을 위해 프로젝트 관리자 본인의 비밀번호를 입력해주세요.</p>
-      <input type="password" class="form-control" id="exampleFormControlInput1" placeholder="관리자 비밀번호" v-model="admin_pw">
-      <button type="button" class="btn btn-secondary" @click="deleteProject()">프로젝트 삭제</button>
-    </div>
-
-    <div v-if="menu === 'member'">
-      <button class="manage-btn" @click="selectProjectMenu('memberInvite')">초대 링크</button>
-      <button class="manage-btn" @click="selectProjectMenu('memberUD')">등급 수정/추방</button>
-    </div>
-    <div v-if="menu === 'memberInvite'" class="mb-3 project-form">
-      <h2>초대링크 생성</h2>
-      <p>해당 링크를 초대할 사람에게 전송해주세요!</p>
-      <input type="text" v-model="link" class="link">
-      <button type="button" @click="linkCopy">복사</button>
-
-    </div>
-    <div v-if="menu === 'memberUD'">
+    <div v-if="menu === 'memberUD'" class="manage-contents-member">
       <h2>회원 관리</h2>
       <table>
         <thead>
-        <tr>
-          <th>이메일</th>
-          <th>이름</th>
-          <th>휴대폰번호</th>
-          <th>등급</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="manager in managers" :key="manager.id">
-          <td>{{ manager.email }}</td>
-          <td>{{ manager.name }}</td>
-          <td>{{ manager.phone }}</td>
-          <td>
-            매니저
-            <select id="managerSelect">
-              <option value="manager" disabled>매니저</option>
-              <option value="member">일반회원</option>
-            </select>
-            <button @click="changeGrade('manager', manager.id)" class="btn">변경</button>
-          </td>
-        </tr>
-        <tr v-for="member in members" :key="member.id">
-          <td>{{ member.email }}</td>
-          <td>{{ member.name }}</td>
-          <td>{{ member.phone }}</td>
-          <td>
-            일반 회원
-            <select id="memberSelect">
-              <option value="manager">매니저</option>
-              <option value="member" disabled>일반회원</option>
-            </select>
-            <button @click="changeGrade('member', member.id)" class="btn">변경</button>
-          </td>
-        </tr>
-      </tbody>
+          <tr>
+            <th>이메일</th>
+            <th>이름</th>
+            <th>휴대폰번호</th>
+            <th>등급</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="manager in managers" :key="manager.id">
+            <td>{{ manager.email }}</td>
+            <td>{{ manager.name }}</td>
+            <td>{{ manager.phone }}</td>
+            <td>
+              매니저
+              <select id="managerSelect">
+                <option value="manager" disabled>매니저</option>
+                <option value="member">일반회원</option>
+              </select>
+              <button @click="changeGrade('manager', manager.id)" class="btn">변경</button>
+            </td>
+          </tr>
+          <tr v-for="member in members" :key="member.id">
+            <td>{{ member.email }}</td>
+            <td>{{ member.name }}</td>
+            <td>{{ member.phone }}</td>
+            <td>
+              일반 회원
+              <select id="memberSelect">
+                <option value="manager">매니저</option>
+                <option value="member" disabled>일반회원</option>
+              </select>
+              <button @click="changeGrade('member', member.id)" class="btn">변경</button>
+            </td>
+          </tr>
+        </tbody>
       </table>
-
+    </div>
+    <div v-else-if="menu === 'projectUpdate'" class="manage-contents-project">
+      <div class="mb-3 project-form">
+        <h2>프로젝트 수정</h2>
+        <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="프로젝트 이름"
+          v-model="project.name">
+        <textarea class="form-control" id="exampleFormControlTextarea1" placeholder="프로젝트 설명" rows="3"
+          v-model="project.description"></textarea>
+        <p class="select-file">프로젝트 대표 이미지
+          <input class="form-control" ref="image" accept="image/*" type="file" id="formFile" @change="saveImage()">
+        </p>
+        <button type="button" class="btn btn-secondary" @click="updateProject()">수정</button>
+      </div>
+    </div>
+    <div v-else-if="menu === 'projectDelete'" class="manage-contents-project">
+      <div class="mb-3 project-form">
+        <h2>프로젝트 삭제</h2>
+        <p style="color: red;">프로젝트 삭제시, 모든 데이터의 복구는 불가능합니다.</p>
+        <p>본인 확인을 위해 <br> 프로젝트 관리자 본인의 비밀번호를 입력해주세요.</p>
+     
+        <input type="password" class="form-control" id="exampleFormControlInput1" placeholder="관리자 비밀번호"
+          v-model="admin_pw">
+        <input type="password" class="form-control" id="exampleFormControlInput1" placeholder="관리자 비밀번호 재확인"
+          v-model="admin_pw2">
+        <button type="button" class="btn btn-secondary" @click="deleteProject()">프로젝트 삭제</button>
+      </div>
     </div>
   </div>
 </template>
@@ -88,8 +89,8 @@ import axios from "axios";
 export default {
   data() {
     return {
-      select: false,
-      menu: 'default',
+      isLoading: true,
+      menu: 'memberUD',
       grade: null,
       project: {
         id: null,
@@ -100,6 +101,7 @@ export default {
       },
       member_id: null, // 회원 본인 아이디
       admin_pw: null,
+      admin_pw2: null,
       manager_ids: [],
       allMembers: [], // 해당 프로젝트에 불러온 전체 회원들 정보(admin, manager 포함)
       managers: [], // 불러온 매니저들 정보
@@ -108,6 +110,10 @@ export default {
   },
   props: ['propsdata'],
   async created() {
+    this.isLoading = true;
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 1500);
     this.project.id = sessionStorage.getItem('project_id');
     this.project.name = sessionStorage.getItem('project_name');
     this.project.description = sessionStorage.getItem('project_description');
@@ -116,7 +122,7 @@ export default {
 
     await axios.get('/api/project/authority', {
       params: {
-        project_id: this.project.id 
+        project_id: this.project.id
       },
       headers: this.$store.getters.headers
     })
@@ -133,13 +139,13 @@ export default {
         }
         console.log(err)
       });
+    await this.getMember();
   },
   methods: {
     selectProjectMenu(arg) {
       this.menu = arg;
-      this.select = true;
 
-      if (arg == 'member') {
+      if (arg == 'memberUD') {
         this.getMember();
       }
     },
@@ -231,6 +237,10 @@ export default {
       }
     },
     async deleteProject() {
+      if(this.admin_pw !== this.admin_pw2) {
+        alert('비밀번호가 일치하지 않습니다.');
+        return;
+      }
       try {
         const chk = confirm('정말 프로젝트를 삭제하시겠습니까?');
         if (chk) {
@@ -247,14 +257,14 @@ export default {
           sessionStorage.setItem('project_image', null);
           this.$router.push('/');
         }
-        else alert('프로젝트 삭제 실패');
+        else alert('프로젝트 삭제가 취소되었습니다.');
       } catch (error) {
         if (error.response && error.response.status === 419) {
           this.$store.dispatch('handleTokenExpired');
         }
         else {
           console.error(err);
-          alert('프로젝트 삭제 실패');
+          alert('서버 오류로 프로젝트 삭제에 실패하였습니다.');
         }
       }
     },
@@ -315,17 +325,56 @@ export default {
 </script>
 
 <style scoped>
+
+
 .link {
   width: 300px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  padding: 5px 10px;
 }
 
 .form {
   height: 90vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#load {
+  height: 80vh;
+  width: 80%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
+  background: rgba(255, 255, 255, 0.8);
+  z-index: 99;
 }
+
+#load > .spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 
 .project-form {
   width: 500px;
@@ -337,53 +386,71 @@ export default {
   border: 1px solid rgb(205, 205, 205);
   border-radius: 10px;
   padding: 30px;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+}
+
+.manage-contents-member {
+  padding: 10px;
+  width: 900px;
+  height: 70vh;
+  border: 1px solid #ccc;
+  text-align: center;
+  overflow-y: scroll;
+}
+
+.manage-contents-member::-webkit-scrollbar {
+  width: 10px;
+}
+
+.manage-contents-member::-webkit-scrollbar-thumb {
+  background-color: gray;
+  border-radius: 10px;
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+
+.manage-contents-member::-webkit-scrollbar-track {
+  background-color: #ccc;
+  border-radius: 10px;
+  box-shadow: inset 0px 0px 5px white;
+}
+
+.manage-contents-project {
+  padding: 10px;
+  width: 900px;
+  height: 70vh;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 table {
-  width: 800px;
-  /* height: 70vh; */
+  width: 100%;
   border: 1px solid #ccc;
   text-align: center;
+
 }
+
 th {
   border: 1px solid #ccc;
   background-color: #2f2f2f;
   color: white;
 }
 
-tbody > tr > td {
+tbody>tr>td {
   border: 1px solid #ccc;
 }
 
-
-.manage-form {
+.menu-form {
   display: flex;
+  width: 900px;
   align-items: center;
-  justify-content: space-around;
-  width: 1000px;
-  height: 500px;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.manage-form-small {
-  display: flex;
-  width: 1200px;
-  height: 100px;
-  /* position: absolute;
-  top: 50%;
-  transform: translate(0%, -50%); */
+  justify-content: space-between;
+  margin: 30px 0;
 }
 
 .manage-btn {
-  width: 300px;
-  height: 200px;
+  padding: 5px 10px;
   border: 1px solid #ccc;
   border-radius: 3px;
   margin-left: 10px;
@@ -404,5 +471,8 @@ tbody > tr > td {
   background-color: white;
   border: none;
 }
-  
+
+.select-file {
+  width: 100%;
+}
 </style>
