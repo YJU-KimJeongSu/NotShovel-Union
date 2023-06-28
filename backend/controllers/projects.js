@@ -39,7 +39,6 @@ exports.findProjects = async (req, res) => {
     if (member) {
       const project_ids = member.project_ids;
       const projectData = [];
-
       for (const project_id of project_ids) {
         const project = await projects.findById(project_id);
         if (project) {
@@ -114,6 +113,7 @@ exports.deleteProject = async (req, res) => {
 };
 
 exports.findMembers = async (req, res) => {
+  console.log(123213213);
   const project_id = req.query.project_id;
   try {
     const project = await projects.findOne({_id: project_id}).populate('member_ids'); // 멤버 정보를 populate로 가져옴
