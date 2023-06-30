@@ -36,7 +36,7 @@ export default {
           email: this.email,
           password: this.password,
         }
-        const res = await axios.patch(`http://${process.env.VUE_APP_SERVER_URL}/api/member/passwordReset`, data);
+        const res = await axios.patch(`https://${process.env.VUE_APP_SERVER_URL}/api/member/passwordReset`, data);
         alert('비밀번호가 정상적으로 변경되었습니다. 다시 로그인해주세요')
         location.href = '/';
       } catch (error) {

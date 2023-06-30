@@ -58,10 +58,10 @@ export default {
           image: this.image,
           member_id: this.member_id,
         };
-        const { data: { id } } = await axios.post(`http://${process.env.VUE_APP_SERVER_URL}/api/project`, requestData, { 
+        const { data: { id } } = await axios.post(`https://${process.env.VUE_APP_SERVER_URL}/api/project`, requestData, { 
           headers: this.$store.getters.headers
         });
-        this.link = `http://localhost:8080/register?id=${id}`;
+        this.link = `https://localhost:8080/register?id=${id}`;
         this.createState = !!!this.createState;
       } 
       catch (err) {
@@ -88,7 +88,7 @@ export default {
           return;
         }
         const filename = selectedFile.name;
-        const res = await axios.get(`http://${process.env.VUE_APP_SERVER_URL}/api/s3/url`, {
+        const res = await axios.get(`https://${process.env.VUE_APP_SERVER_URL}/api/s3/url`, {
           params: { filename },
           headers: this.$store.getters.headers
         });
