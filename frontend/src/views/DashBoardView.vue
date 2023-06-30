@@ -71,7 +71,7 @@ export default {
     this.dbData.member_id = sessionStorage.getItem('member_id');
   },
   async mounted() {
-    await axios.get(`http://${process.env.VUE_APP_SERVER_URL}/api/project/authority`, {
+    await axios.get(`https://${process.env.VUE_APP_SERVER_URL}/api/project/authority`, {
       params: {
         project_id: this.project_id
       }, 
@@ -90,7 +90,7 @@ export default {
     });
 
     // 게시판 리스트 겟요청
-    await axios.get(`http://${process.env.VUE_APP_SERVER_URL}/api/board`, {
+    await axios.get(`https://${process.env.VUE_APP_SERVER_URL}/api/board`, {
       params: {
         project_id: this.project_id
       }, 
@@ -145,7 +145,7 @@ export default {
     async createBoardItem(boardInfo) {
       // console.log(`createBoardInfo: ${boardInfo.name}`);
       boardInfo.listIndex = this.dbData.bList.length; // 새로 추가된 게시판의 순서Index
-      await axios.post(`http://${process.env.VUE_APP_SERVER_URL}/api/board`, boardInfo,{
+      await axios.post(`https://${process.env.VUE_APP_SERVER_URL}/api/board`, boardInfo,{
         params: {
           project_id: this.project_id
         }, 
@@ -186,7 +186,7 @@ export default {
       }
       console.log('save Event 수신');
 
-      await axios.patch(`http://${process.env.VUE_APP_SERVER_URL}/api/board/order`, bList, {
+      await axios.patch(`https://${process.env.VUE_APP_SERVER_URL}/api/board/order`, bList, {
         params: {
           project_id: this.project_id
         }, headers: this.$store.getters.headers
