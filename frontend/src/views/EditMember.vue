@@ -36,7 +36,7 @@ export default {
       } else if (this.checkingText === '비밀번호를 확인해주세요') {
         alert('비밀번호를 확인해주세요');
       } else if (this.checkingText === '　') {
-        axios.patch(`https://${process.env.VUE_APP_SERVER_URL}/api/member/edit`, {
+        axios.patch(`${process.env.VUE_APP_SERVER_URL}/api/member/edit`, {
           member_id: this.member_id,
           name: this.name,
           password: this.password,
@@ -84,7 +84,7 @@ export default {
       } else if (this.checkingText === '비밀번호를 확인해주세요') {
         alert('비밀번호를 확인해주세요');
       } else if (this.checkingText === '　') {
-        await axios.delete(`https://${process.env.VUE_APP_SERVER_URL}/api/member/delete`, {
+        await axios.delete(`${process.env.VUE_APP_SERVER_URL}/api/member/delete`, {
           // delete 요청은 payload body를 사용하지 않고 url 파라미터를 사용함
           // 단 현재 보안 토큰 등의 개념이 부족하므로 payload body를 사용하기 위해 data 속성을 따로 추가해서 넣음
           data: {
@@ -119,7 +119,7 @@ export default {
     //     const formData = new FormData();
     //     formData.append('image', image);
     //     const header = { headers: { 'Content-Type': 'multipart/form-data' } };
-    //     const { data: { filename } } = await axios.post('https://${process.env.VUE_APP_SERVER_URL}/api/member/image', formData, header);
+    //     const { data: { filename } } = await axios.post('${process.env.VUE_APP_SERVER_URL}/api/member/image', formData, header);
     //     return filename;
     //   }
     // }

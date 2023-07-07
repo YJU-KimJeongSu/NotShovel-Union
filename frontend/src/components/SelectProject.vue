@@ -36,7 +36,7 @@ export default {
   async mounted() {
     try {
       const member_id = sessionStorage.getItem('member_id');
-      const res = await axios.get(`https://${process.env.VUE_APP_SERVER_URL}/api/project`, {
+      const res = await axios.get(`${process.env.VUE_APP_SERVER_URL}/api/project`, {
         params: {
           member_id: member_id
         },

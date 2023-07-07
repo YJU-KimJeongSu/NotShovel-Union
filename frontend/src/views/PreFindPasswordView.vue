@@ -31,7 +31,7 @@ export default {
     async sendFindPasswordEmail() {
       try {
         this.isSend = false;
-        const res = await axios.get(`https://${process.env.VUE_APP_SERVER_URL}/api/member/chkEmail?email=` + this.email);
+        const res = await axios.get(`${process.env.VUE_APP_SERVER_URL}/api/member/chkEmail?email=` + this.email);
         this._emailAuthCode = res.data.num;
         this.isSend = true;
       } catch (error) {
