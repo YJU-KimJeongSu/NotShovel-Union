@@ -118,7 +118,7 @@ export default {
     this.project.name = sessionStorage.getItem('project_name');
     this.project.description = sessionStorage.getItem('project_description');
     this.member_id = sessionStorage.getItem('member_id');
-    this.link = `https://localhost:8080/register?id=${this.project.id}`;
+    this.link = `https://www.notshovel.works/register?id=${this.project.id}`;
 
     await axios.get('/api/project/authority', {
       params: {

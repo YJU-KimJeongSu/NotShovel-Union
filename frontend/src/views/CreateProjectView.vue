@@ -61,7 +61,7 @@ export default {
         const { data: { id } } = await axios.post(`${process.env.VUE_APP_SERVER_URL}/api/project`, requestData, { 
           headers: this.$store.getters.headers
         });
-        this.link = `https://localhost:8080/register?id=${id}`;
+        this.link = `https://www.notshovel.works/register?id=${id}`;
         this.createState = !!!this.createState;
       } 
       catch (err) {
